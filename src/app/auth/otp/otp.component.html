@@ -1,0 +1,27 @@
+<div class="auth-card">
+  <h2>Enter OTP</h2>
+  <p class="sub">OTP sent to {{ phone }}</p>
+
+  <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+
+    <input
+      type="text"
+      formControlName="otp"
+      placeholder="Enter 6-digit OTP"
+      maxlength="6"
+    />
+
+    <small class="error"
+      *ngIf="otpForm.get('otp')?.touched && otpForm.get('otp')?.invalid">
+      Enter valid 6-digit OTP
+    </small>
+
+    <button
+      class="btn primary"
+      type="submit"
+      [disabled]="otpForm.invalid || isLoading">
+      {{ isLoading ? 'Verifying...' : 'Verify OTP' }}
+    </button>
+
+  </form>
+</div>

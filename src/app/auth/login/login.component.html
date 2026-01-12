@@ -1,0 +1,47 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Enter your mobile number</h2>
+
+    <form [formGroup]="mobileForm" (ngSubmit)="sendOtp()">
+
+      <!-- MOBILE INPUT -->
+      <div class="mobile-input">
+        <span>+91</span>
+        <input
+          type="text"
+          formControlName="mobile"
+          placeholder="Enter 10-digit mobile number"
+          maxlength="10"
+        />
+      </div>
+
+      <!-- ERROR -->
+      <small class="error"
+        *ngIf="mobileForm.get('mobile')?.touched && mobileForm.get('mobile')?.invalid">
+        Enter valid 10-digit mobile number
+      </small>
+
+      <!-- CHECKBOX -->
+      <label class="checkbox">
+        <input type="checkbox" formControlName="agree" />
+        I agree to <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+      </label>
+
+      <!-- ERROR -->
+      <small class="error"
+        *ngIf="mobileForm.get('agree')?.touched && mobileForm.get('agree')?.invalid">
+        You must accept terms
+      </small>
+
+      <!-- BUTTON -->
+      <button
+        class="btn primary"
+        type="submit"
+        [disabled]="mobileForm.invalid"
+      >
+        Send OTP
+      </button>
+
+    </form>
+  </div>
+</div>

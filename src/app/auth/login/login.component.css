@@ -1,0 +1,82 @@
+.auth-card {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  max-width: 420px;
+  margin: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.auth-card h2 {
+  margin-bottom: 24px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.mobile-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 6px;
+}
+
+.mobile-input span {
+  margin-right: 8px;
+  font-weight: 600;
+}
+
+.mobile-input input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.error {
+  color: #e53935;
+  font-size: 12px;
+}
+
+.btn.primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(180deg, #2f6cf6, #1f4fd8);
+  color: #fff;
+  font-size: 16px;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* FULL SCREEN CENTER */
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center; /* vertical center */
+  justify-content: center; /* horizontal center */
+  background: linear-gradient(180deg, #eef3ff, #ffffff);
+  padding: 16px;
+}
+
+/* CARD */
+.auth-card {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
