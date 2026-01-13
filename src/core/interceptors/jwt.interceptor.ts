@@ -10,56 +10,53 @@ import {
 import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { AuthServiceService } from '../../service/auth-service.service';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
 
-    private static isLoggingOut = false; // 🔥 IMPORTANT FLAG
+  private static isLoggingOut = false;
 
   constructor(
-    private authService: AuthService,
     private router: Router
-  ) { }
-intercept(
-  request: HttpRequest<any>,
-  next: HttpHandler
-): Observable<HttpEvent<any>> {
+  ) {}
 
-  const token = localStorage.getItem('token');
+  intercept(
+    request: HttpRequest<any>,
+    next: HttpHandler
+  ): Observable<HttpEvent<any>> {
 
-  if (token) {
-    request = request.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-  }
+    const token = localStorage.getItem('accessToken');
 
-  return next.handle(request).pipe(
-    catchError((error: HttpErrorResponse) => {
+    if (token) {
+      request = request.clone({
+        setHeaders: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+    }
 
-      // 🔕 Already logging out → ignore
-      if (JwtInterceptor.isLoggingOut) {
+    return next.handle(request).pipe(
+      catchError((error: HttpErrorResponse) => {
+
+        if (JwtInterceptor.isLoggingOut) {
+          return throwError(() => error);
+        }
+
+        if (error.status === 401) {
+          JwtInterceptor.isLoggingOut = true;
+
+          alert('Session expired. Please login again.');
+
+          localStorage.clear();
+
+          this.router.navigate(['/auth/login']).then(() => {
+            window.location.reload();
+          });
+        }
+
         return throwError(() => error);
-      }
-
-      if (error.status === 401) {
-        JwtInterceptor.isLoggingOut = true;
-
-        alert('Session expired. Please login again.');
-
-        localStorage.clear();
-
-            localStorage.clear();
- this.router.navigate(['/login']).then(() => {
-      window.location.reload();
-    });  
-
-      }
-
-      return throwError(() => error);
-    })
-  );
+      })
+    );
+  }
 }
 
-}

@@ -1,0 +1,218 @@
+/* ===============================
+   GLOBAL RESET
+================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f5f7fb;
+}
+
+/* ===============================
+   DASHBOARD LAYOUT
+================================ */
+.dashboard-wrapper {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===============================
+   SIDEBAR
+================================ */
+.sidebar {
+  width: 230px;
+  background: linear-gradient(180deg, #0e2a5c, #163d7a);
+  color: #fff;
+  padding: 20px 0;
+}
+
+.sidebar .logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.sidebar .logo img {
+  width: 120px;
+}
+
+.sidebar .menu {
+  list-style: none;
+}
+
+.sidebar .menu li {
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: background 0.3s;
+}
+
+.sidebar .menu li:hover,
+.sidebar .menu li.active {
+  background: rgba(255, 255, 255, 0.15);
+  border-left: 4px solid #fff;
+}
+
+/* ===============================
+   MAIN SECTION
+================================ */
+.dashboard-main {
+  flex: 1;
+  background: linear-gradient(135deg, #eaf1ff 0%, #f6f9ff 50%, #eef3ff 100%);
+}
+
+/* ===============================
+   HEADER
+================================ */
+.header {
+  height: 60px;
+  background: #fff;
+  border-bottom: 1px solid #e1e7f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
+
+.header h4 {
+  color: #0e2a5c;
+  font-weight: 600;
+}
+
+.header .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+/* ===============================
+   CONTENT AREA
+================================ */
+.dashboard-content {
+  /* padding: 20px; */
+}
+
+/* ===============================
+   PROFILE CARD
+================================ */
+.profile-card {
+  background: #0e2a5c;
+  color: #fff;
+  border-radius: 10px;
+  padding: 20px;
+  width: 65%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.profile-card h3 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.profile-card p {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-bottom: 15px;
+}
+
+.profile-progress {
+  background: #fff;
+  border-radius: 20px;
+  height: 14px;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+.profile-progress-fill {
+  height: 100%;
+  width: 20%;
+  background: linear-gradient(90deg, #5cb85c, #4cae4c);
+}
+
+.profile-card .btn-start {
+  background: #d9534f;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ===============================
+   INFO CARD (RIGHT)
+================================ */
+.info-card {
+  background: #dbe7ff;
+  color: #0e2a5c;
+  border-radius: 10px;
+  padding: 20px;
+  width: 32%;
+  display: inline-block;
+  margin-left: 2%;
+  vertical-align: top;
+}
+
+.info-card h4 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.info-card p {
+  font-size: 13px;
+}
+
+/* ===============================
+   SUPPORT BUTTON
+================================ */
+.support-btn {
+  margin-top: 30px;
+}
+
+.support-btn button {
+  background: #0e2a5c;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 992px) {
+  .profile-card,
+  .info-card {
+    width: 100%;
+    margin: 0 0 20px 0;
+  }
+
+  .sidebar {
+    width: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+}

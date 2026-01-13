@@ -1,0 +1,112 @@
+.dashboard-home {
+  padding: 30px;
+}
+
+/* CARD */
+.profile-card {
+  display: flex;
+  justify-content: space-between;
+  background: #102b61;
+  border-radius: 10px;
+  padding: 24px;
+  color: #fff;
+}
+
+/* LEFT */
+.profile-left {
+  width: 60%;
+}
+
+.profile-left h3 {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.profile-left p {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-bottom: 18px;
+}
+
+/* PROGRESS */
+.progress-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.progress-bar {
+  width: 200px;
+  height: 10px;
+  background: #dfe6f3;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7ad84b, #47b04b);
+  transition: width 0.4s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+}
+
+/* BUTTON */
+.btn-start {
+  background: #e11c2a;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* RIGHT */
+.profile-right {
+  width: 35%;
+  background: #dbe7ff;
+  color: #102b61;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.profile-right h4 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.profile-right span {
+  color: #e11c2a;
+  font-weight: 600;
+}
+
+/* SUPPORT BUTTON */
+.support-btn {
+  margin-top: 20px;
+  background: #0f2d68;
+  color: #fff;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .profile-card {
+    flex-direction: column;
+  }
+
+  .profile-left,
+  .profile-right {
+    width: 100%;
+  }
+
+  .profile-right {
+    margin-top: 16px;
+  }
+}

@@ -9,10 +9,11 @@ import { AuthServiceService } from '../../../service/auth-service.service';
   styleUrl: './otp.component.css',
 })
 export class OtpComponent implements OnInit {
-
   otpForm!: FormGroup;
   isLoading = false;
   phone!: string;
+
+  otpControls = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6'];
 
   constructor(
     private fb: FormBuilder,
@@ -21,7 +22,6 @@ export class OtpComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 🔐 phone jo login page se aaya
     this.phone = localStorage.getItem('loginPhone') || '';
 
     if (!this.phone) {
@@ -30,8 +30,20 @@ export class OtpComponent implements OnInit {
     }
 
     this.otpForm = this.fb.group({
-      otp: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+      d1: ['', Validators.required],
+      d2: ['', Validators.required],
+      d3: ['', Validators.required],
+      d4: ['', Validators.required],
+      d5: ['', Validators.required],
+      d6: ['', Validators.required],
     });
+  }
+
+  moveNext(event: any, index: number) {
+    const input = event.target;
+    if (input.value && index < this.otpControls.length - 1) {
+      input.nextElementSibling?.focus();
+    }
   }
 
   verifyOtp() {
@@ -39,25 +51,43 @@ export class OtpComponent implements OnInit {
 
     this.isLoading = true;
 
+    const code = Object.values(this.otpForm.value).join('');
+
     const payload = {
       phone: this.phone,
-      otp: this.otpForm.value.otp,
+      code,
+      purpose: 'login',
     };
 
     this.auth.verifyOtp(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
 
-        if (!res?.accessToken) {
+        if (!res?.success) {
           alert('Invalid OTP');
           return;
         }
 
-        // ✅ save tokens
+        const data = res.data;
 
-        // ✅ ROLE BASED ROUTING
-        if (res.roles?.includes('BORROWER')) {
-          this.router.navigate(['/profile']);
+        // 🔐 SAVE TOKENS
+        localStorage.setItem('accessToken', data.auth.access_token);
+        localStorage.setItem('refreshToken', data.auth.refresh_token);
+
+        // ✅ THIS WAS MISSING (CRITICAL)
+        this.auth.setCurrentUser(data.user);
+
+        // 🚦 FLOW BASED ROUTING
+        const roles = data.user.roles || [];
+
+        if (roles.includes('BORROWER')) {
+          if (!data.basicFlow.steps.panVerification) {
+            this.router.navigate(['/dashboard/profile/pan']);
+          } else if (!data.basicFlow.steps.basicInformation) {
+            this.router.navigate(['/dashboard/profile/basic-info']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
         } else {
           this.router.navigate(['/dashboard']);
         }
@@ -66,6 +96,17 @@ export class OtpComponent implements OnInit {
         this.isLoading = false;
         alert('OTP verification failed');
       },
+    });
+  }
+
+  resendOtp() {
+    const payload = {
+      phone: this.phone,
+      purpose: 'login',
+    };
+
+    this.auth.otp(payload).subscribe(() => {
+      alert('OTP resent successfully');
     });
   }
 }

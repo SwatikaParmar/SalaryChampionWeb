@@ -1,27 +1,49 @@
-<div class="auth-card">
-  <h2>Enter OTP</h2>
-  <p class="sub">OTP sent to {{ phone }}</p>
+<div class="otp-page">
 
-  <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
+  <!-- LEFT -->
+  <div class="otp-left">
+    <img src="assets/images/otp.png" alt="OTP Verify" />
+  </div>
 
-    <input
-      type="text"
-      formControlName="otp"
-      placeholder="Enter 6-digit OTP"
-      maxlength="6"
-    />
+  <!-- RIGHT -->
+  <div class="otp-right">
+    <h2>OTP Verification</h2>
+    <p>Please enter the OTP sent to <b>{{ phone }}</b></p>
 
-    <small class="error"
-      *ngIf="otpForm.get('otp')?.touched && otpForm.get('otp')?.invalid">
-      Enter valid 6-digit OTP
-    </small>
+    <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
 
-    <button
-      class="btn primary"
-      type="submit"
-      [disabled]="otpForm.invalid || isLoading">
-      {{ isLoading ? 'Verifying...' : 'Verify OTP' }}
-    </button>
+      <!-- OTP BOXES -->
+      <div class="otp-inputs">
+        <input
+          *ngFor="let ctrl of otpControls; let i = index"
+          maxlength="1"
+          type="text"
+          inputmode="numeric"
+          [formControlName]="ctrl"
+          (input)="moveNext($event, i)"
+        />
+      </div>
 
-  </form>
+      <!-- ERROR -->
+      <small class="error" *ngIf="otpForm.touched && otpForm.invalid">
+        Please enter valid 6-digit OTP
+      </small>
+
+      <!-- BUTTON -->
+      <button
+        class="btn-primary"
+        type="submit"
+        [disabled]="otpForm.invalid || isLoading"
+      >
+        {{ isLoading ? 'Verifying...' : 'VERIFY OTP' }}
+      </button>
+    </form>
+
+    <!-- RESEND -->
+    <div class="resend">
+      Didn’t receive OTP?
+      <span (click)="resendOtp()">Resend again</span>
+    </div>
+  </div>
+
 </div>

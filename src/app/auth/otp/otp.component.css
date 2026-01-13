@@ -1,0 +1,107 @@
+.otp-page {
+  min-height: 100vh;
+  display: flex;
+  background: #f8fbff;
+}
+
+/* LEFT */
+.otp-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.otp-left img {
+  max-width: 80%;
+}
+
+/* RIGHT */
+.otp-right {
+  flex: 1;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px;
+}
+
+.otp-right h2 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.otp-right p {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* OTP BOXES */
+.otp-inputs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.otp-inputs input {
+  width: 55px;
+  height: 55px;
+  text-align: center;
+  font-size: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.otp-inputs input:focus {
+  border-color: #1f4fd8;
+}
+
+/* BUTTON */
+.btn-primary {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(180deg, #2f6cf6, #1f4fd8);
+  color: #fff;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+}
+
+/* RESEND */
+.resend {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.resend span {
+  color: #1f4fd8;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* ERROR */
+.error {
+  color: #e53935;
+  font-size: 12px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .otp-page {
+    flex-direction: column;
+  }
+
+  .otp-left {
+    display: none;
+  }
+
+  .otp-right {
+    padding: 30px;
+  }
+}

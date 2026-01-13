@@ -1,18 +1,138 @@
-<div class="landing-wrapper">
-  <div class="landing-content">
+<!-- ================= LANDING PAGE : SALARY CHAMPION ================= -->
 
-    <!-- LEFT / IMAGE -->
-    <div class="left-side">
-      <img src="assets/logo.png" alt="Salary Champion" />
-    <!-- RIGHT / CONTENT -->
-    <div class="right-side">
-      <h1>Secure. Simple. Stress-Free.</h1>
-      <p>Your best money transfer partner.</p>
+<div class="landing-page">
 
-      <button class="btn primary" [routerLink]="['/auth/login']">
-        Let’s Start
+  <!-- ================= HEADER ================= -->
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="Salary Champion" />
+        <span>Salary Champion</span>
+      </div>
+
+      <nav class="nav">
+        <a href="#how">How it Works</a>
+        <a href="#features">Features</a>
+        <a routerLink="/auth/login" class="btn-outline">Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <h1>
+          Smart Salary Loans.<br />
+          <span>Instant. Secure. Stress-Free.</span>
+        </h1>
+
+        <p>
+          Get instant salary-based personal loans with a 100% digital process.
+          Quick approval • No paperwork • Fast disbursal.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn-primary" routerLink="/auth/login">
+            Apply Now
+          </button>
+          <button class="btn-secondary" routerLink="/auth/login">
+            Check Eligibility
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-image">
+        <img src="assets/images/home-banner.jpeg" alt="Loan illustration" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section class="features" id="features">
+    <div class="container">
+      <h2>Why Choose Salary Champion?</h2>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>⚡ Instant Approval</h3>
+          <p>Get approved in minutes with minimal information.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>🔒 Secure & Trusted</h3>
+          <p>Bank-grade security to keep your data safe.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>📱 100% Digital</h3>
+          <p>No paperwork. Apply anytime, anywhere.</p>
+        </div>
+
+        <div class="feature-card">
+          <h3>💰 Flexible Repayment</h3>
+          <p>Choose repayment plans that suit your salary cycle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HOW IT WORKS ================= -->
+  <section class="how-it-works" id="how">
+    <div class="container">
+      <h2>How It Works</h2>
+
+      <div class="steps">
+        <div class="step">
+          <span>1</span>
+          <h4>Apply Online</h4>
+          <p>Enter your mobile number and basic details.</p>
+        </div>
+
+        <div class="step">
+          <span>2</span>
+          <h4>Verify OTP</h4>
+          <p>Secure OTP verification to continue.</p>
+        </div>
+
+        <div class="step">
+          <span>3</span>
+          <h4>Get Approved</h4>
+          <p>Instant eligibility check & approval.</p>
+        </div>
+
+        <div class="step">
+          <span>4</span>
+          <h4>Receive Funds</h4>
+          <p>Money credited directly to your bank account.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="cta">
+    <div class="container cta-box">
+      <h2>Need Money Urgently?</h2>
+      <p>Apply now and get funds credited today.</p>
+      <button class="btn-primary large" routerLink="/auth/login">
+        Get Started
       </button>
     </div>
+  </section>
 
-  </div>
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>© 2026 Salary Champion. All rights reserved.</p>
+
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
 </div>
+

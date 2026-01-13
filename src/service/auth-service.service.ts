@@ -13,7 +13,7 @@ export class AuthServiceService {
   public currentUser$: Observable<any>; // observable you can subscribe to
 
   constructor(private http: HttpClient, private router: Router) {
-    const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
+    const userData = JSON.parse(localStorage.getItem('user') || 'null');
     this.currentUserSubject = new BehaviorSubject<any>(userData);
     this.currentUser$ = this.currentUserSubject.asObservable();
   }
@@ -22,12 +22,19 @@ export class AuthServiceService {
     return this.currentUserSubject.value;
   }
 
+  setCurrentUser(user: any) {
+  localStorage.setItem('user', JSON.stringify(user));
+  this.currentUserSubject.next(user);
+}
+
+
   otp(data: any) {
     return this.http.post<any>(environment.apiUrl + ApiEndPoint.otp, data);
   }
 
   verifyOtp(otp:any){
-    return this.http.post<any>(environment.apiUrl + ApiEndPoint.otp, otp);
+    debugger
+    return this.http.post<any>(environment.apiUrl + ApiEndPoint.verifyOtp, otp);
 
   }
 }

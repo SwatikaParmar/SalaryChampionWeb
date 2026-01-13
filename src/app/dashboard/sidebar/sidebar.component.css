@@ -1,0 +1,54 @@
+.sidebar {
+  width: 230px;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #0e2a5c, #163d7a);
+  color: #fff;
+  padding: 20px 0;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo img {
+  width: 130px;
+}
+
+.menu {
+  list-style: none;
+  padding: 0;
+}
+
+.menu li {
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s, padding-left 0.3s;
+}
+
+.menu li:hover {
+  background: rgba(255, 255, 255, 0.15);
+  padding-left: 30px;
+}
+
+.menu li.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-left: 4px solid #ffffff;
+}
+
+.menu .icon {
+  font-size: 16px;
+}
+
+.logout {
+  margin-top: 20px;
+  color: #ffbaba;
+}
+
+.logout:hover {
+  background: rgba(255, 0, 0, 0.15);
+}

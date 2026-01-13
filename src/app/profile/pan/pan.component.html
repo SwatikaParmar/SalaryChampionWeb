@@ -1,0 +1,74 @@
+<div class="pan-container">
+
+  <div class="pan-box">
+
+    <h2>PAN AUTHENTICATION</h2>
+
+    <p class="subtitle">
+      Please enter your PAN Card Number  
+      Your identity is secure with us
+    </p>
+
+    <!-- PAN INPUT -->
+    <input
+      type="text"
+      class="pan-input"
+      maxlength="10"
+      placeholder="Enter PAN Number"
+      [(ngModel)]="panNumber"
+    />
+
+    <!-- CONTINUE BUTTON -->
+    <button class="continue-btn" (click)="previewPan()">
+      CONTINUE
+    </button>
+
+  </div>
+
+</div>
+
+<!-- 🔥 PREVIEW MODAL -->
+<div class="modal-backdrop" *ngIf="showModal">
+
+  <div class="modal-box">
+
+    <h3>Verify PAN Details</h3>
+
+    <div class="modal-row">
+      <span>Name</span>
+      <strong>{{ panData?.fullName }}</strong>
+    </div>
+
+    <div class="modal-row">
+      <span>DOB</span>
+      <strong>{{ panData?.dob }}</strong>
+    </div>
+
+    <div class="modal-row">
+      <span>PAN</span>
+      <strong>{{ panData?.masked }}</strong>
+    </div>
+
+    <div class="modal-row">
+      <span>Gender</span>
+      <strong>{{ panData?.gender }}</strong>
+    </div>
+
+        <div class="modal-row">
+      <span>Father</span>
+      <strong>{{ panData?.fatherName }}</strong>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" (click)="closeModal()">
+        Cancel
+      </button>
+
+      <button class="btn-primary" (click)="confirmPan()">
+        Verify
+      </button>
+    </div>
+
+  </div>
+
+</div>
