@@ -1,1 +1,95 @@
-<p>preview works!</p>
+<div class="preview-container">
+
+  <!-- LEFT PROFILE CARD -->
+  <div class="profile-card">
+    <img
+      class="avatar"
+      [src]="profilePic || 'assets/images/user-placeholder.png'"
+      alt="Profile"
+    />
+
+    <h4>{{ user?.name }}</h4>
+
+    <p><strong>PAN:</strong> {{ user?.pan?.masked || user?.pan?.number }}</p>
+    <p><strong>Phone:</strong> {{ user?.phone }}</p>
+    <p><strong>Email:</strong> {{ user?.email }}</p>
+  </div>
+
+  <!-- RIGHT CARD -->
+  <div class="details-card">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button
+        class="tab"
+        [class.active]="selectedTab === 'BASIC'"
+        (click)="selectTab('BASIC')"
+      >
+        BASIC INFORMATION
+      </button>
+
+      <button
+        class="tab"
+        [class.active]="selectedTab === 'ADDRESS'"
+        (click)="selectTab('ADDRESS')"
+      >
+        RESIDENCE ADDRESS
+      </button>
+
+      <button
+        class="tab"
+        [class.active]="selectedTab === 'INCOME'"
+        (click)="selectTab('INCOME')"
+      >
+        INCOME DETAILS
+      </button>
+
+      <button class="edit-icon" (click)="editCurrentTab()">✏️</button>
+    </div>
+
+    <!-- TAB CONTENT -->
+
+    <!-- BASIC -->
+    <div class="tab-content" *ngIf="selectedTab === 'BASIC'">
+      <div class="row"><span>Your Name</span><span>{{ user?.name }}</span></div>
+      <div class="row"><span>Gender</span><span>{{ user?.gender }}</span></div>
+      <div class="row"><span>DOB</span><span>{{ user?.dob }}</span></div>
+      <div class="row"><span>Marital Status</span><span>{{ user?.maritalStatus }}</span></div>
+      <div class="row"><span>Personal Email</span><span>{{ user?.email }}</span></div>
+    </div>
+
+    <!-- ADDRESS -->
+    <div class="tab-content" *ngIf="selectedTab === 'ADDRESS'">
+      <div class="row">
+        <span>Address</span>
+        <span>
+          {{ address?.line1 }},
+          {{ address?.line2 }},
+          {{ address?.city }},
+          {{ address?.state }} - {{ address?.pincode }}
+        </span>
+      </div>
+      <div class="row"><span>Residence Type</span><span>{{ address?.residenceTypeCode }}</span></div>
+      <div class="row"><span>Residing Since</span><span>{{ address?.residingSince }}</span></div>
+    </div>
+
+    <!-- INCOME -->
+    <div class="tab-content" *ngIf="selectedTab === 'INCOME'">
+      <div class="row"><span>Employment Type</span><span>{{ employment?.employmentType }}</span></div>
+      <div class="row"><span>Monthly Income</span><span>₹ {{ employment?.netMonthlyIncome }}</span></div>
+      <div class="row"><span>Existing EMI</span><span>₹ {{ employment?.existingEmiTotal }}</span></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+      <p class="hint">
+        Don't let uncertainty hold you back. Click below to check eligibility.
+      </p>
+
+      <button class="primary-btn" (click)="checkEligibility()">
+        CHECK ELIGIBILITY
+      </button>
+    </div>
+
+  </div>
+</div>

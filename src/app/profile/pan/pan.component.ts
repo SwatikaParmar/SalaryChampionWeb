@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 @Component({
@@ -11,8 +12,75 @@ export class PanComponent {
   showModal = false;
   panData: any;
   isLoading = false;
+  basicForm: any;
+  isMarried: any;
 
-  constructor(private ContentService: ContentService, private router: Router) {}
+  constructor(
+    private ContentService: ContentService,
+    private router: Router,
+    private fb: FormBuilder
+  ) {}
+
+  ngOnInit(): void {
+    this.basicForm = this.fb.group({
+      name: ['', Validators.required],
+      dob: ['', Validators.required],
+      gender: ['', Validators.required],
+      maritalStatus: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      spouseName: [''],
+      spouseOccupation: [''],
+      userId: ['3fa85f64-5717-4562-b3fc-2c963f66afa6'],
+    });
+
+    this.patchPanDataIfAvailable();
+    this.watchMaritalStatus();
+  }
+
+  patchPanDataIfAvailable() {
+    const panRaw = localStorage.getItem('panBasicData');
+    if (!panRaw) return;
+
+    const pan = JSON.parse(panRaw);
+
+    if (!pan?.isValid) return;
+
+    this.basicForm.patchValue({
+      name: pan.fullName || '',
+      dob: pan.dob || '',
+      gender: this.mapGender(pan.gender),
+    });
+  }
+
+  mapGender(panGender: string): string {
+    if (!panGender) return '';
+    return panGender.toLowerCase() === 'male' ? 'MALE' : 'FEMALE';
+  }
+
+  watchMaritalStatus() {
+    this.basicForm
+      .get('maritalStatus')
+      ?.valueChanges.subscribe((value: string) => {
+        this.isMarried = value === 'MARRIED';
+
+        if (this.isMarried) {
+          this.basicForm.get('spouseName')?.setValidators(Validators.required);
+          this.basicForm
+            .get('spouseOccupation')
+            ?.setValidators(Validators.required);
+        } else {
+          this.basicForm.patchValue({
+            spouseName: '',
+            spouseOccupation: '',
+          });
+          this.basicForm.get('spouseName')?.clearValidators();
+          this.basicForm.get('spouseOccupation')?.clearValidators();
+        }
+
+        this.basicForm.get('spouseName')?.updateValueAndValidity();
+        this.basicForm.get('spouseOccupation')?.updateValueAndValidity();
+      });
+  }
 
   previewPan() {
     if (this.panNumber.length !== 10) {
@@ -35,6 +103,11 @@ export class PanComponent {
         this.panData = res.data;
 
         // ✅ open modal
+        this.showModal = true;
+
+        // ✅ store PAN preview for next screen
+        localStorage.setItem('panPreviewData', JSON.stringify(res.data));
+
         this.showModal = true;
       },
       error: () => {
@@ -68,10 +141,6 @@ export class PanComponent {
 
         // ✅ PAN VERIFIED → NEXT STEP
         this.showModal = false;
-
-        // optional: save PAN status
-        localStorage.setItem('panVerified', 'true');
-
         // 🚀 redirect to basic info
         this.router.navigate(['/dashboard/profile/basic-info']);
       },

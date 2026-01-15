@@ -1,1 +1,74 @@
-<p>basic-info works!</p>
+<div class="personal-info-container">
+  <div class="personal-info-card">
+    <div class="personal-info-form">
+
+      <h2>Share With Us</h2>
+      <p class="subtitle">A bit about yourself</p>
+
+      <form [formGroup]="basicForm" (ngSubmit)="submit()">
+
+        <!-- Name -->
+        <div class="form-group">
+          <label>Your Name *</label>
+          <input type="text" formControlName="name" style="color: white;"/>
+        </div>
+
+        <!-- Gender -->
+        <div class="form-group">
+          <label>Gender *</label>
+          <div class="gender-group">
+            <label>
+              <input type="radio" value="MALE" formControlName="gender"  style="color: white;"/>
+              Male
+            </label>
+            <label>
+              <input type="radio" value="FEMALE" formControlName="gender"  style="color: white;"/>
+              Female
+            </label>
+          </div>
+        </div>
+
+        <!-- DOB -->
+        <div class="form-group">
+          <label>Date of Birth *</label>
+          <input type="date" formControlName="dob"  style="color: white;" />
+        </div>
+
+        <!-- Marital Status -->
+        <div class="form-group">
+          <label>Marital Status *</label>
+          <select formControlName="maritalStatus">
+            <option value="">Select</option>
+            <option value="SINGLE">Single</option>
+            <option value="MARRIED">Married</option>
+          </select>
+        </div>
+
+        <!-- Spouse Fields -->
+        <div *ngIf="isMarried">
+          <div class="form-group">
+            <label>Spouse Name *</label>
+            <input type="text" formControlName="spouseName" />
+          </div>
+
+          <div class="form-group">
+            <label>Spouse Occupation *</label>
+            <input type="text" formControlName="spouseOccupation" />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label>Email *</label>
+          <input type="email" formControlName="email" />
+        </div>
+
+        <button class="btn-primary" type="submit">
+          Continue
+        </button>
+      </form>
+    </div>
+
+    <div class="personal-info-illustration"></div>
+  </div>
+</div>

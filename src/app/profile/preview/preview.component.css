@@ -1,0 +1,161 @@
+.preview-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+}
+
+.profile-card {
+  width: 260px;
+  text-align: center;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.details-card {
+  flex: 1;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.section {
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.edit-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.cta {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.primary-btn {
+  padding: 10px 30px;
+  background: #243b8f;
+  color: #fff;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+.preview-container {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  background: #f3f6ff;
+  border-radius: 16px;
+}
+
+.profile-card {
+  width: 260px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+}
+
+.details-card {
+  flex: 1;
+  background: linear-gradient(135deg, #f7f9ff, #ffffff);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.tab {
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #243b8f;
+  color: #fff;
+  border-color: #243b8f;
+}
+
+.edit-icon {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.tab-content {
+  background: #f5f7ff;
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e6e9f5;
+  font-size: 14px;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.cta {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.hint {
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.primary-btn {
+  background: linear-gradient(90deg, #243b8f, #3f5bd8);
+  color: #fff;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 8px;
+  cursor: pointer;
+}

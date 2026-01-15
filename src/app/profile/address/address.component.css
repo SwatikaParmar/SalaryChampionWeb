@@ -1,0 +1,192 @@
+/* ===== Page Wrapper ===== */
+.personal-info-container {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+  background: #eef3ff;
+}
+
+/* ===== Card ===== */
+.personal-info-card {
+  display: flex;
+  width: 100%;
+  max-width: 1100px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+/* ===== Left Form Panel ===== */
+.personal-info-form {
+  width: 50%;
+  padding: 28px 30px;
+  background: linear-gradient(180deg, #0b1c4d, #07163c);
+  color: #ffffff;
+}
+
+/* ===== Headings ===== */
+.personal-info-form h2 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 12px;
+  opacity: 0.85;
+  margin-bottom: 20px;
+}
+
+/* ===== Form Groups ===== */
+.form-group {
+  margin-bottom: 14px;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+/* ===== Inputs ===== */
+input,
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  background: #e9f0ff;
+  color: #000;
+}
+
+input::placeholder {
+  color: #6b7280;
+}
+
+input:focus,
+select:focus {
+  box-shadow: 0 0 0 2px rgba(78, 115, 255, 0.4);
+}
+
+/* ===== Row Layout ===== */
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-row .form-group {
+  flex: 1;
+}
+
+/* ===== Pincode Boxes (Optional enhancement) ===== */
+input[formControlName="pincode"] {
+  letter-spacing: 4px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ===== Button ===== */
+.btn-primary {
+  width: 140px;
+  margin-top: 16px;
+  padding: 10px;
+  background: #2f5bff;
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #2448cc;
+}
+
+/* ===== Right Illustration Panel ===== */
+.personal-info-illustration {
+  width: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Optional illustration image */
+.personal-info-illustration img {
+  max-width: 90%;
+  height: auto;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 900px) {
+  .personal-info-card {
+    flex-direction: column;
+  }
+
+  .personal-info-form,
+  .personal-info-illustration {
+    width: 100%;
+  }
+
+  .btn-primary {
+    width: 100%;
+  }
+}
+/* ===== Make card fit viewport ===== */
+.personal-info-container {
+  height: calc(100vh - 20px);
+  overflow: hidden;
+}
+
+/* ===== Card height control ===== */
+.personal-info-card {
+  height: 100%;
+}
+
+/* ===== LEFT FORM SCROLL ENABLE ===== */
+.personal-info-form {
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 16px; /* space for scrollbar */
+}
+
+/* ===== Smooth scrollbar (Chrome/Edge) ===== */
+.personal-info-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+.personal-info-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.personal-info-form::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 4px;
+}
+
+.personal-info-form::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+input:disabled {
+  background: #dbe7ff;
+  color: #2b2b2b;
+  cursor: not-allowed;
+}
+.error {
+  color: #ff4d4f;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+input.ng-touched.ng-invalid,
+select.ng-touched.ng-invalid {
+  border: 1px solid #ff4d4f;
+  background: #ffecec;
+}

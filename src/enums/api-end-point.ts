@@ -1,7 +1,13 @@
 export enum ApiEndPoint {
-
-  otp = "auth/requestOtp",
-  verifyOtp = "auth/verifyOtp",
-  previewPan = "kyc/pan/previewPan",
-  verifyPan = "kyc/pan/verifyPan"
+  otp = 'auth/requestOtp',
+  verifyOtp = 'auth/verifyOtp',
+  previewPan = 'kyc/pan/previewPan',
+  verifyPan = 'kyc/pan/verifyPan',
+  saveBasicDetail = 'lead/saveBasicDetails',
+  borrowerSnapshot = 'lead/getBorrowerSnapshot',
+  saveAddressDetail = 'lead/saveAddressDetails',
+  resolvePincode = 'public/pincodes',
+  saveIncomeDetail = 'lead/saveEmploymentDetails',
+  imageUpload = 'upload/createUploadIntent',
+  completeUpload = 'upload/completeUpload',
 }

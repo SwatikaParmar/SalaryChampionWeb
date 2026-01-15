@@ -1,0 +1,97 @@
+.personal-info-container {
+  display: flex;
+  justify-content: center;
+  padding: 30px;
+  background: #f5f8ff;
+}
+
+.personal-info-card {
+  display: flex;
+  width: 900px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.personal-info-form {
+  width: 50%;
+  padding: 30px;
+  background: #0b1b4b;
+  color: #ffffff;
+}
+
+.personal-info-form h2 {
+  margin: 0;
+  font-size: 22px;
+}
+
+.subtitle {
+  font-size: 13px;
+  opacity: 0.8;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.required {
+  color: #ff4d4f;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+.gender-group {
+  display: flex;
+  gap: 12px;
+}
+
+.gender-option {
+  background: #ffffff;
+  color: #000;
+  padding: 8px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.gender-option input {
+  accent-color: #0b1b4b;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  background: #1e3aff;
+  color: #ffffff;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #162fcf;
+}
+
+.personal-info-illustration {
+  width: 50%;
+  background: #fff;
+}

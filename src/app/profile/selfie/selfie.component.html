@@ -1,1 +1,57 @@
-<p>selfie works!</p>
+<div class="selfie-container">
+  <div class="selfie-card">
+
+    <!-- LEFT -->
+    <div class="selfie-form">
+      <h2>Upload Your Picture</h2>
+      <p class="subtitle">Make sure your face is clearly visible</p>
+
+      <!-- TAKE SELFIE -->
+      <button
+        class="primary-btn"
+        *ngIf="!cameraStarted && !previewUrl"
+        (click)="startCamera()"
+      >
+        Take a Selfie
+      </button>
+
+      <!-- CAMERA -->
+      <div
+        class="camera-box"
+        *ngIf="cameraStarted"
+        [class.detected]="faceDetected"
+      >
+        <video #video autoplay muted></video>
+      </div>
+
+      <!-- CAPTURE -->
+      <button
+        class="primary-btn"
+        *ngIf="cameraStarted"
+        [disabled]="!faceDetected"
+        (click)="captureSelfie()"
+      >
+        Capture Photo
+      </button>
+
+      <!-- PREVIEW -->
+      <div class="preview-box" *ngIf="previewUrl">
+        <img [src]="previewUrl" alt="Preview" />
+
+        <div class="preview-actions">
+          <button class="secondary-btn" (click)="retake()">Retake</button>
+          <button class="primary-btn" (click)="uploadCapturedImage()">
+            Upload
+          </button>
+        </div>
+      </div>
+
+      <canvas #canvas hidden></canvas>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="selfie-illustration">
+      <!-- optional illustration -->
+    </div>
+  </div>
+</div>
