@@ -1,27 +1,71 @@
-<!-- ================= LANDING PAGE : SALARY CHAMPION ================= -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
 
-<div class="landing-page">
+  <header class="main-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
 
-  <!-- ================= HEADER ================= -->
-  <header class="header">
-    <div class="container header-inner">
-      <div class="logo">
-        <img src="assets/images/logo.png" alt="Salary Champion" />
-        <span>Salary Champion</span>
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <!-- Replace with your logo image -->
+        <img src="assets/images/logo.png" alt="Loan112 Logo" class="brand-logo">
+      </a>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler border-0 shadow-none" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu + Button -->
+      <div class="collapse navbar-collapse" id="mainNavbar">
+
+        <!-- Center Menu -->
+        <ul class="navbar-nav mx-lg-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              About Us
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Company</a></li>
+              <li><a class="dropdown-item" href="#">Our Team</a></li>
+              <li><a class="dropdown-item" href="#">Why Choose Us</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              Repay Loan
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Pay Online</a></li>
+              <li><a class="dropdown-item" href="#">EMI Calculator</a></li>
+              <li><a class="dropdown-item" href="#">Payment Status</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact Us</a>
+          </li>
+        </ul>
+
+        <!-- Right Button -->
+        <div class="d-flex mt-3 mt-lg-0">
+          <a href="#" class="btn btn-apply">Apply Now</a>
+        </div>
+
       </div>
-
-      <nav class="nav">
-        <a href="#how">How it Works</a>
-        <a href="#features">Features</a>
-        <a routerLink="/auth/login" class="btn-outline">Login</a>
-      </nav>
     </div>
-  </header>
+  </nav>
+</header>
 
   <!-- ================= HERO ================= -->
-  <section class="hero">
+  <section class="hero" style="background: url(./assets/images/home_banner_b.jpg)no-repeat center; background-size: cover;">
     <div class="container hero-inner">
-      <div class="hero-text">
+      <div class="hero-text col-md-6">
         <h1>
           Smart Salary Loans.<br />
           <span>Instant. Secure. Stress-Free.</span>
@@ -33,7 +77,7 @@
         </p>
 
         <div class="hero-actions">
-          <button class="btn-primary" routerLink="/auth/login">
+          <button class="btn-apply" routerLink="/auth/login">
             Apply Now
           </button>
           <button class="btn-secondary" routerLink="/auth/login">
@@ -41,71 +85,252 @@
           </button>
         </div>
       </div>
+      
+    </div>
+  </section>  
 
-      <div class="hero-image">
-        <img src="assets/images/home-banner.jpeg" alt="Loan illustration" />
+  <section class="features tb-10" id="features">
+    <div class="container">
+      <div class="row justify-content-between align-items-center">
+        
+        <div class="col-md-6">
+          <img src="assets/images/smart_finance_solutions.webp" class="img-fluid">
+        </div>
+
+        <div class="col-md-6">
+          
+          <div class="left-30">
+            <h2>Smart Finance, Quick Loans, Easy Repayments</h2>
+            <div class="mt-3"></div>
+            <p>We provide smart and secure financial solutions designed to help you manage your needs with ease. From quick loan approvals to flexible repayment options, our platform ensures transparency, low interest plans, and safe transactions. Get reliable support, simple EMI calculations, and fast disbursal to meet your goals confidently.</p>
+
+            <div class="row">
+              <div class="col-md-6">
+                <ul class="listing">
+                  <li>Trowels & Planting Tools</li>
+                  <li>Trugs & Harvest Baskets</li>
+                  <li>Weeders & Cultivators</li>
+                </ul>
+              </div>
+
+              <div class="col-md-6">
+                <ul class="listing">
+                  <li>So easy, anyone can do it</li>
+                  <li>Low weed maintenance</li>
+                  <li>No fertilizer needed</li>
+                </ul>
+              </div>
+            </div>
+
+            <div><a href="#" class="btn-apply mt-3">Download App</a></div>
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   </section>
 
-  <!-- ================= FEATURES ================= -->
-  <section class="features" id="features">
+  <section class="position-relative">
     <div class="container">
-      <h2>Why Choose Salary Champion?</h2>
 
-      <div class="feature-grid">
-        <div class="feature-card">
-          <h3>⚡ Instant Approval</h3>
-          <p>Get approved in minutes with minimal information.</p>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2 class="emi-title">Personal Loan <span style="color:#8338ec;">EMI</span> Calculator</h2>
+          <p class="emi-sub">EMIs can be tricky! But via Fi, you get flexible repayment options</p>
+        </div>
+      </div>
+
+      <div class="row mt-5">
+        <!-- LEFT -->
+        <div class="col-lg-6">
+          <div class="calc-card">
+
+            <!-- Loan Amount -->
+            <div class="range-wrap">
+              <div class="label-row">
+                <div class="label">Your loan amount</div>
+                <div class="value-pill" id="loanAmountText">₹ 1000000</div>
+              </div>
+              <input type="range" id="loanAmount" min="50000" max="1000000" step="5000" value="1000000">
+              <div class="minmax">
+                <span>50000</span>
+                <span>10L</span>
+              </div>
+            </div>
+
+            <!-- Tenure -->
+            <div class="range-wrap">
+              <div class="label-row">
+                <div class="label">Loan tenure</div>
+                <div class="value-pill" id="tenureText">48 months</div>
+              </div>
+              <input type="range" id="tenure" min="2" max="48" step="1" value="48">
+              <div class="minmax">
+                <span>2</span>
+                <span>48</span>
+              </div>
+            </div>
+
+            <!-- Interest -->
+            <div class="range-wrap mb-0">
+              <div class="label-row">
+                <div class="label">Interest on loan taken</div>
+                <div class="value-pill" id="interestText">16.6%</div>
+              </div>
+              <input type="range" id="interest" min="10" max="30" step="0.1" value="16.6">
+              <div class="minmax">
+                <span>10</span>
+                <span>30</span>
+              </div>
+            </div>
+
+          </div>
         </div>
 
-        <div class="feature-card">
-          <h3>🔒 Secure & Trusted</h3>
-          <p>Bank-grade security to keep your data safe.</p>
-        </div>
+        <!-- RIGHT -->
+        <div class="col-lg-6">
+          <div class="emi-result">
+            <div class="emi-top">
+              Your EMIs will come out to be <strong id="emiText">₹28,649</strong> per month
+            </div>
 
-        <div class="feature-card">
-          <h3>📱 100% Digital</h3>
-          <p>No paperwork. Apply anytime, anywhere.</p>
-        </div>
+            <div class="donut-wrap">
+              <div class="donut" id="donutChart"></div>
+            </div>
 
-        <div class="feature-card">
-          <h3>💰 Flexible Repayment</h3>
-          <p>Choose repayment plans that suit your salary cycle.</p>
+            <div class="legend">
+              <div class="legend-row">
+                <div class="legend-left">
+                  <span class="dot principal"></span>
+                  Loan Principal
+                </div>
+                <div class="amount" id="principalText">₹10.00L</div>
+              </div>
+
+              <div class="legend-row">
+                <div class="legend-left">
+                  <span class="dot interest"></span>
+                  Total Interest
+                </div>
+                <div class="amount" id="interestTotalText">₹3.75L</div>
+              </div>
+            </div>
+
+          </div>
         </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="cta-btn">
+          <a href="#" class="btn-primary">Check your loan offer in 1 min</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================= FEATURES ================= -->
+  <section class="tb-10">
+    <div class="container">
+      <div class="row">           
+
+        <div class="col-md-12">
+          <div class="feature-grid">
+            <div class="feature-card">
+              <span><img src="assets/images/instant_approval.svg" class="img-fluid"></span>
+              <h3>Instant Approval</h3>
+              <p>Get approved in minutes with minimal information.</p>
+            </div>
+
+            <div class="feature-card">
+              <span><img src="assets/images/instant_approval.svg" class="img-fluid"></span>
+              <h3>Secure & Trusted</h3>
+              <p>Bank-grade security to keep your data safe.</p>
+            </div>
+
+            <div class="feature-card">
+              <span><img src="assets/images/instant_approval.svg" class="img-fluid"></span>
+              <h3>100% Digital</h3>
+              <p>No paperwork. Apply anytime, anywhere.</p>
+            </div>
+
+            <div class="feature-card">
+              <span><img src="assets/images/instant_approval.svg" class="img-fluid"></span>
+              <h3>Flexible Repayment</h3>
+              <p>Choose repayment plans that suit your salary cycle.</p>
+            </div>
+          </div>
+        </div>
+      
       </div>
     </div>
   </section>
 
   <!-- ================= HOW IT WORKS ================= -->
-  <section class="how-it-works" id="how">
+  <section class="how-it-works  tb-10">
     <div class="container">
-      <h2>How It Works</h2>
+      
+      <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+          <h2>Our Financial Services</h2>
+          <p>We provide a range of financial solutions designed to meet your needs with quick processing, competitive rates, and exceptional customer service.</p>
+        </div>
+      </div>
+
+      <div class="row mt-5">       
 
       <div class="steps">
         <div class="step">
-          <span>1</span>
-          <h4>Apply Online</h4>
-          <p>Enter your mobile number and basic details.</p>
+          <figure>
+            <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+            <img src="assets/images/salary_advance.webp" class="img-fluid">
+          </figure>
+          <h4>Salary Advance</h4>
         </div>
 
         <div class="step">
-          <span>2</span>
-          <h4>Verify OTP</h4>
-          <p>Secure OTP verification to continue.</p>
+          <figure>
+            <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+            <img src="assets/images/quick_disbursals.webp" class="img-fluid">
+          </figure>
+          <h4>Quick Disbursals</h4>
         </div>
 
         <div class="step">
-          <span>3</span>
-          <h4>Get Approved</h4>
-          <p>Instant eligibility check & approval.</p>
+          <figure>
+            <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+            <img src="assets/images/personal_loans.webp" class="img-fluid">
+          </figure>
+          <h4>Personal Loans</h4>
         </div>
 
         <div class="step">
-          <span>4</span>
-          <h4>Receive Funds</h4>
-          <p>Money credited directly to your bank account.</p>
+          <figure>
+            <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+            <img src="assets/images/easy_to_apply.webp" class="img-fluid">
+          </figure>
+          <h4>Easy to Apply</h4>
         </div>
+
+        <div class="step">
+          <figure>
+            <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+            <img src="assets/images/secure_processing.webp" class="img-fluid">
+          </figure>
+          <h4>Secure Processing</h4>
+        </div>
+
+        <div class="step">
+          <figure>
+            <a href="#"><i class="fa-solid fa-arrow-right"></i></a>
+            <img src="assets/images/build_credit_history.webp" class="img-fluid">
+          </figure>
+          <h4>Build Credit History</h4>
+        </div>
+
+      </div>
       </div>
     </div>
   </section>
@@ -121,6 +346,89 @@
     </div>
   </section>
 
+  <section class="features-section">
+    <div class="container">
+
+      <!-- Top Content -->
+      <div class="text-center mb-5">
+        <div class="pill-badge mx-auto">
+          <span class="dot">💡</span>
+          Premium Features
+        </div>
+
+        <h2 class="section-title">
+          What Makes sApp<br/>Different?
+        </h2>
+
+        <div class="title-line"></div>
+
+        <p class="section-desc mt-3">
+          Discover the unique features of sApp that set it apart from the competition,
+          designed to deliver unmatched performance and seamless user experiences.
+        </p>
+      </div>
+
+      <!-- Cards -->
+      <div class="row g-4 justify-content-center">
+        <!-- Card 1 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <!-- Icon -->
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L3 7l9 5 9-5-9-5Z" stroke="#3b82f6" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M3 12l9 5 9-5" stroke="#3b82f6" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M3 17l9 5 9-5" stroke="#3b82f6" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Fully functional</h3>
+            <p class="feature-text">
+              Enjoy a complete suite of features designed for seamless user experiences.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <!-- Icon -->
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M7 8h10M7 12h6" stroke="#ef4444" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M20 14c0 1.66-1.34 3-3 3H10l-4 3v-3H7c-1.66 0-3-1.34-3-3V7c0-1.66 1.34-3 3-3h10c1.66 0 3 1.34 3 3v7Z"
+                      stroke="#ef4444" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Live Chat</h3>
+            <p class="feature-text">
+              Connect with your audience in real-time for instant support and engagement.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <!-- Icon -->
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+                <path d="M17 11V8a5 5 0 0 0-10 0v3" stroke="#7c3aed" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2Z"
+                      stroke="#7c3aed" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M12 15v2" stroke="#7c3aed" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3 class="feature-title">Secure Data</h3>
+            <p class="feature-text">
+              Protect your information with industry-leading security measures and encryption.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
   <!-- ================= FOOTER ================= -->
   <footer class="footer">
     <div class="container footer-inner">
@@ -133,6 +441,3 @@
       </div>
     </div>
   </footer>
-
-</div>
-
