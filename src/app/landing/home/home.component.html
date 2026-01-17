@@ -54,7 +54,7 @@
 
         <!-- Right Button -->
         <div class="d-flex mt-3 mt-lg-0">
-          <a href="#" class="btn btn-apply">Apply Now</a>
+          <a [routerLink]="['/auth/login']" class="btn btn-apply">Apply Now</a>
         </div>
 
       </div>
@@ -77,10 +77,10 @@
         </p>
 
         <div class="hero-actions">
-          <button class="btn-apply" routerLink="/auth/login">
+          <button class="btn-apply" [routerLink]="['/auth/login']">
             Apply Now
           </button>
-          <button class="btn-secondary" routerLink="/auth/login">
+          <button class="btn-secondary" [routerLink]="['/auth/login']">
             Check Eligibility
           </button>
         </div>
