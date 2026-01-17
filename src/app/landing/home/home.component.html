@@ -142,85 +142,139 @@
         </div>
       </div>
 
-      <div class="row mt-5">
-        <!-- LEFT -->
-        <div class="col-lg-6">
-          <div class="calc-card">
+        <div class="row mt-5">
 
-            <!-- Loan Amount -->
-            <div class="range-wrap">
-              <div class="label-row">
-                <div class="label">Your loan amount</div>
-                <div class="value-pill" id="loanAmountText">₹ 1000000</div>
-              </div>
-              <input type="range" id="loanAmount" min="50000" max="1000000" step="5000" value="1000000">
-              <div class="minmax">
-                <span>50000</span>
-                <span>10L</span>
-              </div>
+    <!-- LEFT : SLIDERS -->
+    <div class="col-lg-6 mb-4">
+      <div class="calc-card p-4 shadow rounded">
+
+        <!-- Loan Amount -->
+        <div class="range-wrap mb-4">
+          <div class="label-row d-flex justify-content-between mb-2">
+            <div class="label fw-semibold">Your loan amount</div>
+            <div class="value-pill bg-primary text-white px-3 py-1 rounded">
+              ₹ {{ loanAmount | number }}
             </div>
+          </div>
 
-            <!-- Tenure -->
-            <div class="range-wrap">
-              <div class="label-row">
-                <div class="label">Loan tenure</div>
-                <div class="value-pill" id="tenureText">48 months</div>
-              </div>
-              <input type="range" id="tenure" min="2" max="48" step="1" value="48">
-              <div class="minmax">
-                <span>2</span>
-                <span>48</span>
-              </div>
-            </div>
+          <input
+            type="range"
+            min="10000"
+            max="500000"
+            step="5000"
+            [(ngModel)]="loanAmount"
+            (input)="calculateEMI()"
+            class="form-range"
+          />
 
-            <!-- Interest -->
-            <div class="range-wrap mb-0">
-              <div class="label-row">
-                <div class="label">Interest on loan taken</div>
-                <div class="value-pill" id="interestText">16.6%</div>
-              </div>
-              <input type="range" id="interest" min="10" max="30" step="0.1" value="16.6">
-              <div class="minmax">
-                <span>10</span>
-                <span>30</span>
-              </div>
-            </div>
-
+          <div class="minmax d-flex justify-content-between text-muted small">
+            <span>₹10,000</span>
+            <span>₹5,00,000</span>
           </div>
         </div>
 
-        <!-- RIGHT -->
-        <div class="col-lg-6">
-          <div class="emi-result">
-            <div class="emi-top">
-              Your EMIs will come out to be <strong id="emiText">₹28,649</strong> per month
+        <!-- Tenure -->
+        <div class="range-wrap mb-4">
+          <div class="label-row d-flex justify-content-between mb-2">
+            <div class="label fw-semibold">Loan tenure</div>
+            <div class="value-pill bg-secondary text-white px-3 py-1 rounded">
+              {{ tenure }} months
             </div>
+          </div>
 
-            <div class="donut-wrap">
-              <div class="donut" id="donutChart"></div>
-            </div>
+          <input
+            type="range"
+            min="6"
+            max="60"
+            step="1"
+            [(ngModel)]="tenure"
+            (input)="calculateEMI()"
+            class="form-range"
+          />
 
-            <div class="legend">
-              <div class="legend-row">
-                <div class="legend-left">
-                  <span class="dot principal"></span>
-                  Loan Principal
-                </div>
-                <div class="amount" id="principalText">₹10.00L</div>
-              </div>
-
-              <div class="legend-row">
-                <div class="legend-left">
-                  <span class="dot interest"></span>
-                  Total Interest
-                </div>
-                <div class="amount" id="interestTotalText">₹3.75L</div>
-              </div>
-            </div>
-
+          <div class="minmax d-flex justify-content-between text-muted small">
+            <span>6</span>
+            <span>60</span>
           </div>
         </div>
+
+        <!-- Interest -->
+        <div class="range-wrap">
+          <div class="label-row d-flex justify-content-between mb-2">
+            <div class="label fw-semibold">Interest rate (per annum)</div>
+            <div class="value-pill bg-warning text-dark px-3 py-1 rounded">
+              {{ interestRate }}%
+            </div>
+          </div>
+
+          <input
+            type="range"
+            min="10"
+            max="30"
+            step="0.1"
+            [(ngModel)]="interestRate"
+            (input)="calculateEMI()"
+            class="form-range"
+          />
+
+          <div class="minmax d-flex justify-content-between text-muted small">
+            <span>10%</span>
+            <span>30%</span>
+          </div>
+        </div>
+
       </div>
+    </div>
+
+    <!-- RIGHT : RESULT -->
+    <div class="col-lg-6">
+      <div class="emi-result p-4 shadow rounded text-center">
+
+        <div class="emi-top fs-5 mb-4">
+          Your EMIs will come out to be
+          <div class="fs-2 fw-bold text-success">
+            ₹ {{ emi | number:'1.0-0' }}
+          </div>
+          <small class="text-muted">per month</small>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="legend text-start mt-4">
+
+          <div class="legend-row d-flex justify-content-between mb-3">
+            <div>
+              <span class="dot bg-primary me-2"></span>
+              Loan Principal
+            </div>
+            <div class="fw-semibold">
+              ₹ {{ loanAmount | number }}
+            </div>
+          </div>
+
+          <div class="legend-row d-flex justify-content-between mb-3">
+            <div>
+              <span class="dot bg-danger me-2"></span>
+              Total Interest
+            </div>
+            <div class="fw-semibold">
+              ₹ {{ totalInterest | number:'1.0-0' }}
+            </div>
+          </div>
+
+          <div class="legend-row d-flex justify-content-between border-top pt-3">
+            <div class="fw-bold">Total Payment</div>
+            <div class="fw-bold">
+              ₹ {{ totalPayment | number:'1.0-0' }}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
 
       <div class="row mt-3">
         <div class="cta-btn">

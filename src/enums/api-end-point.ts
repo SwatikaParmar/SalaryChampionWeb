@@ -10,4 +10,8 @@ export enum ApiEndPoint {
   saveIncomeDetail = 'lead/saveEmploymentDetails',
   imageUpload = 'upload/createUploadIntent',
   completeUpload = 'upload/completeUpload',
+  emiLoanQuote = 'loan/quote',
+  acceptLoan = 'loan/decision',
+  postEmploymentDetail = 'loan/upsertCompanyDetail',
+  ekycStart = 'kyc/aadhaar/start'
 }

@@ -1,1 +1,120 @@
-<p>calculator works!</p>
+<div class="loan-calculator-wrapper">
+
+  <!-- LEFT SECTION -->
+  <div class="calculator-left">
+
+    <h3>CALCULATING LOANS</h3>
+
+    <p class="desc">
+      We have calculated your loan eligibility based on the given details.
+      Please choose the loan amount and tenure as per your requirements.
+    </p>
+
+    <!-- INFO BADGES -->
+    <div class="info-badges">
+      <span>
+        INTEREST (Monthly)
+        <b>{{ interestRateMonthly }}%</b>
+      </span>
+      <span>
+        PROCESSING FEE
+        <b>{{ processingFeePercent }}%</b>
+      </span>
+    </div>
+
+    <p class="note">
+      Please review the loan quotation carefully before proceeding.
+    </p>
+
+    <!-- ACTION BUTTONS -->
+    <div class="action-btns">
+      <button class="btn-accept" (click)="acceptLoan()">
+        ACCEPT
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- RIGHT SECTION -->
+  <div class="calculator-right">
+
+    <!-- PURPOSE -->
+    <div class="field">
+      <label>Purpose of Loan</label>
+      <select [(ngModel)]="purpose" (change)="recalculateQuote()">
+        <option value="PERSONAL">Personal</option>
+        <option value="MEDICAL">Medical</option>
+        <option value="EDUCATION">Education</option>
+        <option value="BUSINESS">Business</option>
+      </select>
+    </div>
+
+    <!-- PRINCIPAL -->
+    <div class="field">
+      <label>
+        Principal
+        <span>₹ {{ principal | number }}</span>
+      </label>
+
+      <input
+        type="range"
+        [min]="minPrincipal"
+        [max]="maxPrincipal"
+        step="500"
+        [(ngModel)]="principal"
+        (change)="recalculateQuote()"
+      />
+
+      <div class="range-info">
+        <small>₹ {{ minPrincipal | number }}</small>
+        <small>₹ {{ maxPrincipal | number }}</small>
+      </div>
+    </div>
+
+    <!-- TENURE -->
+    <div class="field">
+      <label>
+        Tenure
+        <span>{{ tenure }} Days</span>
+      </label>
+
+      <input
+        type="range"
+        [min]="minTenure"
+        [max]="maxTenure"
+        step="1"
+        [(ngModel)]="tenure"
+        (change)="recalculateQuote()"
+      />
+
+      <div class="range-info">
+        <small>{{ minTenure }} Days</small>
+        <small>{{ maxTenure }} Days</small>
+      </div>
+    </div>
+
+    <!-- RESULT SUMMARY -->
+    <div class="result-box">
+
+      <!-- <div class="result">
+        <p>Monthly EMI</p>
+        <h4 *ngIf="!isCalculating">₹ {{ emi | number }}</h4>
+        <span *ngIf="isCalculating">Calculating…</span>
+      </div> -->
+
+      <div class="result">
+        <p>Principle</p>
+        <h4>₹ {{ principal | number }}</h4>
+      </div>
+
+      <div class="result highlight">
+        <p>Total Payable</p>
+        <h4>₹ {{ grandTotalPayable | number }}</h4>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

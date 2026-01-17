@@ -1,0 +1,196 @@
+/* ================= ROOT ================= */
+.company-details-wrapper {
+  padding: 24px;
+  background: #f4f7fb;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+  background: linear-gradient(180deg, #0b1f5e, #07164a);
+  padding: 12px 18px;
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 0;
+}
+
+/* ================= GRID ================= */
+.company-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  background: #ffffff;
+  padding: 18px;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* ================= CARD ================= */
+.company-card {
+  background: linear-gradient(180deg, #0b1f5e, #07164a);
+  border-radius: 10px;
+  padding: 18px;
+  color: #ffffff;
+}
+
+/* ================= TOGGLE ================= */
+.toggle-group label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.toggle-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.toggle-btns button {
+  flex: 1;
+  padding: 8px 0;
+  border-radius: 20px;
+  border: 1px solid #ffffff;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.toggle-btns button.active {
+  background: #ffffff;
+  color: #0b1f5e;
+  font-weight: 600;
+}
+
+/* ================= FORM ================= */
+.form-group {
+  margin-top: 14px;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-group .hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: #d1d7ff;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 38px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  background: #d7ecff;
+  color: #000;
+}
+
+.form-group input:disabled {
+  background: #cfd8e6;
+  color: #555;
+}
+
+/* ================= PIN CODE ================= */
+.pincode-box {
+  display: flex;
+  gap: 6px;
+}
+
+.pincode-box input {
+  width: 38px;
+  height: 38px;
+  text-align: center;
+  font-size: 14px;
+  border-radius: 6px;
+  border: none;
+  background: #d7ecff;
+}
+
+/* ================= ROW ================= */
+.row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group.half {
+  width: 50%;
+}
+
+/* ================= SUB TITLE ================= */
+.sub-title {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* ================= BUTTONS ================= */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-save {
+  padding: 9px 18px;
+  background: #c20d2f;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.btn-continue {
+  padding: 9px 22px;
+  background: #0d1b5e;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ================= HOVER ================= */
+.btn-save:hover {
+  background: #a10b25;
+}
+
+.btn-continue:hover {
+  background: #08144a;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 900px) {
+  .company-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===== ERROR STATE ===== */
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched {
+  border: 1px solid #e53935;
+  background-color: #fff5f5;
+}
+
+small {
+  color: #e53935;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Optional: focus */
+input:focus.ng-invalid,
+select:focus.ng-invalid {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
+}

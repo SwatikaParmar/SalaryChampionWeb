@@ -1,23 +1,24 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CalculatorComponent } from './calculator/calculator.component';
-import { EmploymentComponent } from './employment/employment.component';
-import { EkycComponent } from './ekyc/ekyc.component';
 import { BankComponent } from './bank/bank.component';
-import { DocumentsComponent } from './documents/documents.component';
+import { CalculatorComponent } from './calculator/calculator.component';
 import { DisbursalComponent } from './disbursal/disbursal.component';
-
+import { DocumentsComponent } from './documents/documents.component';
+import { EkycComponent } from './ekyc/ekyc.component';
+import { EmploymentComponent } from './employment/employment.component';
+import { LoanApplicationHomeComponent } from './loan-application-home/loan-application-home.component';
 const routes: Routes = [
+  { path: '', component: LoanApplicationHomeComponent },
   { path: 'calculator', component: CalculatorComponent },
   { path: 'employment', component: EmploymentComponent },
   { path: 'ekyc', component: EkycComponent },
   { path: 'bank', component: BankComponent },
   { path: 'documents', component: DocumentsComponent },
-  { path: 'disbursal', component: DisbursalComponent }
+  { path: 'disbursal', component: DisbursalComponent },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class LoanRoutingModule { }
+export class LoanRoutingModule {}

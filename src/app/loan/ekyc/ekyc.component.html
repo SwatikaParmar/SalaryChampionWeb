@@ -1,1 +1,40 @@
-<p>ekyc works!</p>
+<div class="ekyc-wrapper">
+
+  <h3 class="page-title">eKYC Verification</h3>
+
+  <p class="desc">
+    Complete your identity verification using DigiLocker to proceed further.
+  </p>
+
+  <!-- ERROR -->
+  <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+
+  <!-- START BUTTON -->
+  <button
+    class="btn-primary"
+    (click)="startEkyc()"
+    [disabled]="loading || !applicationId || ekycUrl"
+  >
+    <span *ngIf="!loading">Start eKYC</span>
+    <span *ngIf="loading">Loading...</span>
+  </button>
+
+  <!-- ================= EMBEDDED EKYC ================= -->
+  <div class="ekyc-frame-wrapper" *ngIf="ekycUrl">
+    <iframe
+      [src]="ekycUrl | safeUrl"
+      frameborder="0"
+      allowfullscreen
+    ></iframe>
+  </div>
+
+  <!-- CONTINUE -->
+  <button
+    class="btn-secondary"
+    *ngIf="ekycUrl"
+    (click)="continueAfterEkyc()"
+  >
+    Continue
+  </button>
+
+</div>

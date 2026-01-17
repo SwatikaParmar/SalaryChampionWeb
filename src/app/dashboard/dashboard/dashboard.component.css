@@ -110,3 +110,18 @@
     margin-top: 16px;
   }
 }
+
+
+.loan-dashboard-card {
+  background: #132a63;
+  color: #fff;
+  border-radius: 14px;
+  padding: 25px;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.loan-right span {
+  color: #e63946;
+}

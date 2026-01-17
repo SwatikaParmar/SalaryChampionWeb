@@ -82,4 +82,32 @@ export class ContentService {
       { fileId } // ✅ backend expects object
     );
   }
+
+  // loan application
+
+  emiLoanQuote(data: any) {
+    return this.http.post<any>(
+      environment.apiUrl + ApiEndPoint.emiLoanQuote,
+      data
+    );
+  }
+
+  accetLoanDecision(data: any) {
+    return this.http.post<any>(
+      environment.apiUrl + ApiEndPoint.acceptLoan,
+      data
+    );
+  }
+
+  postEmploymentDetail(data: any) {
+    return this.http.post<any>(
+      environment.apiUrl + ApiEndPoint.postEmploymentDetail,
+      data
+    );
+  }
+
+
+  ekycStart(id:any){
+    return this.http.post<any>(environment.apiUrl + ApiEndPoint.ekycStart,id)
+  }
 }
