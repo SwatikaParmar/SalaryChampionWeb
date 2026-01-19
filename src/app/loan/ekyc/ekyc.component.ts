@@ -13,7 +13,10 @@ export class EkycComponent implements OnInit {
   loading = false;
   errorMsg = '';
 
-  constructor(private contentService: ContentService, private router: Router) {}
+  constructor(
+    private contentService: ContentService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
@@ -34,33 +37,33 @@ export class EkycComponent implements OnInit {
   }
 
   // ================= START EKYC =================
- startEkyc() {
-  if (!this.applicationId) return;
+  startEkyc() {
+    if (!this.applicationId) return;
 
-  this.loading = true;
-  this.errorMsg = '';
+    this.loading = true;
+    this.errorMsg = '';
 
-  const payload = {
-    applicationId: this.applicationId,
-  };
+    const payload = {
+      applicationId: this.applicationId,
+    };
 
-  this.contentService.ekycStart(payload).subscribe({
-    next: (res: any) => {
-      this.loading = false;
+    this.contentService.ekycStart(payload).subscribe({
+      next: (res: any) => {
+        this.loading = false;
 
-      if (res?.success && res?.data?.url) {
-        // 🔥 SAME TAB REDIRECT (NO NEW TAB)
-        window.location.href = res.data.url;
-      } else {
-        this.errorMsg = 'Unable to start eKYC';
-      }
-    },
-    error: () => {
-      this.loading = false;
-      this.errorMsg = 'eKYC initiation failed';
-    },
-  });
-}
+        if (res?.success && res?.data?.url) {
+          // 🔥 SAME TAB REDIRECT (NO NEW TAB)
+          window.location.href = res.data.url;
+        } else {
+          this.errorMsg = 'Unable to start eKYC';
+        }
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMsg = 'eKYC initiation failed';
+      },
+    });
+  }
 
   // ================= AFTER EKYC =================
   continueAfterEkyc() {
