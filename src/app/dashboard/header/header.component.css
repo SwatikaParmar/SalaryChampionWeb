@@ -6,6 +6,7 @@
   justify-content: space-between;
   padding: 0 24px;
   border-bottom: 1px solid #e4e7ec;
+  margin-left: 13vw;
 }
 
 /* LEFT */
@@ -24,9 +25,10 @@
 }
 
 .user-name {
-  font-size: 13px;
-  color: #102b61;
-  font-weight: 500;
+    font-size: 14px;
+    color: #555;
+    font-weight: 400;
+    font-family: "Poppins", sans-serif;
 }
 
 .avatar {
