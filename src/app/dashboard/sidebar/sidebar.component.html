@@ -12,22 +12,16 @@
       routerLinkActive="active"
       [routerLinkActiveOptions]="{ exact: true }"
     >
-      Dashboard
+      <img src="assets/images/dashboard.svg" class="img-fluid"> Dashboard
     </li>
 
     <!-- MY ACCOUNT -->
-    <li
-      routerLink="/dashboard/profile"
-      routerLinkActive="active"
-    >
-      My Account
-    </li>
+    <li routerLink="/dashboard/profile" routerLinkActive="active"><img src="assets/images/my-account.svg" class="img-fluid"> My Account</li>
+    <li><img src="assets/images/support.svg" class="img-fluid"> Support</li>
+    <li><img src="assets/images/terms-conditions.svg" class="img-fluid"> Terms & Conditions</li>
+    <li><img src="assets/images/privacy-policy.svg" class="img-fluid"> Privacy Policy</li>
 
-    <li>Support</li>
-    <li>Terms & Conditions</li>
-    <li>Privacy Policy</li>
-
-    <li (click)="logout()">Logout</li>
+    <li (click)="logout()"><img src="assets/images/logout.svg" class="img-fluid"> Logout</li>
   </ul>
 
 </aside>

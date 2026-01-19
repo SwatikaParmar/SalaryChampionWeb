@@ -6,7 +6,7 @@
 
 /* INFO */
 .info-text {
-  font-size: 13px;
+  font-size: 14px;
   color: #555;
   margin-bottom: 16px;
 }
@@ -26,7 +26,7 @@
 }
 
 .progress-header h4 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 600;
 }
 
@@ -69,13 +69,13 @@
 }
 
 .step-card:hover {
-  border-color: #2f6cf6;
+  border-color: #7c4fe0;
   transform: translateY(-2px);
 }
 
 .step-card.active {
   background: #eef4ff;
-  border-color: #2f6cf6;
+  border-color: #7c4fe0;
 }
 
 .icon {
@@ -90,12 +90,13 @@
 }
 
 .text h5 {
-  font-size: 14px;
-  margin: 0 0 4px;
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  margin: 0 0 5px;
 }
 
 .text p {
-  font-size: 12px;
+  font-size: 13px;
   color: #666;
   margin: 0;
 }
@@ -116,10 +117,17 @@
   background: #2f6cf6;
   color: #fff;
   padding: 10px 22px;
-  border-radius: 8px;
+  border-radius: 7px;
   border: none;
   font-size: 14px;
   cursor: pointer;
+}
+
+.theme-btn{
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 /* RESPONSIVE */

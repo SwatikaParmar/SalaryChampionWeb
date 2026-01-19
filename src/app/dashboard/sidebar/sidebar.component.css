@@ -1,9 +1,11 @@
 .sidebar {
-  width: 250px;
+  width: 17%;
   min-height: 100vh;
-  background: #4528dc;
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
   color: #fff;
   padding: 20px 0;
+  position: fixed;
+  left: 0;
 }
 
 .logo {
@@ -22,19 +24,24 @@
 }
 
 .menu li {
-  padding: 5px 24px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 400;
-  font-family: "Poppins", sans-serif;
-  transition: background 0.3s, padding-left 0.3s;
+    padding: 10px 24px;
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    grid-gap: 10px;
+    gap: 10px;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 400;
+    font-family: "Poppins", sans-serif;
+    border-bottom: 1px solid #ffffff12;
+    transition: background 0.3s, padding-left 0.3s;
 }
 
 .menu li.active {
-  color: #ffb900;
+    color: #ffb900;
+    /* background: #ffffff; */
 }
 
 .menu .icon {
