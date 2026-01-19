@@ -40,6 +40,10 @@
   gap: 8px;
   margin: 16px 0;
   font-size: 14px;
+  color: #3c3c3c;
+}
+.checkbox a{
+  color: #7c4fe0;
 }
 
 .error {
@@ -67,16 +71,38 @@
   display: flex;
   align-items: center; /* vertical center */
   justify-content: center; /* horizontal center */
-  background: linear-gradient(180deg, #eef3ff, #ffffff);
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
   padding: 16px;
 }
 
 /* CARD */
 .auth-card {
   background: #fff;
-  padding: 32px;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    padding: 0px;
+    border-radius: 0px;
+    width: 100%;
+    max-width: 800px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+.auth-card figure{
+  margin: 0px;
+}
+.left_boxx{
+    padding: 30px;
+    display: grid;
+    align-content: center;
+}
+.auth-card h2{
+  text-align: center;
+  font-size: 28px;
+}
+.sendOtp{
+  background: linear-gradient(90deg, #7c4fe0, #4528dc) !important;
+}
+.logo-login{
+  max-width: 220px;
+  margin: auto;
+  margin-bottom: 25px;
 }

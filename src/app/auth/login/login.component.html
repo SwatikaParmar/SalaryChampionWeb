@@ -1,7 +1,8 @@
 <div class="auth-container">
   <div class="auth-card">
+    <div class="left_boxx">
+      <img src="assets/images/logo.png" class="img-fluid logo-login">
     <h2>Enter your mobile number</h2>
-
     <form [formGroup]="mobileForm" (ngSubmit)="sendOtp()">
 
       <!-- MOBILE INPUT -->
@@ -35,7 +36,7 @@
 
       <!-- BUTTON -->
       <button
-        class="btn primary"
+        class="btn primary sendOtp"
         type="submit"
         [disabled]="mobileForm.invalid"
       >
@@ -43,5 +44,10 @@
       </button>
 
     </form>
+    </div>
+    <figure>
+      <img src="assets/images/login_form.jpg" class="img-fluid">
+    </figure>
   </div>
+  
 </div>
