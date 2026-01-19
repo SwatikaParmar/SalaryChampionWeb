@@ -1,7 +1,7 @@
 .sidebar {
-  width: 230px;
+  width: 250px;
   min-height: 100vh;
-  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+  background: #4528dc;
   color: #fff;
   padding: 20px 0;
 }
@@ -12,7 +12,8 @@
 }
 
 .logo img {
-  width: 130px;
+  width: 170px;
+  filter: brightness(0) invert(1);
 }
 
 .menu {
@@ -21,23 +22,19 @@
 }
 
 .menu li {
-  padding: 12px 24px;
+  padding: 5px 24px;
   display: flex;
   align-items: center;
   gap: 12px;
   cursor: pointer;
   font-size: 14px;
+  font-weight: 400;
+  font-family: "Poppins", sans-serif;
   transition: background 0.3s, padding-left 0.3s;
 }
 
-.menu li:hover {
-  background: rgba(255, 255, 255, 0.15);
-  padding-left: 30px;
-}
-
 .menu li.active {
-  background: rgba(255, 255, 255, 0.2);
-  border-left: 4px solid #ffffff;
+  color: #ffb900;
 }
 
 .menu .icon {
@@ -51,4 +48,7 @@
 
 .logout:hover {
   background: rgba(255, 0, 0, 0.15);
+}
+.radius-10{
+  border-radius: 10px;
 }
