@@ -2,21 +2,29 @@
 
 .dashboard-home {
   padding: 30px;
+  padding-left: 15%;
+}
+.mini-banner{
+    height: 30vh;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
 }
 
 /* CARD */
 .profile-card {
   display: grid;
-  grid-template-columns: 50% 1fr;
-  gap: 30px;
-  grid-gap: 30px;  
+  grid-template-columns: 70% 1fr;
+  gap: 20px;
+  grid-gap: 20px;
+  margin-bottom: 20px;
 }
 
 /* LEFT */
 .profile-left {
     background: #ffffff;
     border: 1px solid #eeeeee;
-    padding: 40px;
+    padding: 30px;
     border-radius: 10px;
 }
 
@@ -62,7 +70,7 @@
 
 /* BUTTON */
 .btn-start {
-  background: #4528dc;
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
   font-family: "Poppins", sans-serif;
   border: none;
   padding: 10px 22px;
@@ -75,7 +83,7 @@
 /* RIGHT */
 .profile-right {    
     color: #4528dc;
-    padding: 40px;
+    padding: 30px;
     border-radius: 10px;
     text-align: center;
     display: grid;
@@ -97,14 +105,17 @@
 
 /* SUPPORT BUTTON */
 .support-btn {
-  margin-top: 20px;
-  background: #4528dc;
-  color: #fff;
-  border: none;
-  font-size: 14px;
-  padding: 8px 20px;
-  border-radius: 6px;
-  cursor: pointer;
+    margin-top: 20px;
+    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    font-weight: 400;
+    text-transform: capitalize;
+    font-family: "Poppins", sans-serif;
+    padding: 10px 22px;
+    border-radius: 7px;
+    cursor: pointer;
 }
 
 /* RESPONSIVE */
@@ -125,9 +136,9 @@
 
 .loan-dashboard-card {
     display: grid;
-    grid-template-columns: 50% 1fr;
-    gap: 30px;
-    grid-gap: 30px;
+    grid-template-columns: 70% 1fr;
+    gap: 20px;
+    grid-gap: 20px;
 }
 
 .loan-right span {
@@ -137,7 +148,7 @@
 .loan-left{
     background: #ffffff;
     border: 1px solid #eeeeee;
-    padding: 40px;
+    padding: 30px;
     border-radius: 10px;
 }
 .loan-left h3{
@@ -146,4 +157,11 @@
     text-transform: capitalize;
     font-size: 22px;
     font-weight: 500;
+}
+.dashboard-main{
+  padding-left: 13vw;
+}
+
+.radius-10{
+  border-radius: 10px;
 }
