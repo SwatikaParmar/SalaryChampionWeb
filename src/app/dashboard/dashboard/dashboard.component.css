@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
 .dashboard-home {
-  padding: 30px;
-  padding-left: 15%;
+  padding: 30px;  
 }
 .mini-banner{
     height: 30vh;
@@ -157,9 +156,6 @@
     text-transform: capitalize;
     font-size: 22px;
     font-weight: 500;
-}
-.dashboard-main{
-  padding-left: 13vw;
 }
 
 .radius-10{

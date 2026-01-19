@@ -63,6 +63,7 @@ body {
    MAIN SECTION
 ================================ */
 .dashboard-main {
+  padding-left: 13.5%;
   flex: 1;
   background: linear-gradient(135deg, #eaf1ff 0%, #f6f9ff 50%, #eef3ff 100%);
 }
