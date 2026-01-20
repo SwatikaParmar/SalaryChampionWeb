@@ -14,6 +14,10 @@
           <div class="form-group">
             <label>Your Name *</label>
             <input type="text" formControlName="name"/>
+            <small class="error"
+    *ngIf="basicForm.get('name')?.invalid && basicForm.get('name')?.touched">
+    Name is required
+  </small>
           </div>
         </div>
 
@@ -31,6 +35,10 @@
                 Female
               </label>
             </div>
+             <small class="error"
+    *ngIf="basicForm.get('gender')?.invalid && basicForm.get('gender')?.touched">
+    Gender is required
+  </small>
           </div>
         </div>
 
@@ -39,6 +47,11 @@
           <div class="form-group">
             <label>Date of Birth *</label>
             <input type="date" formControlName="dob"   />
+            
+  <small class="error"
+    *ngIf="basicForm.get('dob')?.invalid && basicForm.get('dob')?.touched">
+    Date of birth is required
+  </small>
           </div>
         </div>
 
@@ -51,6 +64,11 @@
               <option value="SINGLE">Single</option>
               <option value="MARRIED">Married</option>
             </select>
+             <small class="error"
+    *ngIf="basicForm.get('maritalStatus')?.invalid && basicForm.get('maritalStatus')?.touched">
+    Marital status is required
+  </small>
+
           </div>
         </div>
 
@@ -60,11 +78,19 @@
             <div class="form-group">
               <label>Spouse Name *</label>
               <input type="text" formControlName="spouseName" />
+                <small class="error"
+    *ngIf="basicForm.get('spouseName')?.invalid && basicForm.get('spouseName')?.touched">
+    Spouse name is required
+  </small>
             </div>
 
             <div class="form-group">
               <label>Spouse Occupation *</label>
               <input type="text" formControlName="spouseOccupation" />
+                <small class="error"
+    *ngIf="basicForm.get('spouseOccupation')?.invalid && basicForm.get('spouseOccupation')?.touched">
+    Spouse occupation is required
+  </small>
             </div>
           </div>
         </div>
@@ -74,6 +100,15 @@
           <div class="form-group">
             <label>Email *</label>
             <input type="email" formControlName="email" />
+              <small class="error"
+    *ngIf="basicForm.get('email')?.touched && basicForm.get('email')?.errors?.['required']">
+    Email is required
+  </small>
+
+  <small class="error"
+    *ngIf="basicForm.get('email')?.touched && basicForm.get('email')?.errors?.['email']">
+    Enter a valid email address
+  </small>
           </div>
         </div>
 
