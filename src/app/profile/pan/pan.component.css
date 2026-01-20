@@ -108,9 +108,45 @@
   border: none;
   padding: 10px 18px;
 }
+.btn-primary.theme{
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+}
+.btn-primary.theme:hover{
+  background: #3c3c3c;
+}
 
 .btn-secondary {
   background: #ccc;
   border: none;
   padding: 10px 18px;
+}
+
+.pan-form .modal-box h4{
+    text-align: center;
+    margin-bottom: 32px;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+}
+.pan-form .modal-box .modal-row {
+    border-bottom: 1px solid #ddd;
+    padding: 0px 0px 9px;
+}
+.pan-form .modal-box span {
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+}
+.pan-form .modal-box strong {
+    font-weight: 500;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+}
+
+
+.btn-white{
+  background: #fff;
+  border: 1px solid #ddd;
+}
+.btn-white:hover{
+  background: #3c3c3c;
 }
