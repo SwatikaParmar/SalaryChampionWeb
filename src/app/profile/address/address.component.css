@@ -132,11 +132,6 @@ input[formControlName="pincode"] {
   overflow: hidden;
 }
 
-/* ===== Card height control ===== */
-.personal-info-card {
-  height: 100%;
-}
-
 /* ===== LEFT FORM SCROLL ENABLE ===== */
 .personal-info-form {
   height: 100%;
