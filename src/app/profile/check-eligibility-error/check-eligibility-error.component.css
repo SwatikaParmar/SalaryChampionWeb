@@ -1,0 +1,60 @@
+    .loan-popup{      
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 30px;
+    }
+
+    .loan-card{
+       background: #fff;
+        width: 100%;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .loan-title{
+      font-size: 32px;
+      margin-bottom: 50px;
+      line-height: 1.2;
+      font-family: "Poppins", sans-serif;
+    }
+
+    .loan-title .danger{
+      color:#8340da;
+    }
+
+    .loan-title .dark{
+      color:#3c3c3c;
+    }
+
+    .loan-illustration{
+      max-width: 550px;
+      width: 100%;
+      margin: 0 auto 20px;
+      display:block;
+    }
+
+    .loan-desc{
+      color:#6b7280;
+      font-size: 16px;
+      line-height: 1.7;
+      max-width: 520px;
+      margin: 0 auto 25px;
+    }
+
+    .btn-close-custom{
+        background: linear-gradient(90deg, #7c4fe0, #4528dc);
+        font-family: "Poppins", sans-serif;
+        border: none;
+        padding: 10px 30px;
+        border-radius: 7px;
+        height: 48px;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn-close-custom:hover{
+      background: #3c3c3c;
+      color:#fff;
+    }
