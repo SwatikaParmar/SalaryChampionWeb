@@ -1,79 +1,143 @@
 <div class="dashboard-home">
 
-  <img src="assets/images/dashboard_loan1.webp" class="img-fluid mb-4 radius-10 mini-banner">
+  <!-- TOP BANNER -->
+  <img
+    src="assets/images/dashboard_loan1.webp"
+    class="img-fluid mb-4 radius-10 mini-banner"
+    alt="Dashboard Banner"
+  />
 
   <div class="row">
 
-  <div class="col-md-12 profile-card">   
+    <!-- ================= PROFILE CARD ================= -->
+    <!-- SHOW ONLY WHEN PROFILE IS NOT COMPLETE -->
+    <div
+      class="col-md-12 profile-card"
+     
+    >
 
-    <!-- LEFT CONTENT -->
-    <div class="profile-left">
-      <h3>My Profile</h3>
+      <!-- LEFT -->
+      <div class="profile-left">
+        <h3>My Profile</h3>
 
-      <p>
-        Complete registration to apply for a loan.  
-        Your financial solution awaits.
-      </p>
+        <p>
+          Complete registration to apply for a loan.  
+          Your financial solution awaits.
+        </p>
 
-      <!-- PROGRESS -->
-      <div class="progress-wrapper">
+        <!-- PROFILE PROGRESS -->
+        <div class="progress-wrapper">
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="profileProgress"
+            ></div>
+          </div>
+          <span class="progress-text">
+            {{ profileProgress }}%
+          </span>
+        </div>
+
+        <button
+          class="btn-start"
+          routerLink="/dashboard/profile"
+        >
+          Let's Start
+        </button>
+      </div>
+
+      <!-- RIGHT -->
+      <div
+        class="profile-right"
+        style="background: #eeebff; border: 1px solid #e4dcff;"
+      >
+        <h4>
+          Complete your
+          <span>Profile</span>
+          to continue
+        </h4>
+      </div>
+
+    </div>
+    <!-- ================= END PROFILE CARD ================= -->
+
+
+    <!-- ================= LOAN CARD ================= -->
+    <!-- SHOW ONLY WHEN PROFILE IS COMPLETE -->
+    <div
+      class="loan-dashboard-card col-md-12"
+     
+    >
+
+      <!-- LEFT -->
+      <div class="loan-left">
+        <h3>Loan Application</h3>
+
+        <p>
+          Only few steps left to complete your loan journey.
+        </p>
+
+        <!-- LOAN PROGRESS -->
+        <div class="progress-wrapper">
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="loanProgress"
+            ></div>
+          </div>
+          <span class="progress-text">
+            {{ loanProgress }}%
+          </span>
+        </div>
+
+        <button
+          class="btn-start"
+          routerLink="/dashboard/loan"
+        >
+          Continue
+        </button>
+      </div>
+
+      <!-- RIGHT -->
+      <div
+        class="profile-right"
+        style="background: #ffeded; border: 1px solid #ffe0e0;"
+      >
+        <h4>
+          Resume Your
+          <span>Loan</span> Journey
+        </h4>
+      </div>
+
+    </div>
+    <!-- ================= END LOAN CARD ================= -->
+
+
+    <!-- ================= OPTIONAL OVERALL PROGRESS ================= -->
+    <!-- <div class="col-md-12 mt-3" *ngIf="overallProgress">
+      <div class="overall-progress-card">
+        <p class="mb-1 fw-semibold">
+          Overall Completion
+        </p>
+
         <div class="progress-bar">
           <div
             class="progress-fill"
-            [style.width.%]="20"
+            [style.width.%]="overallProgress"
           ></div>
         </div>
-        <span class="progress-text">20%</span>
+
+        <small class="text-muted">
+          {{ overallProgress }}% Completed
+        </small>
       </div>
-
-      <button
-        class="btn-start"
-        routerLink="/dashboard/profile"
-      >
-        Let's Start
-      </button>
-    </div>
-
-    <!-- RIGHT INFO -->
-    <div class="profile-right" style="background: #eeebff; border: 1px solid #e4dcff;">
-      <h4>your gateway to quick
-      <span>Easy</span> & <span>Hassle-Free</span>
-      Finances.</h4>
-    </div>
+    </div> -->
 
   </div>
-
-  <!-- LOAN DASHBOARD -->
-  <div class="loan-dashboard-card col-md-12">
-
-    <div class="loan-left">
-      <h3>loan application</h3>
-      <p>Only few steps left to complete your loan journey.</p>
-
-      <div class="progress-wrapper">
-        <div class="progress-bar">
-          <div class="progress-fill" style="width:70%"></div>
-        </div>
-        <span class="progress-text">70%</span>
-      </div>
-
-      <button class="btn-start"  routerLink="/dashboard/loan">
-        Continue
-      </button>
-    </div>
-
-    <div class="profile-right" style="background: #ffeded; border: 1px solid #ffe0e0;">
-      <h4>Resume Your
-      <span>Loan</span> Journey</h4>
-    </div>
-
-  </div>
-
-  </div>
-
-
 
   <!-- SUPPORT BUTTON -->
-  <button class="support-btn">Support</button>
+  <button class="support-btn">
+    Support
+  </button>
 
 </div>
