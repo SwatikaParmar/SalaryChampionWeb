@@ -64,11 +64,11 @@ checkEligibility() {
 debugger
       if (res?.success === true) {
         this.router.navigate(
-          ['/dashboard/success-eligibility']
+          ['/dashboard/profile/success-eligibility']
         );
       } else {
         this.router.navigate(
-          ['/dashboard/error-eligibility'],
+          ['/dashboard/profile/error-eligibility'],
           { state: { message: res?.message } }
         );
       }
