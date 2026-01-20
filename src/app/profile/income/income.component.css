@@ -1,73 +1,76 @@
 .personal-info-container {
-  display: flex;
-  justify-content: center;
-  padding: 40px;
-  background: #eef3ff;
+  padding: 30px;
+  background: #f5f8ff;
 }
 
 .personal-info-card {
-  display: flex;
-  width: 100%;
-  max-width: 1100px;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px;
 }
 
 .personal-info-form {
-  width: 50%;
   padding: 30px;
-  background: linear-gradient(180deg, #0b1c4d, #07163c);
-  color: #fff;
+  background: #fff;
+  border: 1px solid #f0e4ff;
 }
 
 .personal-info-form h2 {
-  font-size: 20px;
-  font-weight: 700;
+  margin: 0px 0px 5px;
+  font-size: 28px;
 }
 
 .subtitle {
-  font-size: 12px;
-  opacity: 0.85;
+  font-size: 15px;
+  opacity: 0.8;
   margin-bottom: 20px;
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 22px;
 }
 
-label {
-  font-size: 12px;
-  margin-bottom: 6px;
+.personal-info-form .form-group label {
   display: block;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  margin-bottom: 5px;
 }
 
-input {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  background: #e9f0ff;
+.personal-info-form .form-group input[type=number],
+.personal-info-form .form-group input[type=date],
+.personal-info-form .form-group select {
+    width: 100%;
+    height: 48px;
+    padding: 7px 15px;
+    border-radius: 0;
+    border: 1px solid #ddd;
+    outline: none;
+    font-size: 15px;
+    color: #444;
+    background: #fff;
+    font-size: 15px;
+    font-family: "Poppins", sans-serif;
 }
 
 .toggle-group {
-  display: flex;
-  gap: 10px;
+  display: inline-block;
 }
-
 .toggle-group button {
-  flex: 1;
-  padding: 10px;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  background: #e9f0ff;
-  font-weight: 600;
+    padding: 3px 15px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    background: #823eda;
+    font-weight: 400;
+    color: #fff;
+    font-family: "Poppins", sans-serif;
+    font-size: 12px;
+    margin-right: 5px;
 }
-
 .toggle-group button.active {
-  background: #35c96f;
+  background: #3c3c3c;
   color: #fff;
 }
 
@@ -78,15 +81,18 @@ input {
 }
 
 .btn-primary {
-  margin-top: 16px;
-  width: 140px;
-  padding: 10px;
-  border-radius: 8px;
-  background: #2f5bff;
-  border: none;
-  color: #fff;
-  font-weight: 600;
-  cursor: pointer;
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+.btn-primary:hover {
+  background: #3c3c3c;
 }
 
 .error {
@@ -95,8 +101,7 @@ input {
   margin-top: 4px;
 }
 
-.personal-info-illustration {
-  width: 50%;
+.personal-info-illustration {  
   background: #fff;
 }
 /* Keep page height fixed */
@@ -107,12 +112,11 @@ input {
 
 /* Card full height */
 .personal-info-card {
-  height: 100%;
+  
 }
 
 /* 🔥 LEFT FORM SCROLL */
-.personal-info-form {
-  height: 100%;
+.personal-info-form {  
   overflow-y: auto;
   padding-right: 16px;
 }
