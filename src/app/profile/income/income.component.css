@@ -134,3 +134,7 @@
 .personal-info-form::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.6);
 }
+
+.if-dnone{
+  display: none;
+}

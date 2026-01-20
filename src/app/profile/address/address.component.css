@@ -44,7 +44,8 @@
 }
 
 /* ===== Inputs ===== */
-.personal-info-form .form-group input,
+.personal-info-form .form-group input[type=text],
+.personal-info-form .form-group input[type=date],
 .personal-info-form .form-group select {
     width: 100%;
     height: 48px;
@@ -79,9 +80,7 @@ select:focus {
 
 /* ===== Pincode Boxes (Optional enhancement) ===== */
 input[formControlName="pincode"] {
-  letter-spacing: 4px;
-  text-align: center;
-  font-weight: 600;
+  letter-spacing: 4px;  
 }
 
 /* ===== Button ===== */
@@ -109,6 +108,10 @@ input[formControlName="pincode"] {
 .personal-info-illustration img {
   max-width: 90%;
   height: auto;
+}
+
+.if-dnone{
+  display: none;
 }
 
 /* ===== Responsive ===== */

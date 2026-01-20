@@ -108,3 +108,7 @@
 .personal-info-illustration {  
   background: #f1f1f1;
 }
+
+.if-dnone{
+  display: none;
+}
