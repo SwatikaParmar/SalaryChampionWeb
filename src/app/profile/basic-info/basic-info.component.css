@@ -1,24 +1,19 @@
 .personal-info-container {
-  display: flex;
-  justify-content: center;
   padding: 30px;
   background: #f5f8ff;
 }
 
 .personal-info-card {
-  display: flex;
-  width: 900px;
-  background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08); */
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 15px;
 }
 
 .personal-info-form {
-  width: 50%;
   padding: 30px;
-  background: #0b1b4b;
-  color: #ffffff;
+  background: #fff;
 }
 
 .personal-info-form h2 {
@@ -33,32 +28,46 @@
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
-label {
+.personal-info-form .form-group label {
   display: block;
-  font-size: 13px;
-  margin-bottom: 6px;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  margin-bottom: 5px;
 }
 
 .required {
   color: #ff4d4f;
 }
 
-input,
-select {
-  width: 100%;
-  padding: 10px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-  font-size: 14px;
+.personal-info-form .form-group input,
+.personal-info-form .form-group select {
+    width: 100%;
+    height: 52px;
+    padding: 7px 15px;
+    border-radius: 0;
+    border: 2px solid #ddd;
+    outline: none;
+    font-size: 15px;
+    background: #fff;
+    font-size: 15px;
+    font-family: "Poppins", sans-serif;
 }
 
 .gender-group {
   display: flex;
   gap: 12px;
+}
+
+.gender-mf label{
+  display: grid !important;
+  grid-template-columns: auto auto;
+  grid-gap: 5px;
+}
+.gender-mf input[type=radio] {
+    height: auto !important;
 }
 
 .gender-option {
@@ -70,10 +79,14 @@ select {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
 }
 
 .gender-option input {
   accent-color: #0b1b4b;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
 }
 
 .btn-primary {
@@ -85,13 +98,14 @@ select {
   color: #ffffff;
   font-size: 15px;
   cursor: pointer;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
 }
 
 .btn-primary:hover {
   background: #162fcf;
 }
 
-.personal-info-illustration {
-  width: 50%;
-  background: #fff;
+.personal-info-illustration {  
+  background: #f1f1f1;
 }

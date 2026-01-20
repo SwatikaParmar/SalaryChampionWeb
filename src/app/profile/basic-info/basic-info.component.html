@@ -6,69 +6,85 @@
       <p class="subtitle">A bit about yourself</p>
 
       <form [formGroup]="basicForm" (ngSubmit)="submit()">
+        <div class="row">
 
         <!-- Name -->
-        <div class="form-group">
-          <label>Your Name *</label>
-          <input type="text" formControlName="name" style="color: white;"/>
+         <div class="col-md-6">
+          <div class="form-group">
+            <label>Your Name *</label>
+            <input type="text" formControlName="name"/>
+          </div>
         </div>
 
         <!-- Gender -->
-        <div class="form-group">
-          <label>Gender *</label>
-          <div class="gender-group">
-            <label>
-              <input type="radio" value="MALE" formControlName="gender"  style="color: white;"/>
-              Male
-            </label>
-            <label>
-              <input type="radio" value="FEMALE" formControlName="gender"  style="color: white;"/>
-              Female
-            </label>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Gender *</label>
+            <div class="gender-group gender-mf">
+              <label>
+                <input type="radio" value="MALE" formControlName="gender"  style="color: white;"/>
+                Male
+              </label>
+              <label>
+                <input type="radio" value="FEMALE" formControlName="gender"  style="color: white;"/>
+                Female
+              </label>
+            </div>
           </div>
         </div>
 
         <!-- DOB -->
-        <div class="form-group">
-          <label>Date of Birth *</label>
-          <input type="date" formControlName="dob"  style="color: white;" />
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Date of Birth *</label>
+            <input type="date" formControlName="dob"  style="color: white;" />
+          </div>
         </div>
 
         <!-- Marital Status -->
-        <div class="form-group">
-          <label>Marital Status *</label>
-          <select formControlName="maritalStatus">
-            <option value="">Select</option>
-            <option value="SINGLE">Single</option>
-            <option value="MARRIED">Married</option>
-          </select>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Marital Status *</label>
+            <select formControlName="maritalStatus">
+              <option value="">Select</option>
+              <option value="SINGLE">Single</option>
+              <option value="MARRIED">Married</option>
+            </select>
+          </div>
         </div>
 
         <!-- Spouse Fields -->
-        <div *ngIf="isMarried">
-          <div class="form-group">
-            <label>Spouse Name *</label>
-            <input type="text" formControlName="spouseName" />
-          </div>
+        <div class="col-md-6">
+          <div *ngIf="isMarried">
+            <div class="form-group">
+              <label>Spouse Name *</label>
+              <input type="text" formControlName="spouseName" />
+            </div>
 
-          <div class="form-group">
-            <label>Spouse Occupation *</label>
-            <input type="text" formControlName="spouseOccupation" />
+            <div class="form-group">
+              <label>Spouse Occupation *</label>
+              <input type="text" formControlName="spouseOccupation" />
+            </div>
           </div>
         </div>
 
         <!-- Email -->
-        <div class="form-group">
-          <label>Email *</label>
-          <input type="email" formControlName="email" />
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" formControlName="email" />
+          </div>
         </div>
 
-        <button class="btn-primary" type="submit">
-          Continue
-        </button>
+        <div class="col-md-4">
+          <button class="btn-primary theme-btn" type="submit">Continue</button>
+        </div>
+
+        </div>
       </form>
     </div>
 
     <div class="personal-info-illustration"></div>
+
   </div>
 </div>

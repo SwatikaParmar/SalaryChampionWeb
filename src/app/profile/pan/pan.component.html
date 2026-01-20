@@ -28,11 +28,11 @@
 </div>
 
 <!-- 🔥 PREVIEW MODAL -->
-<div class="modal-backdrop" *ngIf="showModal">
+<div class="modal-backdrop pan-form" *ngIf="showModal">
 
   <div class="modal-box">
 
-    <h3>Verify PAN Details</h3>
+    <h4>Verify PAN Details</h4>
 
     <div class="modal-row">
       <span>Name</span>
@@ -60,11 +60,11 @@
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary" (click)="closeModal()">
+      <button class="btn-secondary btn-white" (click)="closeModal()">
         Cancel
       </button>
 
-      <button class="btn-primary" (click)="confirmPan()">
+      <button class="btn-primary theme" (click)="confirmPan()">
         Verify
       </button>
     </div>
