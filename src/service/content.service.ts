@@ -110,4 +110,12 @@ export class ContentService {
   ekycStart(id:any){
     return this.http.post<any>(environment.apiUrl + ApiEndPoint.ekycStart,id)
   }
+
+ checkEligibility() {
+  return this.http.post<any>(
+    environment.apiUrl + ApiEndPoint.checkEligibility,
+    null   // 👈 body empty
+  );
+}
+
 }

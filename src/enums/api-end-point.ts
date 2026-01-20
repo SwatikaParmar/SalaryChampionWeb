@@ -13,5 +13,6 @@ export enum ApiEndPoint {
   emiLoanQuote = 'loan/quote',
   acceptLoan = 'loan/decision',
   postEmploymentDetail = 'loan/upsertCompanyDetail',
-  ekycStart = 'kyc/aadhaar/start'
+  ekycStart = 'kyc/aadhaar/start',
+  checkEligibility = 'loan/eligibility/evaluate'
 }

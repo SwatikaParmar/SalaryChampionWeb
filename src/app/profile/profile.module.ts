@@ -10,6 +10,8 @@ import { PreviewComponent } from './preview/preview.component';
 import { ProfileHomeComponent } from './profile-home/profile-home.component';
 import { ProfileRoutingModule } from './profile-routing.module';
 import { SelfieComponent } from './selfie/selfie.component';
+import { CheckEligibilityErrorComponent } from './check-eligibility-error/check-eligibility-error.component';
+import { CheckEligibilitySuccessComponent } from './check-eligibility-success/check-eligibility-success.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +22,8 @@ import { SelfieComponent } from './selfie/selfie.component';
     SelfieComponent,
     PreviewComponent,
     ProfileHomeComponent,
+    CheckEligibilityErrorComponent,
+    CheckEligibilitySuccessComponent,
   ],
   imports: [
     CommonModule,

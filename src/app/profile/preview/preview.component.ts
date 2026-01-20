@@ -53,7 +53,35 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-  checkEligibility() {
-    this.router.navigate(['/dashboard/loan-calculator']);
-  }
+checkEligibility() {
+  this.contentService.checkEligibility().subscribe({
+    next: (res) => {
+      /**
+       * Example response:
+       * { success: true }
+       * { success: false, message: 'Not eligible' }
+       */
+debugger
+      if (res?.success === true) {
+        this.router.navigate(
+          ['/dashboard/success-eligibility']
+        );
+      } else {
+        this.router.navigate(
+          ['/dashboard/error-eligibility'],
+          { state: { message: res?.message } }
+        );
+      }
+    },
+
+    error: () => {
+      // server / network error
+      this.router.navigate(
+        ['/dashboard/error-eligibility'],
+        { state: { message: 'Something went wrong' } }
+      );
+    }
+  });
+}
+
 }
