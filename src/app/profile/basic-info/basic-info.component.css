@@ -42,7 +42,9 @@
   color: #ff4d4f;
 }
 
-.personal-info-form .form-group input,
+.personal-info-form .form-group input[type=text],
+.personal-info-form .form-group input[type=date],
+.personal-info-form .form-group input[type=email],
 .personal-info-form .form-group select {
     width: 100%;
     height: 48px;
@@ -51,6 +53,7 @@
     border: 1px solid #ddd;
     outline: none;
     font-size: 15px;
+    color: #444;
     background: #fff;
     font-size: 15px;
     font-family: "Poppins", sans-serif;
