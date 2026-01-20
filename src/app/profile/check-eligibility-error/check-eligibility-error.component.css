@@ -28,16 +28,15 @@
     }
 
     .loan-illustration{
-      max-width: 550px;
-      width: 100%;
+      max-width: 300px;      
       margin: 0 auto 20px;
       display:block;
     }
 
     .loan-desc{
       color:#6b7280;
-      font-size: 16px;
-      line-height: 1.7;
+      font-size: 15px;
+      line-height: 1.5;
       max-width: 520px;
       margin: 0 auto 25px;
     }
