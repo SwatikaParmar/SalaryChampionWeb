@@ -1,1 +1,38 @@
-<p>bank works!</p>
+<div class="bank-container">
+  <div class="bank-card">
+
+    <h2 class="title">Fetch Bank Statement</h2>
+    <p class="subtitle">
+      Securely share your bank statement using OneMoney consent flow.
+      No passwords. No manual uploads.
+    </p>
+
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step">
+        <span class="step-icon">1</span>
+        <p>Verify mobile number</p>
+      </div>
+
+      <div class="step-line"></div>
+
+      <div class="step">
+        <span class="step-icon">2</span>
+        <p>Select your bank</p>
+      </div>
+
+      <div class="step-line"></div>
+
+      <div class="step">
+        <span class="step-icon">3</span>
+        <p>Approve consent</p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button class="primary-btn" (click)="fetchBankStatement()">
+      Fetch Bank Statement
+    </button>
+
+    <p class="secure-text">
+      🔒 Powered by OneMoney • RBI appro

@@ -7,6 +7,8 @@ import { DocumentsComponent } from './documents/documents.component';
 import { EkycComponent } from './ekyc/ekyc.component';
 import { EmploymentComponent } from './employment/employment.component';
 import { LoanApplicationHomeComponent } from './loan-application-home/loan-application-home.component';
+import { EKYCVerificationComponent } from './ekyc/e-kyc-verification/e-kyc-verification.component';
+import { BankVerificationComponent } from './bank/bank-verification/bank-verification.component';
 const routes: Routes = [
   { path: '', component: LoanApplicationHomeComponent },
   { path: 'calculator', component: CalculatorComponent },
@@ -15,6 +17,8 @@ const routes: Routes = [
   { path: 'bank', component: BankComponent },
   { path: 'documents', component: DocumentsComponent },
   { path: 'disbursal', component: DisbursalComponent },
+  { path: 'ekyc-verification', component: EKYCVerificationComponent},
+  { path: 'bank-verification', component:BankVerificationComponent}
 ];
 
 @NgModule({

@@ -12,6 +12,8 @@ import { LoanApplicationHomeComponent } from './loan-application-home/loan-appli
 import { LoanRoutingModule } from './loan-routing.module';
 import { ReactiveFormsModule } from '@angular/forms';
 import { SafeUrlPipe } from './ekyc/safe-url.pipe';
+import { EKYCVerificationComponent } from './ekyc/e-kyc-verification/e-kyc-verification.component';
+import { BankVerificationComponent } from './bank/bank-verification/bank-verification.component';
 @NgModule({
   declarations: [
     CalculatorComponent,
@@ -21,7 +23,9 @@ import { SafeUrlPipe } from './ekyc/safe-url.pipe';
     DocumentsComponent,
     DisbursalComponent,
     LoanApplicationHomeComponent,
-    SafeUrlPipe
+    SafeUrlPipe,
+    EKYCVerificationComponent,
+    BankVerificationComponent
   ],
   imports: [CommonModule, LoanRoutingModule, FormsModule,ReactiveFormsModule],
 })

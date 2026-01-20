@@ -1,0 +1,58 @@
+.bank-verify-wrapper {
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f2f4f8;
+}
+
+.bank-verify-card {
+  background: linear-gradient(135deg, #0f2557, #1b3b73);
+  width: 860px;
+  padding: 40px 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.illustration img {
+  max-width: 420px;
+  margin-bottom: 28px;
+}
+
+.verify-text {
+  font-size: 16px;
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.primary-btn {
+  background: #e53935;
+  color: #fff;
+  border: none;
+  padding: 12px 34px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.primary-btn:hover {
+  opacity: 0.95;
+}
+
+.secondary-actions {
+  margin-top: 18px;
+  font-size: 13px;
+  color: #cfd8ff;
+}
+
+.secondary-actions a {
+  cursor: pointer;
+  color: #cfd8ff;
+  text-decoration: underline;
+  margin: 0 6px;
+}
+
+.secondary-actions a:hover {
+  color: #ffffff;
+}

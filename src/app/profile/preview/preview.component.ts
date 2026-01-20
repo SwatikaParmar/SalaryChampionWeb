@@ -77,7 +77,7 @@ debugger
     error: () => {
       // server / network error
       this.router.navigate(
-        ['/dashboard/error-eligibility'],
+        ['/dashboard/profile/error-eligibility'],
         { state: { message: 'Something went wrong' } }
       );
     }

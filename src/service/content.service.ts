@@ -118,4 +118,8 @@ export class ContentService {
   );
 }
 
+
+fetchBankStatement(data:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.fetchBankStatement,data)
+}
 }

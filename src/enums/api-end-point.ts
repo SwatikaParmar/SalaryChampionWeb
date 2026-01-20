@@ -14,5 +14,6 @@ export enum ApiEndPoint {
   acceptLoan = 'loan/decision',
   postEmploymentDetail = 'loan/upsertCompanyDetail',
   ekycStart = 'kyc/aadhaar/start',
-  checkEligibility = 'loan/eligibility/evaluate'
+  checkEligibility = 'loan/eligibility/evaluate',
+  fetchBankStatement = 'kyc/aa/consents'
 }
