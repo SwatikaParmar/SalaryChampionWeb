@@ -3,116 +3,127 @@
     <div class="personal-info-form">
 
       <h2>Current Residence Address</h2>
-      <p class="subtitle">
-        Ensure correct residence address. No surprise visits, we promise!
-      </p>
+      <p class="subtitle">Ensure correct residence address. No surprise visits, we promise!</p>
+      <hr class="mt-3">
 
       <form [formGroup]="addressForm" (ngSubmit)="submit()">
+        <div class="row mt-4">
 
         <!-- Address Line 1 -->
-        <div class="form-group">
-          <label>Address Line 1 *</label>
-          <input type="text" formControlName="line1" placeholder="Enter your address" />
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Address Line 1 *</label>
+            <input type="text" formControlName="line1" placeholder="Enter your address" />
+          </div>
+            <div class="error"
+              *ngIf="addressForm.get('line1')?.touched && addressForm.get('line1')?.invalid">
+            Address Line 1 is required
+          </div>
         </div>
-          <div class="error"
-       *ngIf="addressForm.get('line1')?.touched && addressForm.get('line1')?.invalid">
-    Address Line 1 is required
-  </div>
 
         <!-- Address Line 2 & Landmark -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>Address Line 2</label>
-            <input type="text" formControlName="line2" />
-          </div>
+        <div class="col-md-9">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Address Line 2</label>
+              <input type="text" formControlName="line2" />
+            </div>
 
-          <div class="form-group">
-            <label>Landmark</label>
-            <input type="text" formControlName="landmark" />
-             <div
-    class="error"
-    *ngIf="
-      addressForm.get('landmark')?.touched &&
-      addressForm.get('landmark')?.invalid
-    "
-  >
-    Landmark is required
-  </div>
+            <div class="form-group">
+              <label>Landmark</label>
+              <input type="text" formControlName="landmark" />
+              <div
+                class="error"
+                *ngIf="
+                  addressForm.get('landmark')?.touched &&
+                  addressForm.get('landmark')?.invalid
+                "
+              >
+                Landmark is required
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Pincode -->
-        <div class="form-group">
-          <label>Pincode *</label>
-<input
-  type="text"
-  formControlName="pincode"
-  maxlength="6"
-  (keyup)="onPincodeChange()"
-/>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Pincode *</label>
+            <input
+              type="text"
+              formControlName="pincode"
+              maxlength="6"
+              (keyup)="onPincodeChange()"
+            />
 
-  <div class="error"
-       *ngIf="addressForm.get('pincode')?.touched && addressForm.get('pincode')?.invalid">
-    <span *ngIf="addressForm.get('pincode')?.errors?.['required']">
-      Pincode is required
-    </span>
-    <span *ngIf="addressForm.get('pincode')?.errors?.['pattern']">
-      Enter a valid 6-digit pincode
-    </span>
-  </div>
+              <div class="error"
+                  *ngIf="addressForm.get('pincode')?.touched && addressForm.get('pincode')?.invalid">
+                <span *ngIf="addressForm.get('pincode')?.errors?.['required']">
+                  Pincode is required
+                </span>
+                <span *ngIf="addressForm.get('pincode')?.errors?.['pattern']">
+                  Enter a valid 6-digit pincode
+                </span>
+              </div>
+          </div>
         </div>
 
         <!-- State & City -->
-        <div class="form-row">
-          <div class="form-group">
-            <label>State *</label>
-            <input type="text" formControlName="state" />
-             <div class="error"
-       *ngIf="addressForm.get('state')?.touched && addressForm.get('state')?.invalid">
-    State is required
-  </div>
-          </div>
-
-          <div class="form-group">
-            <label>City *</label>
-            <input type="text" formControlName="city" />
+        <div class="col-md-12">
+          <div class="form-row">
+            <div class="form-group">
+              <label>State *</label>
+              <input type="text" formControlName="state" />
               <div class="error"
-       *ngIf="addressForm.get('city')?.touched && addressForm.get('city')?.invalid">
-    City is required
-  </div>
+                  *ngIf="addressForm.get('state')?.touched && addressForm.get('state')?.invalid">
+                State is required
+              </div>
+                      </div>
+
+                      <div class="form-group">
+                        <label>City *</label>
+                        <input type="text" formControlName="city" />
+                          <div class="error"
+                  *ngIf="addressForm.get('city')?.touched && addressForm.get('city')?.invalid">
+                City is required
+              </div>
+            </div>
           </div>
         </div>
 
         <!-- Residence Type -->
-        <div class="form-group">
-          <label>Residence Type *</label>
-          <select formControlName="residenceType">
-            <option value="">Select</option>
-            <option value="OWNED">Owned</option>
-            <option value="RENTED">Rented</option>
-            <option value="PARENTAL">Parental</option>
-          </select>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Residence Type *</label>
+            <select formControlName="residenceType">
+              <option value="">Select</option>
+              <option value="OWNED">Owned</option>
+              <option value="RENTED">Rented</option>
+              <option value="PARENTAL">Parental</option>
+            </select>
 
-            <div class="error"
-       *ngIf="addressForm.get('residenceType')?.touched && addressForm.get('residenceType')?.invalid">
-    Residence type is required
-  </div>
+              <div class="error"
+                  *ngIf="addressForm.get('residenceType')?.touched && addressForm.get('residenceType')?.invalid">
+                Residence type is required
+              </div>
+          </div>
         </div>
 
         <!-- Residing Since -->
-        <div class="form-group">
-          <label>Residing Since *</label>
-          <input type="date" formControlName="residingSince" />
-          
-  <div class="error"
-       *ngIf="addressForm.get('residingSince')?.touched && addressForm.get('residingSince')?.invalid">
-    Residing since date is required
-  </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Residing Since *</label>
+            <input type="date" formControlName="residingSince" />          
+            <div class="error"
+                *ngIf="addressForm.get('residingSince')?.touched && addressForm.get('residingSince')?.invalid">
+              Residing since date is required
+            </div>
+          </div>
         </div>
 
-        <button class="btn-primary" type="submit">
-          Continue
-        </button>
+        <div class="col-md-6"><button class="btn-primary" type="submit">Continue</button></div>
+
+        </div>
       </form>
 
     </div>
