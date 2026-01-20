@@ -4,9 +4,10 @@
 
       <h2>Share With Us</h2>
       <p class="subtitle">A bit about yourself</p>
+      <hr class="mt-3">
 
       <form [formGroup]="basicForm" (ngSubmit)="submit()">
-        <div class="row">
+        <div class="row mt-4">
 
         <!-- Name -->
          <div class="col-md-6">
@@ -84,7 +85,9 @@
       </form>
     </div>
 
-    <div class="personal-info-illustration"></div>
+    <div class="personal-info-illustration">
+      <img src="assets/images/personal_information.jpg" class="img-fluid">
+    </div>
 
   </div>
 </div>
