@@ -43,7 +43,7 @@
 </div>
 
 <!-- PREVIEW -->
-<div class="action-area">
+<div class="action-area" *ngIf="progress  == 100">
   <button
     class="btn-primary theme-btn"
     routerLink="/dashboard/profile/preview"

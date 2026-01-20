@@ -6,16 +6,20 @@
   </div>
 
   <!-- RIGHT -->
-  <div class="header-right">
-    <span class="user-name">
-      Hi, User
-    </span>
+<div class="header-right">
 
-    <img
-      src="assets/images/c1_1.webp"
-      alt="User"
-      class="avatar"
-    />
-  </div>
+  <span class="user-name">
+    Hi, {{ userName }}
+  </span>
+
+  <img
+    [src]="profileImage"
+    alt="User"
+    class="avatar"
+    (error)="onImageError($event)"
+  />
+
+</div>
+
 
 </header>
