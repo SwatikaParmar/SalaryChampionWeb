@@ -8,107 +8,113 @@
       <p class="subtitle">Select employment type and income information</p>
 
       <form [formGroup]="incomeForm" (ngSubmit)="submit()">
+        <div class="row mt-4">
 
         <!-- Employment Type -->
-        <div class="form-group">
-          <label>Employment Type *</label>
-        <div class="toggle-group">
-  <button
-    type="button"
-    [class.active]="incomeForm.value.employmentType === 'SALARIED'"
-    (click)="setEmploymentType('SALARIED')">
-    Salaried
-  </button>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Employment Type *</label>
+            <div class="toggle-group">
+              <button
+                type="button"
+                [class.active]="incomeForm.value.employmentType === 'SALARIED'"
+                (click)="setEmploymentType('SALARIED')">
+                Salaried
+              </button>
 
-  <button
-    type="button"
-    [class.active]="incomeForm.value.employmentType === 'SELF_EMPLOYED'"
-    (click)="setEmploymentType('SELF_EMPLOYED')">
-    Self Employed
-  </button>
+              <button
+                type="button"
+                [class.active]="incomeForm.value.employmentType === 'SELF_EMPLOYED'"
+                (click)="setEmploymentType('SELF_EMPLOYED')">
+                Self Employed
+              </button>
 
-  <button
-    type="button"
-    [class.active]="incomeForm.value.employmentType === 'OTHER'"
-    (click)="setEmploymentType('OTHER')">
-    Other
-  </button>
-</div>
-
+              <button
+                type="button"
+                [class.active]="incomeForm.value.employmentType === 'OTHER'"
+                (click)="setEmploymentType('OTHER')">
+                Other
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Net Monthly Income -->
-        <div class="form-group">
-          <label>Net Monthly Income *</label>
-          <input type="number" formControlName="netMonthlyIncome" placeholder="Enter monthly income" />
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Net Monthly Income *</label>
+            <input type="number" formControlName="netMonthlyIncome" placeholder="Enter monthly income" />
 
-          <div class="error"
-            *ngIf="incomeForm.get('netMonthlyIncome')?.touched && incomeForm.get('netMonthlyIncome')?.invalid">
-            Enter valid income
+            <div class="error"
+              *ngIf="incomeForm.get('netMonthlyIncome')?.touched && incomeForm.get('netMonthlyIncome')?.invalid">
+              Enter valid income
+            </div>
           </div>
         </div>
 
         <!-- Next Salary Date -->
-    <div class="form-group">
-  <label>Next Salary Date *</label>
-  <input
-    type="date"
-    formControlName="nextSalaryDate"
-    [min]="minSalaryDate"
-  />
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Next Salary Date *</label>
+            <input type="date" formControlName="nextSalaryDate" [min]="minSalaryDate"/>
 
-  <div
-    class="error"
-    *ngIf="
-      incomeForm.get('nextSalaryDate')?.touched &&
-      incomeForm.get('nextSalaryDate')?.invalid
-    "
-  >
-    Salary date is required
-  </div>
-</div>
-
+            <div
+              class="error"
+              *ngIf="
+                incomeForm.get('nextSalaryDate')?.touched &&
+                incomeForm.get('nextSalaryDate')?.invalid
+              "
+            >
+              Salary date is required
+            </div>
+          </div>
+        </div>
 
         <!-- Mode of Income -->
-        <div class="form-group">
-          <label>Mode of Income *</label>
-          <div class="radio-group">
-            <label>
-              <input type="radio" value="SALARY" formControlName="modeOfIncome" />
-              Bank
-            </label>
-            <label>
-              <input type="radio" value="CHEQUE" formControlName="modeOfIncome" />
-              Cheque
-            </label>
-            <label>
-              <input type="radio" value="CASH" formControlName="modeOfIncome" />
-              Cash
-            </label>
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Mode of Income *</label>
+            <div class="radio-group">
+              <label>
+                <input type="radio" value="SALARY" formControlName="modeOfIncome" />
+                Bank
+              </label>
+              <label>
+                <input type="radio" value="CHEQUE" formControlName="modeOfIncome" />
+                Cheque
+              </label>
+              <label>
+                <input type="radio" value="CASH" formControlName="modeOfIncome" />
+                Cash
+              </label>
+            </div>
           </div>
         </div>
 
         <!-- Existing EMI -->
-        <div class="form-group">
-          <label>Total Existing EMI *</label>
-          <input type="number" formControlName="existingEmiTotal" placeholder="Enter EMI amount" />
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Total Existing EMI *</label>
+            <input type="number" formControlName="existingEmiTotal" placeholder="Enter EMI amount" />
 
-          <div class="error"
-            *ngIf="incomeForm.get('existingEmiTotal')?.touched && incomeForm.get('existingEmiTotal')?.invalid">
-            Enter valid EMI amount
+            <div class="error"
+              *ngIf="incomeForm.get('existingEmiTotal')?.touched && incomeForm.get('existingEmiTotal')?.invalid">
+              Enter valid EMI amount
+            </div>
           </div>
         </div>
 
-        <button class="btn-primary" type="submit">
-          Continue
-        </button>
+        <div class="col-md-6">
+          <button class="btn-primary" type="submit">Continue</button>
+        </div>
 
+        </div>
       </form>
     </div>
 
     <!-- RIGHT ILLUSTRATION -->
     <div class="personal-info-illustration">
-      <!-- illustration image here -->
+      <img src="assets/images/income_details.webp" class="img-fluid">
     </div>
 
   </div>
