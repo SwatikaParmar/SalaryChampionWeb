@@ -49,9 +49,15 @@ export class BasicInfoComponent implements OnInit {
 
   // 🔐 PATCH + LOCK PAN VERIFIED DATA
   patchBorrowerData(user: any) {
+    debugger
+  // Ensure YYYY-MM-DD
+  const formattedDob = user.dob.split('T')[0];
+
+  this.basicForm.patchValue({
+    dob: formattedDob
+  });
     this.basicForm.patchValue({
       name: user.name,
-      dob: user.dob,
       gender: user.gender,
       maritalStatus: user.maritalStatus,
       email: user.email,
