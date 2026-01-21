@@ -8,120 +8,134 @@
 
       <!-- ================= LEFT CARD ================= -->
       <div class="company-card">
+        <div class="row">
 
         <!-- OFFICE / HOME -->
-        <div class="toggle-group">
-          <label>Are You Working From Office Or Home? *</label>
-          <div class="toggle-btns">
-      <button
-  [class.active]="workingFromHomeCtrl?.value === false"
-  (click)="workingFromHomeCtrl?.setValue(false)"
->
-  OFFICE
-</button>
+        <div class="col-md-12">
+          <div class="toggle-group">
+            <label>Are You Working From Office Or Home? *</label>
+            <div class="toggle-btns">
+                  <button
+              [class.active]="workingFromHomeCtrl?.value === false"
+              (click)="workingFromHomeCtrl?.setValue(false)"
+            >
+              OFFICE
+            </button>
 
-<button
-  [class.active]="workingFromHomeCtrl?.value === true"
-  (click)="workingFromHomeCtrl?.setValue(true)"
->
-  HOME
-</button>
+            <button
+              [class.active]="workingFromHomeCtrl?.value === true"
+              (click)="workingFromHomeCtrl?.setValue(true)">
+              HOME
+            </button>
 
+            </div>
           </div>
         </div>
 
         <!-- OFFICE EMAIL -->
-        <div class="form-group">
-          <label>Office Email *</label>
-        <input type="email" formControlName="workEmail" />
-
-<small *ngIf="submitted && workEmailCtrl?.invalid">
-  Valid email required
-</small>
-
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Office Email *</label>
+            <input type="email" formControlName="workEmail" />
+            <small *ngIf="submitted && workEmailCtrl?.invalid">
+              Valid email required
+            </small>
+          </div>
         </div>
 
         <!-- COMPANY NAME -->
-        <div class="form-group">
-          <label>Company Name *</label>
-          <input formControlName="companyName" />
-<small *ngIf="submitted && companyNameCtrl?.errors?.['required']">
-  Company name is required
-</small>
-<small *ngIf="submitted && companyNameCtrl?.errors?.['minlength']">
-  Minimum 2 characters required
-</small>
-     
- </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Company Name *</label>
+            <input formControlName="companyName" />
+            <small *ngIf="submitted && companyNameCtrl?.errors?.['required']">
+              Company name is required
+            </small>
+            <small *ngIf="submitted && companyNameCtrl?.errors?.['minlength']">
+              Minimum 2 characters required
+            </small>              
+          </div>
+        </div>
 
         <!-- COMPANY TYPE -->
-        <div class="form-group">
-          <label>Company Type *</label>
-          <select formControlName="companyType">
-            <option value="">Select</option>
-            <option>PRIVATE</option>
-            <option>GOVERNMENT</option>
-            <option>PUBLIC</option>
-            <option>PSU</option>
-            <option>NGO</option>
-            <option>OTHER</option>
-          </select>
-   <small *ngIf="submitted && companyTypeCtrl?.errors?.['required']">
-  Company type is required
-</small>
-
+        <div class="col-md-12">
+          <div class="form-group">
+            <label>Company Type *</label>
+            <select formControlName="companyType">
+              <option value="">Select</option>
+              <option>PRIVATE</option>
+              <option>GOVERNMENT</option>
+              <option>PUBLIC</option>
+              <option>PSU</option>
+              <option>NGO</option>
+              <option>OTHER</option>
+            </select>
+            <small *ngIf="submitted && companyTypeCtrl?.errors?.['required']">
+            Company type is required
+          </small>
+          </div>
         </div>
 
         <!-- DESIGNATION -->
-        <div class="form-group">
-          <label>Designation *</label>
-          <input formControlName="designation" />
-<small *ngIf="submitted && designationCtrl?.errors?.['required']">
-  Designation is required
-</small>
-<small *ngIf="submitted && designationCtrl?.errors?.['minlength']">
-  Minimum 2 characters required
-</small>
-   
-  </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Designation *</label>
+            <input formControlName="designation" />
+            <small *ngIf="submitted && designationCtrl?.errors?.['required']">
+              Designation is required
+            </small>
+            <small *ngIf="submitted && designationCtrl?.errors?.['minlength']">
+              Minimum 2 characters required
+            </small>            
+          </div>
+        </div>
 
         <!-- DOJ -->
-        <div class="form-group">
-          <label>Date Of Joining *</label>
-          <input type="date" formControlName="dateOfJoining" />
-          <small *ngIf="submitted && f['dateOfJoining']?.errors?.['required']">
-  Date of joining is required
-</small>
-
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Date Of Joining *</label>
+            <input type="date" formControlName="dateOfJoining" />
+            <small *ngIf="submitted && f['dateOfJoining']?.errors?.['required']">
+              Date of joining is required
+            </small>
+          </div>
         </div>
 
         <!-- INCOME -->
-        <div class="form-group">
-          <label>Monthly Income *</label>
-          <input type="number" formControlName="monthlyIncome" />
-          <small *ngIf="submitted && f['monthlyIncome']?.errors?.['required']">
-  Monthly income is required
-</small>
-
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Monthly Income *</label>
+            <input type="number" formControlName="monthlyIncome" />
+            <small *ngIf="submitted && f['monthlyIncome']?.errors?.['required']">
+              Monthly income is required
+            </small>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label>Other Income</label>
-          <input type="number" formControlName="otherIncome" />
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Other Income</label>
+            <input type="number" formControlName="otherIncome" />
+          </div>
         </div>
 
         <!-- BUTTONS -->
         <div class="btn-row">
-          <button type="button" class="btn-save" (click)="save()">SAVE</button>
+          <button type="button" class="btn-save" (click)="save()">Save</button>
+          <button type="button" class="btn-black" (click)="save()">Back</button>
         </div>
 
       </div>
+    </div>
 
-      <!-- ================= RIGHT CARD ================= -->
-  <div class="company-card" formGroupName="address">
+<!-- ================= RIGHT CARD ================= -->
 
-  <h4 class="sub-title">Company Address</h4>
+<div class="company-card" formGroupName="address">
+  <div class="row">
 
+  <div class="col-md-12"><h4 class="sub-title">Company Address</h4></div>
+
+  <div class="col-md-12">
   <div class="form-group">
     <label>Address Line 1 *</label>
     <input formControlName="line1" />
@@ -129,45 +143,56 @@
       Address Line 1 is required
     </small>
   </div>
-
-  <div class="form-group">
-    <label>Address Line 2</label>
-    <input formControlName="line2" />
   </div>
 
-  <div class="form-group">
-    <label>Landmark *</label>
-    <input formControlName="landmark" />
-    <small *ngIf="addr['landmark']?.invalid && (addr['landmark']?.touched || submitted)">
-      Landmark is required
-    </small>
+  <div class="col-md-12">
+    <div class="form-group">
+      <label>Address Line 2</label>
+      <input formControlName="line2" />
+    </div>
   </div>
 
-  <div class="form-group">
-    <label>Pincode *</label>
-    <input
-      formControlName="pincode"
-      (keyup)="onPincodeChange()"
-    />
-    <small *ngIf="addr['pincode']?.errors?.['required'] && submitted">
-      Pincode is required
-    </small>
-    <small *ngIf="addr['pincode']?.errors?.['pattern'] && submitted">
-      Enter valid 6-digit pincode
-    </small>
+  <div class="col-md-6">
+    <div class="form-group">
+      <label>Landmark *</label>
+      <input formControlName="landmark" />
+      <small *ngIf="addr['landmark']?.invalid && (addr['landmark']?.touched || submitted)">
+        Landmark is required
+      </small>
+    </div>
   </div>
 
-  <div class="row">
+  <div class="col-md-6">
+    <div class="form-group">
+      <label>Pincode *</label>
+      <input
+        formControlName="pincode"
+        (keyup)="onPincodeChange()"
+      />
+      <small *ngIf="addr['pincode']?.errors?.['required'] && submitted">
+        Pincode is required
+      </small>
+      <small *ngIf="addr['pincode']?.errors?.['pattern'] && submitted">
+        Enter valid 6-digit pincode
+      </small>
+    </div>
+  </div>
+
+  <div class="col-md-6">
     <div class="form-group half">
       <label>State</label>
       <input formControlName="state" readonly />
     </div>
+  </div>
+
+  <div class="col-md-6">
     <div class="form-group half">
       <label>City</label>
       <input formControlName="city" />
     </div>
   </div>
 
+</div>
 </div>
 
     </div>

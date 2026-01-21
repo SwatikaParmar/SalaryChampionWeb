@@ -1,78 +1,71 @@
 /* ================= ROOT ================= */
 .company-details-wrapper {
-  padding: 24px;
+  padding: 30px;
   background: #f4f7fb;
-  font-family: "Segoe UI", Arial, sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .page-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: #ffffff;
-  background: linear-gradient(180deg, #0b1f5e, #07164a);
-  padding: 12px 18px;
-  border-radius: 6px 6px 0 0;
-  margin-bottom: 0;
+    font-family: "Poppins", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    /* color: #ffffff; */
+    /* background: linear-gradient(90deg, #7c4fe0, #4528dc); */
+    /* padding: 12px 18px; */
+    margin-bottom: 20px;
 }
 
 /* ================= GRID ================= */
 .company-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  background: #ffffff;
-  padding: 18px;
-  border-radius: 0 0 10px 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  gap: 30px;
 }
 
 /* ================= CARD ================= */
 .company-card {
-  background: linear-gradient(180deg, #0b1f5e, #07164a);
-  border-radius: 10px;
-  padding: 18px;
-  color: #ffffff;
+  background: #fff;
+    padding: 30px;
 }
 
 /* ================= TOGGLE ================= */
 .toggle-group label {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .toggle-btns {
   display: flex;
-  gap: 8px;
+  gap: 25px;
   margin-top: 8px;
 }
 
 .toggle-btns button {
-  flex: 1;
-  padding: 8px 0;
-  border-radius: 20px;
-  border: 1px solid #ffffff;
-  background: transparent;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 13px;
+    flex: 1;
+    padding: 8px 0;
+    background: transparent;
+    color: #444;
+    cursor: pointer;
+    font-size: 15px;
+    border: 1px solid #f1e1fd;
 }
 
 .toggle-btns button.active {
-  background: #ffffff;
-  color: #0b1f5e;
-  font-weight: 600;
+  background: #efe2ff;
+  color: #3c3c3c;
+  font-weight: 500;
 }
 
 /* ================= FORM ================= */
 .form-group {
-  margin-top: 14px;
+  margin-top: 15px;
 }
 
 .form-group label {
-  font-size: 12px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  display: block;
+  font-size: 15px;
+    font-weight: 400;
+    margin-bottom: 6px;
+    display: block;
 }
 
 .form-group .hint {
@@ -84,14 +77,15 @@
 .form-group input,
 .form-group select {
   width: 100%;
-  height: 38px;
-  padding: 0 10px;
-  border-radius: 6px;
-  border: none;
-  outline: none;
-  font-size: 13px;
-  background: #d7ecff;
-  color: #000;
+    height: 42px;
+    padding: 0 15px;
+    border-radius: 0;
+    border: 1px solid #ddd;
+    outline: none;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    background: transparent;
+    color: #444;
 }
 
 .form-group input:disabled {
@@ -115,21 +109,11 @@
   background: #d7ecff;
 }
 
-/* ================= ROW ================= */
-.row {
-  display: flex;
-  gap: 12px;
-}
-
-.form-group.half {
-  width: 50%;
-}
-
 /* ================= SUB TITLE ================= */
 .sub-title {
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
 }
 
 /* ================= BUTTONS ================= */
@@ -140,13 +124,35 @@
 }
 
 .btn-save {
-  padding: 9px 18px;
-  background: #c20d2f;
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
-  cursor: pointer;
+    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+.btn-save:hover{
+    background: #3c3c3c;
+    color:#fff;
+}
+
+.btn-black {        
+    font-family: "Poppins", sans-serif;
+    border: 1px solid #ddd;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #444;
+    font-size: 14px;
+    background: transparent;
+    cursor: pointer;
+}
+.btn-black:hover{
+    background: #3c3c3c;
+    color:#fff;
 }
 
 .btn-continue {
@@ -158,12 +164,6 @@
   font-size: 13px;
   cursor: pointer;
 }
-
-/* ================= HOVER ================= */
-.btn-save:hover {
-  background: #a10b25;
-}
-
 .btn-continue:hover {
   background: #08144a;
 }
