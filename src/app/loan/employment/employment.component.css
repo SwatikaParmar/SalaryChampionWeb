@@ -144,6 +144,22 @@
     color:#fff;
 }
 
+.btn-black {        
+    font-family: "Poppins", sans-serif;
+    border: 1px solid #ddd;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #444;
+    font-size: 14px;
+    background: transparent;
+    cursor: pointer;
+}
+.btn-black:hover{
+    background: #3c3c3c;
+    color:#fff;
+}
+
 .btn-continue {
   padding: 9px 22px;
   background: #0d1b5e;
