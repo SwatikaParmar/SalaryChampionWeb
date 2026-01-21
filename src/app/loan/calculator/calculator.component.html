@@ -1,42 +1,46 @@
 <div class="loan-calculator-wrapper">
+  <div class="row">
 
   <!-- LEFT SECTION -->
-  <div class="calculator-left">
+  <div class="col-md-6">
+    <div class="calculator-left">
 
-    <h3>CALCULATING LOANS</h3>
+      <h3>Calculating Loads</h3>
 
-    <p class="desc">
-      We have calculated your loan eligibility based on the given details.
-      Please choose the loan amount and tenure as per your requirements.
-    </p>
+      <p class="desc">
+        We have calculated your loan eligibility based on the given details.
+        Please choose the loan amount and tenure as per your requirements.
+      </p>
 
-    <!-- INFO BADGES -->
-    <div class="info-badges">
-      <span>
-        INTEREST (Monthly)
-        <b>{{ interestRateMonthly }}%</b>
-      </span>
-      <span>
-        PROCESSING FEE
-        <b>{{ processingFeePercent }}%</b>
-      </span>
+      <!-- INFO BADGES -->
+      <div class="info-badges">
+        <span>
+          Interest (Monthly)
+          <b>{{ interestRateMonthly }}%</b>
+        </span>
+        <span>
+          Processing Fee
+          <b>{{ processingFeePercent }}%</b>
+        </span>
+      </div>
+
+      <p class="note">
+        Please review the loan quotation carefully before proceeding.
+      </p>
+
+      <!-- ACTION BUTTONS -->
+      <div class="action-btns">
+        <button class="btn-accept" (click)="acceptLoan()">
+          Accept
+        </button>
+
+      </div>
+
     </div>
-
-    <p class="note">
-      Please review the loan quotation carefully before proceeding.
-    </p>
-
-    <!-- ACTION BUTTONS -->
-    <div class="action-btns">
-      <button class="btn-accept" (click)="acceptLoan()">
-        ACCEPT
-      </button>
-
-    </div>
-
   </div>
 
   <!-- RIGHT SECTION -->
+   <div class="col-md-6">
   <div class="calculator-right">
 
     <!-- PURPOSE -->
@@ -116,5 +120,7 @@
     </div>
 
   </div>
+  </div>
 
+</div>
 </div>
