@@ -9,10 +9,10 @@
     font-family: "Poppins", sans-serif;
     font-size: 22px;
     font-weight: 500;
+    margin: 0;
     /* color: #ffffff; */
     /* background: linear-gradient(90deg, #7c4fe0, #4528dc); */
     /* padding: 12px 18px; */
-    margin-bottom: 20px;
 }
 
 /* ================= GRID ================= */
@@ -166,6 +166,26 @@
 }
 .btn-continue:hover {
   background: #08144a;
+}
+
+.action-arr{
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    grid-gap: 15px;
+    align-items: center;
+}
+
+.back-lk{
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 12px;
+    text-decoration: none;
+    border: 1px solid #eee0ff;
+    color: #8541da;
 }
 
 /* ================= RESPONSIVE ================= */
