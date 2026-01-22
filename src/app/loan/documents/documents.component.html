@@ -1,10 +1,10 @@
 <!-- PAGE WRAPPER -->
-<div class="page">
+<div class="page address-proof">
 
   <!-- HEADER -->
-  <div class="header">
-    <button class="back-btn" (click)="prev()">←</button>
-    <h2>Address Proof</h2>
+  <div class="action-arr">
+    <a href="#" class="back-lk"><i class="fa-solid fa-arrow-left" (click)="prev()"></i></a>
+    <h3 class="page-title">Address Proof</h3>
   </div>
 
   <!-- SUBTITLE -->
@@ -50,9 +50,7 @@
   <!-- NAV -->
   <div class="nav-buttons">
     <button (click)="prev()" [disabled]="activeIndex === 0">Previous</button>
-    <button (click)="next()" [disabled]="activeIndex === steps.length - 1">
-      Next
-    </button>
+    <button (click)="next()" [disabled]="activeIndex === steps.length - 1">Next</button>
   </div>
 </div>
 
