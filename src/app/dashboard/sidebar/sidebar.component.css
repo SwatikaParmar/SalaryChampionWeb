@@ -59,3 +59,16 @@
 .radius-10{
   border-radius: 10px;
 }
+
+/* 1025px to 1199px (medium desktops) */
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+  .sidebar{
+    width: 250px;
+  }
+  .menu li {padding: 10px 15px;}
+}
+
+/* 992px to 1024px (tablet landscape & small desktops) */
+@media only screen and (min-width: 992px) and (max-width: 1024px) {
+  
+}

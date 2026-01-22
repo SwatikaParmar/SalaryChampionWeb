@@ -196,6 +196,19 @@ body {
 /* ===============================
    RESPONSIVE
 ================================ */
+
+/* 1025px to 1199px (medium desktops) */
+@media only screen and (min-width: 1025px) and (max-width: 1366px) {
+  .dashboard-main{
+    padding-left: 250px;
+  }
+}
+
+/* 992px to 1024px (tablet landscape & small desktops) */
+@media only screen and (min-width: 992px) and (max-width: 1024px) {
+  
+}
+
 @media (max-width: 992px) {
   .profile-card,
   .info-card {
