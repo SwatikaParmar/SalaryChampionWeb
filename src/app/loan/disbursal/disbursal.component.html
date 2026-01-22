@@ -7,30 +7,50 @@
   </div>
 
   <!-- Card -->
-  <div class="card">
+  <form class="card" [formGroup]="disbursalForm" (ngSubmit)="submit()">
+
     <p class="subtitle">Please add your bank details</p>
 
+    <!-- ACCOUNT NUMBER -->
     <div class="form-group">
-      <label>Enter Account Number <span>*</span></label>
-      <input type="text" placeholder="Enter account number" />
+      <label>Account Number <span>*</span></label>
+      <input type="text" formControlName="accountNumber" placeholder="Enter account number" />
+      <small *ngIf="f.accountNumber.touched && f.accountNumber.invalid">
+        Enter valid account number (9–18 digits)
+      </small>
     </div>
 
+    <!-- IFSC -->
     <div class="form-group">
-      <label>Enter IFSC Code <span>*</span></label>
-      <input type="text" placeholder="Enter IFSC code" />
+      <label>IFSC Code <span>*</span></label>
+      <input type="text" formControlName="ifsc" placeholder="Enter IFSC code" />
+      <small *ngIf="f.ifsc.touched && f.ifsc.invalid">
+        Enter valid IFSC (e.g. HDFC0001234)
+      </small>
     </div>
 
+    <!-- HOLDER NAME -->
     <div class="form-group">
-      <label>Enter Account Holder Name <span>*</span></label>
-      <input type="text" placeholder="Enter account holder name" />
+      <label>Account Holder Name <span>*</span></label>
+      <input type="text" formControlName="holderName" placeholder="Enter account holder name" />
+      <small *ngIf="f.holderName.touched && f.holderName.invalid">
+        Name is required
+      </small>
     </div>
 
+    <!-- MOBILE -->
     <div class="form-group">
-      <label>Enter Mobile Number <span>*</span></label>
-      <input type="tel" placeholder="Enter mobile number" />
+      <label>Mobile Number <span>*</span></label>
+      <input type="tel" formControlName="mobile" placeholder="Enter mobile number" />
+      <small *ngIf="f.mobile.touched && f.mobile.invalid">
+        Enter valid 10-digit mobile number
+      </small>
     </div>
 
-    <button class="submit-btn">Add</button>
-  </div>
+    <button class="submit-btn" [disabled]="isSubmitting">
+      {{ isSubmitting ? 'Saving...' : 'Add' }}
+    </button>
+
+  </form>
 
 </div>

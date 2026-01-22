@@ -1,10 +1,168 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ContentService } from '../../../service/content.service';
 
 @Component({
   selector: 'app-disbursal',
   templateUrl: './disbursal.component.html',
-  styleUrl: './disbursal.component.css'
+  styleUrls: ['./disbursal.component.css'],
 })
-export class DisbursalComponent {
+export class DisbursalComponent implements OnInit {
+
+  disbursalForm!: FormGroup;
+  applicationId!: string;
+  isSubmitting = false;
+  id: any;
+isAccountReadonly = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private contentService: ContentService,
+  ) {}
+
+  ngOnInit(): void {
+    this.initForm();
+    this.getBorrowerSnapshot();
+  }
+
+  /* ===============================
+     FORM INITIALIZATION
+  =============================== */
+  initForm() {
+    this.disbursalForm = this.fb.group({
+      accountNumber: [
+      '',
+      [
+        Validators.required,
+        this.accountNumberValidator.bind(this)
+      ]
+    ],
+      ifsc: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)
+        ]
+      ],
+      holderName: ['', Validators.required],
+      mobile: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[6-9]\d{9}$/)
+        ]
+      ],
+    });
+  }
+
+  accountNumberValidator(control: any) {
+  const value = control.value;
+
+  // ✅ allow masked value
+  if (!value) return null;
+  if (value.includes('X')) return null;
+
+  // ✅ validate only real numbers
+  return /^\d{9,18}$/.test(value)
+    ? null
+    : { invalidAccount: true };
+}
+
+
+  /* ===============================
+     GET SNAPSHOT (PREFILL)
+  =============================== */
+getBorrowerSnapshot() {
+  this.contentService.getBorrowerSnapshot().subscribe({
+    next: (res: any) => {
+      if (!res?.success) return;
+
+      this.applicationId = res.data.application?.id;
+
+      // 🔥 CALL BANK DETAILS API
+      this.getDisbursalBankDetails();
+    },
+    error: () => console.error('Failed to fetch borrower snapshot'),
+  });
+}
+
+
+getDisbursalBankDetails() {
+  this.contentService
+    .getDisbursalBankStatement(this.applicationId)
+    .subscribe({
+      next: (res: any) => {
+        if (!res?.success || !res.data?.length) return;
+
+        const bank = res.data[0];
+
+        this.disbursalForm.patchValue({
+          ifsc: bank.ifsc,
+          holderName: bank.holderName,
+          mobile: bank.mobile,
+          accountNumber: bank.accountNumberMasked,
+        });
+
+        this.id = bank.id;
+
+        // 🔥 IMPORTANT
+        this.isAccountReadonly = true;
+
+        // ❌ Remove validators (masked value invalid)
+        this.disbursalForm.get('accountNumber')?.clearValidators();
+        this.disbursalForm.get('accountNumber')?.updateValueAndValidity();
+      },
+      error: () => console.error('Failed to fetch bank details'),
+    });
+}
+
+
+  /* ===============================
+     SUBMIT BANK DETAILS
+  =============================== */
+  submit() {
+    if (this.disbursalForm.invalid || this.isSubmitting) {
+      this.disbursalForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    const payload = {
+      applicationId: this.applicationId,
+      id: this.id || '',
+      ...this.disbursalForm.value,
+    };
+
+    this.contentService.disbursalBankAccount(payload).subscribe({
+      next: (res: any) => {
+        this.isSubmitting = false;
+
+        if (!res?.success) {
+     ///     this.toastr.error('Failed to save bank details');
+          return;
+        }
+
+      //  this.toastr.success('Bank details added successfully ✅');
+        // 🔥 navigate next step if required
+      },
+      error: () => {
+        this.isSubmitting = false;
+   //     this.toastr.error('Something went wrong');
+      },
+    });
+  }
+
+  /* ===============================
+     FORM GETTERS
+  =============================== */
+  get f() {
+  return this.disbursalForm.controls as {
+    accountNumber: any;
+    ifsc: any;
+    holderName: any;
+    mobile: any;
+  };
+}
 
 }

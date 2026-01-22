@@ -127,4 +127,23 @@ documentCheckList(applicationId :any){
   return this.http.get<any>(environment.apiUrl + ApiEndPoint.documentCheckList + '?applicationId=' + applicationId )
 
 }
+
+
+// content.service.ts
+uploadDocumentMeta(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + ApiEndPoint.UploadDocument,
+    data
+  );
+}
+
+disbursalBankAccount(data:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.disbursalBankAccount,data)
+}
+
+
+getDisbursalBankStatement(applicationId:any){
+return this.http.get<any>(environment.apiUrl + ApiEndPoint.getDisbursalBankStatement + '?applicationId=' + applicationId)
+}
+
 }

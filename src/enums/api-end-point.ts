@@ -16,5 +16,8 @@ export enum ApiEndPoint {
   ekycStart = 'kyc/aadhaar/start',
   checkEligibility = 'loan/eligibility/evaluate',
   fetchBankStatement = 'kyc/aa/consents',
-  documentCheckList = 'loan/getDocumentsChecklist'
+  documentCheckList = 'loan/getDocumentsChecklist',
+  UploadDocument = 'loan/createLoanDocUploadIntent',
+  disbursalBankAccount = 'loan/upsertDisbursalBankAccounts',
+  getDisbursalBankStatement = 'loan/getDisbursalBankAccounts'
 }

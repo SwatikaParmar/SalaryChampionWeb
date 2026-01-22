@@ -9,7 +9,7 @@
 
   <!-- SUBTITLE -->
   <p class="subtitle">
-    Please upload required documents
+    Please upload two address proof documents.
   </p>
 
   <!-- DOCUMENT CARD -->
@@ -30,9 +30,12 @@
       ✔ File uploaded successfully
     </p>
 
-    <button class="primary-btn" (click)="openUpload()">
-      {{ steps[activeIndex]?.uploaded ? 'Edit ✏️' : 'Upload ⬆' }}
-    </button>
+  <button class="primary-btn"
+        (click)="openUpload()"
+        [disabled]="isUploading">
+  {{ steps[activeIndex]?.uploaded ? 'Edit ✏️' : 'Upload ⬆' }}
+</button>
+
   </div>
 
   <!-- DOTS -->
@@ -63,11 +66,16 @@
       <button class="close-btn" (click)="closeUpload()">✖</button>
     </div>
 
-    <label class="upload-box">
-      <span class="upload-icon">⬆</span>
-      <span>Tap to upload</span>
-      <input type="file" hidden (change)="onFileSelect($event)" />
-    </label>
+<label class="upload-box" [class.disabled]="isUploading">
+  <span *ngIf="!isUploading">⬆ Tap to upload</span>
+  <span *ngIf="isUploading">Uploading...</span>
+
+  <input type="file"
+         hidden
+         [disabled]="isUploading"
+         (change)="onFileSelect($event)" />
+</label>
+
 
     <p class="hint">
       If the document is password protected, enter password below
