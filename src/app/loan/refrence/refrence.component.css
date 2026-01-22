@@ -1,105 +1,180 @@
-/* Page layout */
-.page-wrapper {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #eaf1ff, #ffffff);
-  padding: 16px;
-  font-family: "Inter", sans-serif;
+/* ===============================
+   GLOBAL
+================================ */
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Header */
-.page-header {
+.company-details-wrapper {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===============================
+   HEADER
+================================ */
+.action-arr {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 12px;
 }
 
-.page-header h2 {
+.back-lk {
+  font-size: 18px;
+  color: #222;
+  text-decoration: none;
+}
+
+.page-title {
   font-size: 20px;
   font-weight: 600;
+  color: #111827;
 }
 
-.back-btn {
-  border: none;
-  background: transparent;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Card */
-.card {
+/* ===============================
+   CARD
+================================ */
+.company-card {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  max-width: 420px;
-  margin: auto;
-}
-
-/* Text */
-.hint {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 16px;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
 }
 
 .sub-title {
-  margin: 20px 0 10px;
   font-size: 16px;
   font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
 }
 
-/* Form */
-.section label {
-  font-size: 14px;
-  font-weight: 500;
+/* ===============================
+   FORM
+================================ */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
   display: block;
-  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #374151;
 }
 
-.section label span {
-  color: red;
+.form-group span {
+  color: #dc2626;
 }
 
-.section input,
-.section select {
+.form-group input,
+.form-group select {
   width: 100%;
   height: 44px;
-  margin-top: 6px;
   padding: 0 12px;
-  border-radius: 8px;
-  border: 1.5px solid #cfd8e3;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
   font-size: 14px;
   outline: none;
   background: #fff;
 }
 
-.section input:focus,
-.section select:focus {
+.form-group input:focus,
+.form-group select:focus {
   border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
-/* Button */
-.submit-btn {
-  margin-top: 24px;
-  width: 100%;
-  height: 48px;
-  border: none;
-  border-radius: 10px;
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-save {
   background: linear-gradient(90deg, #2563eb, #1e40af);
   color: #fff;
-  font-size: 16px;
+  border: none;
+  height: 46px;
+  padding: 0 28px;
+  border-radius: 12px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.submit-btn:hover {
+.btn-save:hover {
   opacity: 0.95;
 }
 
-/* Responsive */
-@media (min-width: 768px) {
-  .card {
-    padding: 24px;
+.btn-save:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .company-details-wrapper {
+    padding: 12px;
+  }
+
+  .company-card {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+}
+
+/* ===============================
+   PLACEHOLDER STYLE
+================================ */
+::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ===============================
+   INPUT HOVER
+================================ */
+.form-group input:hover,
+.form-group select:hover {
+  border-color: #9ca3af;
+}
+
+/* ===============================
+   CARD SEPARATOR FEEL
+================================ */
+.company-card + .company-card {
+  border-top: 1px dashed #e5e7eb;
+}
+
+/* ===============================
+   MOBILE POLISH
+================================ */
+@media (max-width: 576px) {
+  .sub-title {
+    font-size: 15px;
+  }
+
+  .btn-save {
+    width: 100%;
   }
 }

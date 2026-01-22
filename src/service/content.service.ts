@@ -146,4 +146,8 @@ getDisbursalBankStatement(applicationId:any){
 return this.http.get<any>(environment.apiUrl + ApiEndPoint.getDisbursalBankStatement + '?applicationId=' + applicationId)
 }
 
+
+saveReference(data:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.saveReference,data)
+}
 }

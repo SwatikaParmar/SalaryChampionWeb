@@ -19,5 +19,6 @@ export enum ApiEndPoint {
   documentCheckList = 'loan/getDocumentsChecklist',
   UploadDocument = 'loan/createLoanDocUploadIntent',
   disbursalBankAccount = 'loan/upsertDisbursalBankAccounts',
-  getDisbursalBankStatement = 'loan/getDisbursalBankAccounts'
+  getDisbursalBankStatement = 'loan/getDisbursalBankAccounts',
+  saveReference = 'lead/saveReferences'
 }
