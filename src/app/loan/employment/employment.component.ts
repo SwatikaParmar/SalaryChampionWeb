@@ -33,7 +33,6 @@ export class EmploymentComponent implements OnInit {
       companyType: ['', Validators.required],
       designation: ['', Validators.required],
       dateOfJoining: ['', Validators.required],
-      monthlyIncome: ['', [Validators.required, Validators.min(1)]],
       otherIncome: [''],
       address: this.fb.group({
         line1: ['', Validators.required],

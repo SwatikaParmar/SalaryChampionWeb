@@ -214,3 +214,17 @@ select:focus.ng-invalid {
   outline: none;
   box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
 }
+
+.back-lk{
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 14px;
+    text-decoration: none;
+    border: 2px solid #8541da;
+    color: #8541da;
+    border-radius: 50px;
+}
