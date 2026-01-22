@@ -1,19 +1,35 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ContentService } from '../../../service/content.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent {
-
+export class HeaderComponent implements OnInit {
   user: any = null;
 
+  constructor(private contentService: ContentService) {}
+
   ngOnInit(): void {
-    const storedUser = localStorage.getItem('user'); // ya API response se
-    this.user = storedUser ? JSON.parse(storedUser) : null;
+    this.getBorrowerSnapshot();
   }
 
+  getBorrowerSnapshot() {
+    this.contentService.getBorrowerSnapshot().subscribe({
+      next: (res: any) => {
+        if (!res?.success) return;
+
+        // ✅ THIS IS MISSING LINE
+        this.user = res.data.user;
+      },
+      error: () => console.error('Failed to fetch borrower snapshot'),
+    });
+  }
+
+  /* ===============================
+     GETTERS FOR TEMPLATE
+  =============================== */
   get userName(): string {
     return this.user?.name?.trim() || 'User';
   }

@@ -11,6 +11,7 @@ import { EKYCVerificationComponent } from './ekyc/e-kyc-verification/e-kyc-verif
 import { BankVerificationComponent } from './bank/bank-verification/bank-verification.component';
 import { SalarySlipComponent } from './documents/salary-slip/salary-slip.component';
 import { AddressProofComponent } from './documents/address-proof/address-proof.component';
+import { RefrenceComponent } from './refrence/refrence.component';
 const routes: Routes = [
   { path: '', component: LoanApplicationHomeComponent },
   { path: 'calculator', component: CalculatorComponent },
@@ -22,7 +23,8 @@ const routes: Routes = [
   { path: 'ekyc-verification', component: EKYCVerificationComponent},
   { path: 'bank-verification', component:BankVerificationComponent},
   { path: ' salary-slip', component:SalarySlipComponent},
-  { path: 'address-proof', component:AddressProofComponent}
+  { path: 'address-proof', component:AddressProofComponent},
+  { path: 'reference', component:RefrenceComponent}
 ];
 
 @NgModule({

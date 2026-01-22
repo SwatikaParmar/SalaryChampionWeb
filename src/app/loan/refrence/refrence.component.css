@@ -1,0 +1,180 @@
+/* ===============================
+   GLOBAL
+================================ */
+* {
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.company-details-wrapper {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* ===============================
+   HEADER
+================================ */
+.action-arr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.back-lk {
+  font-size: 18px;
+  color: #222;
+  text-decoration: none;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+}
+
+/* ===============================
+   CARD
+================================ */
+.company-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.sub-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 16px;
+}
+
+/* ===============================
+   FORM
+================================ */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #374151;
+}
+
+.form-group span {
+  color: #dc2626;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  outline: none;
+  background: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.form-group small {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: #dc2626;
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-save {
+  background: linear-gradient(90deg, #2563eb, #1e40af);
+  color: #fff;
+  border: none;
+  height: 46px;
+  padding: 0 28px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+  opacity: 0.95;
+}
+
+.btn-save:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .company-details-wrapper {
+    padding: 12px;
+  }
+
+  .company-card {
+    padding: 16px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+}
+
+/* ===============================
+   PLACEHOLDER STYLE
+================================ */
+::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ===============================
+   INPUT HOVER
+================================ */
+.form-group input:hover,
+.form-group select:hover {
+  border-color: #9ca3af;
+}
+
+/* ===============================
+   CARD SEPARATOR FEEL
+================================ */
+.company-card + .company-card {
+  border-top: 1px dashed #e5e7eb;
+}
+
+/* ===============================
+   MOBILE POLISH
+================================ */
+@media (max-width: 576px) {
+  .sub-title {
+    font-size: 15px;
+  }
+
+  .btn-save {
+    width: 100%;
+  }
+}

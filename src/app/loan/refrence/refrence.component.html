@@ -1,0 +1,86 @@
+<div class="company-details-wrapper">
+
+  <!-- HEADER -->
+  <div class="action-arr mb-3">
+    <a class="back-lk">
+      <i class="fa-solid fa-angle-left"></i>
+    </a>
+    <h3 class="page-title">Reference Details</h3>
+  </div>
+
+  <form [formGroup]="referenceForm">
+
+    <div
+      class="company-card"
+      formArrayName="references"
+      *ngFor="let ref of references.controls; let i = index"
+    >
+      <h4 class="sub-title">Reference {{ i + 1 }}</h4>
+
+      <div [formGroupName]="i" class="row">
+
+        <!-- NAME -->
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Name <span>*</span></label>
+            <input
+              type="text"
+              formControlName="name"
+              placeholder="Enter full name"
+            />
+            <small *ngIf="submitted && ref.get('name')?.invalid">
+              Enter valid name
+            </small>
+          </div>
+        </div>
+
+        <!-- MOBILE -->
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Mobile <span>*</span></label>
+            <input
+              type="tel"
+              formControlName="phone"
+              placeholder="Enter 10-digit mobile number"
+              maxlength="10"
+            />
+            <small *ngIf="submitted && ref.get('phone')?.invalid">
+              Enter valid mobile number
+            </small>
+          </div>
+        </div>
+
+        <!-- RELATION -->
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Relation <span>*</span></label>
+            <select formControlName="relation">
+              <option value="">Select relation</option>
+              <option value="FRIEND">Friend</option>
+              <option value="COLLEAGUE">Colleague</option>
+              <option value="RELATIVE">Relative</option>
+              <option value="NEIGHBOUR">Neighbour</option>
+            </select>
+            <small *ngIf="submitted && ref.get('relation')?.invalid">
+              Relation is required
+            </small>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ACTION BUTTON -->
+    <div class="btn-row">
+      <button
+        type="button"
+        class="btn-save"
+        (click)="save()"
+        [disabled]="isSaving"
+      >
+        {{ isSaving ? 'Saving...' : 'Save References' }}
+      </button>
+    </div>
+
+  </form>
+</div>
