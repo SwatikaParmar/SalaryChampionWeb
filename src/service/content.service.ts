@@ -122,4 +122,9 @@ export class ContentService {
 fetchBankStatement(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.fetchBankStatement,data)
 }
+
+documentCheckList(applicationId :any){
+  return this.http.get<any>(environment.apiUrl + ApiEndPoint.documentCheckList + '?applicationId=' + applicationId )
+
+}
 }

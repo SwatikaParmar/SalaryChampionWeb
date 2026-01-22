@@ -1,1 +1,86 @@
-<p>documents works!</p>
+<!-- PAGE WRAPPER -->
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <button class="back-btn" (click)="prev()">←</button>
+    <h2>Address Proof</h2>
+  </div>
+
+  <!-- SUBTITLE -->
+  <p class="subtitle">
+    Please upload required documents
+  </p>
+
+  <!-- DOCUMENT CARD -->
+  <div class="card" *ngIf="steps.length">
+
+    <img
+      class="doc-img"
+      [src]="steps[activeIndex]?.image"
+      alt="Document image"
+    />
+
+    <h3 class="doc-title">
+      {{ steps[activeIndex]?.label }}
+      <span class="required" *ngIf="steps[activeIndex]?.required">*</span>
+    </h3>
+
+    <p class="success-text" *ngIf="steps[activeIndex]?.uploaded">
+      ✔ File uploaded successfully
+    </p>
+
+    <button class="primary-btn" (click)="openUpload()">
+      {{ steps[activeIndex]?.uploaded ? 'Edit ✏️' : 'Upload ⬆' }}
+    </button>
+  </div>
+
+  <!-- DOTS -->
+  <div class="dots">
+    <span
+      *ngFor="let s of steps; let i = index"
+      class="dot"
+      [class.active]="i === activeIndex">
+    </span>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-buttons">
+    <button (click)="prev()" [disabled]="activeIndex === 0">Previous</button>
+    <button (click)="next()" [disabled]="activeIndex === steps.length - 1">
+      Next
+    </button>
+  </div>
+</div>
+
+<!-- ================= CUSTOM MODAL ================= -->
+<div class="modal-overlay" *ngIf="showUploadModal">
+
+  <div class="upload-modal">
+
+    <div class="modal-header">
+      <h3>{{ steps[activeIndex]?.label }}</h3>
+      <button class="close-btn" (click)="closeUpload()">✖</button>
+    </div>
+
+    <label class="upload-box">
+      <span class="upload-icon">⬆</span>
+      <span>Tap to upload</span>
+      <input type="file" hidden (change)="onFileSelect($event)" />
+    </label>
+
+    <p class="hint">
+      If the document is password protected, enter password below
+    </p>
+
+    <input
+      type="password"
+      [(ngModel)]="password"
+      placeholder="Enter password"
+      class="password-input"
+    />
+
+    <button class="cancel-btn" (click)="closeUpload()">Cancel</button>
+  </div>
+
+</div>
