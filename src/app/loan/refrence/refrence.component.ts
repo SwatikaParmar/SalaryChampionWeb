@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContentService } from '../../../service/content.service';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-refrence',
   templateUrl: './refrence.component.html',
@@ -17,8 +17,8 @@ export class RefrenceComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private contentService: ContentService
-  ) {}
+    private contentService: ContentService,
+ private router: Router  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -103,8 +103,8 @@ export class RefrenceComponent implements OnInit {
         this.isSaving = false;
         if (!res?.success) return;
 
-        alert('References saved successfully ✅');
-      },
+     this.router.navigate(['/dashboard/loan/disbursal']);
+     },
       error: () => {
         this.isSaving = false;
         alert('Something went wrong ❌');

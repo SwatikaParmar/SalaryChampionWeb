@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ContentService } from '../../../service/content.service';
+import { Router } from '@angular/router';
 
 interface DocumentStep {
   label: string;
@@ -28,7 +29,7 @@ export class DocumentsComponent implements OnInit {
   password = '';
 isUploading = false;
 
-  constructor(private contentService: ContentService) {}
+  constructor(private contentService: ContentService, private router: Router) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
@@ -81,9 +82,9 @@ navigateToDisbursal() {
   // Optional: small delay for smooth UX
   setTimeout(() => {
     // 🔥 Change route as per your app
-    window.location.href = '/dashboard/loan/disbursal';
+    // window.location.href = '/dashboard/loan/disbursal';
     // OR (better way if Router injected)
-    // this.router.navigate(['/dashboard/disbursal']);
+     this.router.navigate(['/dashboard/loan/disbursal']);
   }, 300);
 }
 
