@@ -2,13 +2,15 @@
   <div class="row">
     <div class="col-md-6">
       <div class="ekyc-box">
-        <h3 class="page-title">eKYC Verification</h3>
+        <div class="action-arr mb-3">
+          <a href="#" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
+          <h3 class="page-title">eKYC Verification</h3>
+        </div>
 
         <p class="desc">
-          Let's get into some advanced technology! Authenticate yourself using eKYC and only provide the last 4 digits of your Aadhaar number. There's no need to share the entire number!
+          Complete your identity verification using DigiLocker to proceed further. 
         </p>
-
-        <span>Enter your last 4 digit of Aadhaar number</span>
+                
         <h5>To initiate eKYC verification</h5>
 
         <!-- ERROR -->
@@ -16,7 +18,7 @@
 
         <!-- START BUTTON -->
         <button
-          class="btn-primary"
+          class="btn-primary mt-3"
           (click)="startEkyc()"
           [disabled]="loading || !applicationId || ekycUrl"
         >
