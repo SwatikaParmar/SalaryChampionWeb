@@ -1,40 +1,54 @@
 <div class="ekyc-wrapper">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="ekyc-box">
+        <h3 class="page-title">eKYC Verification</h3>
 
-  <h3 class="page-title">eKYC Verification</h3>
+        <p class="desc">
+          Let's get into some advanced technology! Authenticate yourself using eKYC and only provide the last 4 digits of your Aadhaar number. There's no need to share the entire number!
+        </p>
 
-  <p class="desc">
-    Complete your identity verification using DigiLocker to proceed further.
-  </p>
+        <span>Enter your last 4 digit of Aadhaar number</span>
+        <h5>To initiate eKYC verification</h5>
 
-  <!-- ERROR -->
-  <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+        <!-- ERROR -->
+        <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
 
-  <!-- START BUTTON -->
-  <button
-    class="btn-primary"
-    (click)="startEkyc()"
-    [disabled]="loading || !applicationId || ekycUrl"
-  >
-    <span *ngIf="!loading">Start eKYC</span>
-    <span *ngIf="loading">Loading...</span>
-  </button>
+        <!-- START BUTTON -->
+        <button
+          class="btn-primary"
+          (click)="startEkyc()"
+          [disabled]="loading || !applicationId || ekycUrl"
+        >
+          <span *ngIf="!loading">Start eKYC</span>
+          <span *ngIf="loading">Loading...</span>
+        </button>
 
-  <!-- ================= EMBEDDED EKYC ================= -->
-  <div class="ekyc-frame-wrapper" *ngIf="ekycUrl">
-    <iframe
-      [src]="ekycUrl | safeUrl"
-      frameborder="0"
-      allowfullscreen
-    ></iframe>
+        <!-- ================= EMBEDDED EKYC ================= -->
+        <div class="ekyc-frame-wrapper" *ngIf="ekycUrl">
+          <iframe
+            [src]="ekycUrl | safeUrl"
+            frameborder="0"
+            allowfullscreen
+          ></iframe>
+        </div>
+
+        <!-- CONTINUE -->
+        <button
+          class="btn-secondary"
+          *ngIf="ekycUrl"
+          (click)="continueAfterEkyc()"
+        >
+          Continue
+        </button>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="rfigure">
+        <img src="assets/images/adharcard.png" class="img-fluid"> 
+      </div>
+    </div>
+
   </div>
-
-  <!-- CONTINUE -->
-  <button
-    class="btn-secondary"
-    *ngIf="ekycUrl"
-    (click)="continueAfterEkyc()"
-  >
-    Continue
-  </button>
-
 </div>
