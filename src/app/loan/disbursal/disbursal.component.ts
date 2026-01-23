@@ -55,17 +55,19 @@ isAccountReadonly = false;
     });
   }
 
-  accountNumberValidator(control: any) {
-  const value = control.value;
+accountNumberValidator(control: any) {
+  const value: string = control.value;
 
-  // ✅ allow masked value
   if (!value) return null;
-  if (value.includes('X')) return null;
 
-  // ✅ validate only real numbers
-  return /^\d{9,18}$/.test(value)
-    ? null
-    : { invalidAccount: true };
+  // ✅ masked value allowed
+  if (/X/i.test(value)) {
+    return null;
+  }
+
+  // ✅ real account number validation
+  const valid = /^\d{9,18}$/.test(value);
+  return valid ? null : { invalidAccount: true };
 }
 
 
@@ -100,8 +102,7 @@ getDisbursalBankDetails() {
           ifsc: bank.ifsc,
           holderName: bank.holderName,
           mobile: bank.mobile,
-          accountNumber: bank.accountNumberMasked,
-        });
+ accountNumber: bank.accountNumberMasked,         });
 
         this.id = bank.id;
 
@@ -109,9 +110,9 @@ getDisbursalBankDetails() {
         this.isAccountReadonly = true;
 
         // ❌ Remove validators (masked value invalid)
-        this.disbursalForm.get('accountNumber')?.clearValidators();
-        this.disbursalForm.get('accountNumber')?.updateValueAndValidity();
-      },
+      //   this.disbursalForm.get('accountNumber')?.clearValidators();
+      //   this.disbursalForm.get('accountNumber')?.updateValueAndValidity();
+       },
       error: () => console.error('Failed to fetch bank details'),
     });
 }

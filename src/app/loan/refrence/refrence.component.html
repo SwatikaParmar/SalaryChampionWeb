@@ -2,7 +2,7 @@
 
   <!-- HEADER -->
   <div class="action-arr mb-3">
-    <a class="back-lk">
+    <a class="back-lk" [routerLink]="['/dashboard/loan']">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <h3 class="page-title">Reference Details</h3>
@@ -53,6 +53,8 @@
               <label>Relation <span>*</span></label>
               <select formControlName="relation">
                 <option value="">Select relation</option>
+                                <option value="FAMILY">Family</option>
+
                 <option value="FRIEND">Friend</option>
                 <option value="COLLEAGUE">Colleague</option>
                 <option value="RELATIVE">Relative</option>

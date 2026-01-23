@@ -15,8 +15,8 @@ import { SafeUrlPipe } from './ekyc/safe-url.pipe';
 import { EKYCVerificationComponent } from './ekyc/e-kyc-verification/e-kyc-verification.component';
 import { BankVerificationComponent } from './bank/bank-verification/bank-verification.component';
 import { SalarySlipComponent } from './documents/salary-slip/salary-slip.component';
-import { AddressProofComponent } from './documents/address-proof/address-proof.component';
 import { RefrenceComponent } from './refrence/refrence.component';
+import { BankStatementComponent } from './documents/bank-statement/bank-statement.component';
 @NgModule({
   declarations: [
     CalculatorComponent,
@@ -30,8 +30,8 @@ import { RefrenceComponent } from './refrence/refrence.component';
     EKYCVerificationComponent,
     BankVerificationComponent,
     SalarySlipComponent,
-    AddressProofComponent,
-    RefrenceComponent
+    RefrenceComponent,
+    BankStatementComponent
   ],
   imports: [CommonModule, LoanRoutingModule, FormsModule,ReactiveFormsModule],
 })
