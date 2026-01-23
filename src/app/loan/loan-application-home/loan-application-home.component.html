@@ -1,47 +1,81 @@
 <div class="loan-app-wrapper">
 
   <!-- HEADER TEXT -->
-  <p class="loan-app-desc">
+  <!-- <p class="loan-app-desc">
     Begin your journey to financial empowerment – provide the necessary details
     to initiate your loan application.
-  </p>
+  </p> -->
+
+  <h4>Your Loan application</h4>
 
   <div class="loan-app-card">
 
-    <!-- LEFT COLUMN -->
+    <!-- ================= LEFT COLUMN ================= -->
     <div class="loan-left">
 
       <!-- PROGRESS CARD -->
       <div class="loan-progress">
         <div class="loan-progress-title">
-          Loan Application
+          Complete Profile
         </div>
 
-        <div class="loan-progress-bar">
-          <div class="loan-progress-fill" style="width:70%"></div>
-        </div>
+      <div class="loan-progress-bar">
+  <div
+    class="loan-progress-fill"
+    [style.width.%]="flowPercent"
+  ></div>
+</div>
 
-        <div class="loan-progress-percent">70%</div>
+<div class="loan-progress-percent">
+  {{ flowPercent }}%
+</div>
+
       </div>
 
-      <!-- STEP ITEM -->
-      <div class="loan-step completed"  [routerLink]="['/dashboard/loan/employment']">
+      <!-- Employment Details -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('employmentDetails'),
+          'active': isActive('employmentDetails'),
+          'locked': isLocked('employmentDetails')
+        }"
+        (click)="navigate('employmentDetails','/dashboard/loan/employment')"
+      >
         <div class="loan-step-icon">📊</div>
-        <div class="loan-step-text" >
+        <div class="loan-step-text">
           <h5>Employment Details</h5>
           <p>Share about your work status.</p>
         </div>
       </div>
 
-      <div class="loan-step completed" [routerLink]="['/dashboard/loan/reference']">
-  <div class="loan-step-icon">🧾</div>
-  <div class="loan-step-text">
-    <h5>Add Reference</h5>
-    <p>Add a reference person for verification.</p>
-  </div>
-</div>
+      <!-- References -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('references'),
+          'active': isActive('references'),
+          'locked': isLocked('references')
+        }"
+        (click)="navigate('references','/dashboard/loan/reference')"
+      >
+        <div class="loan-step-icon">🧾</div>
+        <div class="loan-step-text">
+          <h5>Add Reference</h5>
+          <p>Add a reference person for verification.</p>
+        </div>
+      </div>
 
-      <div class="loan-step completed" [routerLink]="['/dashboard/loan/bank']">
+      <!-- Fetch Bank Statement -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('fetchBankStatement'),
+          'active': isActive('fetchBankStatement'),
+          'locked': isLocked('fetchBankStatement')
+        }"
+        (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
+      >
         <div class="loan-step-icon">🏦</div>
         <div class="loan-step-text">
           <h5>Fetch Bank Statement</h5>
@@ -49,24 +83,39 @@
         </div>
       </div>
 
-
     </div>
 
-    <!-- RIGHT COLUMN -->
+    <!-- ================= RIGHT COLUMN ================= -->
     <div class="loan-right">
 
-      <div class="loan-step active">
+      <!-- Loan Calculator -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('loanCalculator'),
+          'active': isActive('loanCalculator'),
+          'locked': isLocked('loanCalculator')
+        }"
+        (click)="navigate('loanCalculator','/dashboard/loan/calculator')"
+      >
         <div class="loan-step-icon highlight">🧮</div>
-        <div class="loan-step-text" [routerLink]="['/dashboard/loan/calculator']">
-          <h5>          Get Loan Offer
-</h5>
+        <div class="loan-step-text">
+          <h5>Get Loan Offer</h5>
           <p>Choose the loan amount and tenure as per your requirements.</p>
         </div>
         <div class="loan-step-arrow">›</div>
       </div>
 
-      
-      <div class="loan-step completed" [routerLink]="['/dashboard/loan/ekyc']">
+      <!-- Aadhaar eKYC -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('aadhaarEKyc'),
+          'active': isActive('aadhaarEKyc'),
+          'locked': isLocked('aadhaarEKyc')
+        }"
+        (click)="navigate('aadhaarEKyc','/dashboard/loan/ekyc')"
+      >
         <div class="loan-step-icon">🪪</div>
         <div class="loan-step-text">
           <h5>eKYC Verification</h5>
@@ -74,24 +123,38 @@
         </div>
       </div>
 
-         <div class="loan-step completed" [routerLink]="['/dashboard/loan/bank-statement']">
+      <!-- Documentation -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('documents'),
+          'active': isActive('documents'),
+          'locked': isLocked('documents')
+        }"
+        (click)="navigate('documents','/dashboard/loan/bank-statement')"
+      >
         <div class="loan-step-icon">📄</div>
         <div class="loan-step-text">
           <h5>Documentation Verification</h5>
-          <p>Share your latest documents to verify your details.</p>
+          <p>Upload required documents.</p>
         </div>
       </div>
 
-
-      <div class="loan-step completed"  [routerLink]="['/dashboard/loan/disbursal']">
+      <!-- 🔥 Disbursal Bank Details (ALWAYS OPEN) -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('disbursalBankDetails'),
+          'active': isActive('disbursalBankDetails')
+        }"
+        (click)="navigate('disbursalBankDetails','/dashboard/loan/disbursal')"
+      >
         <div class="loan-step-icon">💳</div>
         <div class="loan-step-text">
           <h5>Disbursal Bank Details</h5>
           <p>Share bank details for verification.</p>
         </div>
       </div>
-
-   
 
     </div>
 

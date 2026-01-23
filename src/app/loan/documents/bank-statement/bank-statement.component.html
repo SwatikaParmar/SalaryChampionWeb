@@ -1,30 +1,38 @@
 <div class="personal-info-container">
 
-    <div class="action-arr">
-        <a href="#" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
-        <h2 class="page-title">Upload Bank statement</h2>
+  <div class="action-arr">
+    <a class="back-lk" >
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h2 class="page-title">Upload Bank Statement</h2>
+  </div>
+
+  <div class="upload-wrapper mt-3">
+    <div class="upload-title">
+      <p>Upload your bank statement for financial behaviour verification</p>
     </div>
 
-    <div class="upload-wrapper mt-3">
-        <div class="upload-title">
-            <p>Upload your bank statement for financial behaviour verification</p>
-        </div>
+    <label class="upload-box">
+      <input
+        type="file"
+        accept=".pdf"
+        (change)="onFileSelect($event)"
+        [disabled]="isUploading"
+      />
 
-        <label class="upload-box">
-            <input type="file" />
+      <div class="upload-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+          <path d="M12 3V14" stroke="#4F46E5" stroke-width="2"/>
+          <path d="M8 7L12 3L16 7" stroke="#4F46E5" stroke-width="2"/>
+          <path d="M4 14V17C4 18.6 5.3 20 7 20H17C18.6 20 20 18.6 20 17V14"
+                stroke="#4F46E5" stroke-width="2"/>
+        </svg>
+      </div>
 
-            <div class="upload-icon">
-                <!-- Upload Icon (SVG) -->
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                <path d="M12 3V14" stroke="#4F46E5" stroke-width="2" stroke-linecap="round"/>
-                <path d="M8 7L12 3L16 7" stroke="#4F46E5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M4 14V17C4 18.6569 5.34315 20 7 20H17C18.6569 20 20 18.6569 20 17V14"
-                        stroke="#4F46E5" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-            </div>
-
-            <div class="upload-text">Upload your file here</div>
-        </label>
-    </div>
+      <div class="upload-text">
+        {{ isUploading ? 'Uploading...' : 'Upload your file here' }}
+      </div>
+    </label>
+  </div>
 
 </div>
