@@ -16,9 +16,30 @@
   border: 1px solid #f0e4ff;
 }
 
-.personal-info-form h2 {
-  margin: 0px 0px 5px;
-  font-size: 28px;
+.action-arr {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    grid-gap: 12px;
+    align-items: center;
+}
+.back-lk {
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 14px;
+    text-decoration: none;
+    border: 2px solid #8541da;
+    color: #8541da;
+    border-radius: 50px;
+}
+.page-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
 }
 
 .subtitle {
