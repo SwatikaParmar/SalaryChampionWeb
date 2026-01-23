@@ -1,10 +1,14 @@
 <div class="personal-info-container">
-  <div class="personal-info-card">
+
+  <div class="action-arr">
+    <a href="#" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
+    <h2 class="page-title">Income Details</h2>
+  </div>
+
+  <div class="personal-info-card mt-3">
 
     <!-- LEFT FORM -->
-    <div class="personal-info-form">
-
-      <h2>Income Details</h2>
+    <div class="personal-info-form">      
       <p class="subtitle">Select employment type and income information</p>
 
       <form [formGroup]="incomeForm" (ngSubmit)="submit()">
