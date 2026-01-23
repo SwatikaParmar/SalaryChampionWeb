@@ -105,9 +105,8 @@
    BUTTONS
 ================================ */
 .btn-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
+    display: flex;
+    justify-content: flex-start;
 }
 
 .btn-save {
@@ -128,6 +127,12 @@
 .btn-save:disabled {
   background: #9ca3af;
   cursor: not-allowed;
+}
+
+.row-grid-6{
+    display: grid;
+    grid-template-columns: 50% 1fr;
+    grid-gap: 30px;
 }
 
 /* ===============================

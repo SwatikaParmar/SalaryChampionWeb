@@ -9,8 +9,8 @@
   </div>
 
   <form [formGroup]="referenceForm">
-    <div class="row">
-    
+    <div class="row-grid-6">    
+      
       <div class="company-card" formArrayName="references" *ngFor="let ref of references.controls; let i = index">
         <h4 class="sub-title">Reference {{ i + 1 }}</h4>
 
@@ -48,7 +48,7 @@
           </div>
 
           <!-- RELATION -->
-          <div class="col-md-6">
+          <div class="col-md-12">
             <div class="form-group">
               <label>Relation <span>*</span></label>
               <select formControlName="relation">
@@ -65,20 +65,21 @@
           </div>
 
         </div>
-      </div>    
-
-    <!-- ACTION BUTTON -->
-    <div class="btn-row">
-      <button
-        type="button"
-        class="btn-save"
-        (click)="save()"
-        [disabled]="isSaving"
-      >
-        {{ isSaving ? 'Saving...' : 'Save References' }}
-      </button>
-    </div>
-
+      </div>
   </div>
+
+  <!-- ACTION BUTTON -->
+    <div class="col-md-12">
+      <div class="btn-row">
+        <button
+          type="button"
+          class="btn-save"
+          (click)="save()"
+          [disabled]="isSaving"
+        >
+          {{ isSaving ? 'Saving...' : 'Save References' }}
+        </button>
+      </div>
+    </div>
   </form>
 </div>
