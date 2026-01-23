@@ -16,7 +16,7 @@ export class EmploymentComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -55,7 +55,6 @@ export class EmploymentComponent implements OnInit {
 
         const emp = res.data.employment;
         const addr = res.data.addresses?.[0];
-
       },
       error: () => console.error('Failed to fetch borrower snapshot'),
     });
@@ -80,7 +79,7 @@ export class EmploymentComponent implements OnInit {
     this.contentService.postEmploymentDetail(payload).subscribe({
       next: (res: any) => {
         if (res?.success) {
-          alert('Employment details saved successfully');
+          this.router.navigateByUrl('/dashboard/loan/ekyc');
         }
       },
       error: () => console.error('Save failed'),
