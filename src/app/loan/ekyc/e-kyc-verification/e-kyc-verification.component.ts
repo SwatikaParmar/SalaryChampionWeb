@@ -12,6 +12,9 @@ export class EKYCVerificationComponent {
     private router: Router,
   ) {}
 
+
+
+  
   verifyEkyc(){
  this.router.navigate(['dashboard/loan/bank']);
   }
