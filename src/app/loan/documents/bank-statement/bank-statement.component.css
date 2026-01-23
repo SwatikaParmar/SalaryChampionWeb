@@ -1,0 +1,76 @@
+/* ===== Page Wrapper ===== */
+.personal-info-container {
+  padding: 30px;
+  background: #f5f8ff;
+}
+
+.action-arr {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    grid-gap: 12px;
+    align-items: center;
+}
+.back-lk {
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 14px;
+    text-decoration: none;
+    border: 2px solid #8541da;
+    color: #8541da;
+    border-radius: 50px;
+}
+.page-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.upload-wrapper {
+    width: 100%;
+    text-align: center;
+    background: #fff;
+    padding: 30px;
+    border: 1px solid #f1f1f1;
+}
+
+.upload-box {
+    background: #ffffff;
+    border: 2px solid rgb(236 222 255);
+    border-radius: 10px;
+    padding: 60px 20px;
+    width: 100%;
+    cursor: pointer;
+    transition: 0.25s ease;
+}
+
+.upload-box:hover {
+    border-color: #7c3aed;
+    background: #f5f3ff;
+}
+
+.upload-icon {
+    width: 70px;
+    height: 70px;
+    background: #e6e9ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.upload-text {
+    font-size: 24px;
+    font-weight: 700;
+    color: #3c3c3c;
+    text-transform: uppercase;
+}
+
+.upload-box input[type="file"] {
+    display: none;
+}
