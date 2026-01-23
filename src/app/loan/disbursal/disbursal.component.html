@@ -1,56 +1,70 @@
 <div class="page-wrapper">
 
   <!-- Header -->
-  <div class="page-header">
-    <button class="back-btn">←</button>
-    <h2>Disbursal Bank Details</h2>
+  <div class="action-arr">
+    <button class="back-lk"><i class="fa-solid fa-arrow-left"></i></button>
+    <h2 class="page-title">Disbursal Bank Details</h2>
   </div>
 
   <!-- Card -->
-  <form class="card" [formGroup]="disbursalForm" (ngSubmit)="submit()">
+  <form class="card mt-3" [formGroup]="disbursalForm" (ngSubmit)="submit()">
+    <div class="row">
 
-    <p class="subtitle">Please add your bank details</p>
+    <div class="col-md-12">
+      <p class="subtitle">Please add your bank details</p>
+    </div>
 
     <!-- ACCOUNT NUMBER -->
-    <div class="form-group">
-      <label>Account Number <span>*</span></label>
-      <input type="text" formControlName="accountNumber" placeholder="Enter account number" />
-      <small *ngIf="f.accountNumber.touched && f.accountNumber.invalid">
-        Enter valid account number (9–18 digits)
-      </small>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>Account Number <span>*</span></label>
+        <input type="text" formControlName="accountNumber" placeholder="Enter account number" />
+        <small *ngIf="f.accountNumber.touched && f.accountNumber.invalid">
+          Enter valid account number (9–18 digits)
+        </small>
+      </div>
     </div>
 
     <!-- IFSC -->
-    <div class="form-group">
-      <label>IFSC Code <span>*</span></label>
-      <input type="text" formControlName="ifsc" placeholder="Enter IFSC code" />
-      <small *ngIf="f.ifsc.touched && f.ifsc.invalid">
-        Enter valid IFSC (e.g. HDFC0001234)
-      </small>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>IFSC Code <span>*</span></label>
+        <input type="text" formControlName="ifsc" placeholder="Enter IFSC code" />
+        <small *ngIf="f.ifsc.touched && f.ifsc.invalid">
+          Enter valid IFSC (e.g. HDFC0001234)
+        </small>
+      </div>
     </div>
 
     <!-- HOLDER NAME -->
-    <div class="form-group">
-      <label>Account Holder Name <span>*</span></label>
-      <input type="text" formControlName="holderName" placeholder="Enter account holder name" />
-      <small *ngIf="f.holderName.touched && f.holderName.invalid">
-        Name is required
-      </small>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>Account Holder Name <span>*</span></label>
+        <input type="text" formControlName="holderName" placeholder="Enter account holder name" />
+        <small *ngIf="f.holderName.touched && f.holderName.invalid">
+          Name is required
+        </small>
+      </div>
     </div>
 
     <!-- MOBILE -->
-    <div class="form-group">
-      <label>Mobile Number <span>*</span></label>
-      <input type="tel" formControlName="mobile" placeholder="Enter mobile number" />
-      <small *ngIf="f.mobile.touched && f.mobile.invalid">
-        Enter valid 10-digit mobile number
-      </small>
+    <div class="col-md-6">
+      <div class="form-group">
+        <label>Mobile Number <span>*</span></label>
+        <input type="tel" formControlName="mobile" placeholder="Enter mobile number" />
+        <small *ngIf="f.mobile.touched && f.mobile.invalid">
+          Enter valid 10-digit mobile number
+        </small>
+      </div>
     </div>
 
-    <button class="submit-btn" [disabled]="isSubmitting">
-      {{ isSubmitting ? 'Saving...' : 'Add' }}
-    </button>
+    <div class="col-md-12">
+      <button class="submit-btn" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Saving...' : 'Add' }}
+      </button>
+    </div>
 
+    </div>
   </form>
 
 </div>
