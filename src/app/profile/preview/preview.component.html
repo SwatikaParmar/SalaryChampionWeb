@@ -80,14 +80,19 @@
     </div>
 
     <!-- CTA -->
-    <div class="cta">
+    <div class="cta"   *ngIf="!hasEvaluatedEligibilityOnce"
+>
       <p class="hint">
         Don't let uncertainty hold you back. Click below to check eligibility.
       </p>
 
-      <button class="primary-btn" (click)="checkEligibility()">
-        CHECK ELIGIBILITY
-      </button>
+   <button
+  class="primary-btn"
+  (click)="checkEligibility()"
+>
+  CHECK ELIGIBILITY
+</button>
+
     </div>
 
   </div>

@@ -16,6 +16,7 @@ export class PreviewComponent implements OnInit {
   address: any;
   employment: any;
   profilePic: string | null = null;
+  hasEvaluatedEligibilityOnce = false; // 🔥 ADD THIS
 
   constructor(private contentService: ContentService, private router: Router) {}
 
@@ -33,7 +34,13 @@ export class PreviewComponent implements OnInit {
         this.address = data.addresses?.[0];
         this.employment = data.employment;
         this.profilePic = data.user?.profilePicUrl;
+
+           // 🔥 eligibility flag
+        this.hasEvaluatedEligibilityOnce =
+          data.offer?.hasEvaluatedEligibilityOnce === true;
       },
+
+      
     });
   }
 
