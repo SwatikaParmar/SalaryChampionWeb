@@ -84,7 +84,7 @@ navigateToDisbursal() {
     // 🔥 Change route as per your app
     // window.location.href = '/dashboard/loan/disbursal';
     // OR (better way if Router injected)
-     this.router.navigate(['/dashboard/loan/disbursal']);
+     this.router.navigate(['/dashboard/loan/bank']);
   }, 300);
 }
 

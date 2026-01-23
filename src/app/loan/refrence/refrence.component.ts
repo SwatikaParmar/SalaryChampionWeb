@@ -103,7 +103,7 @@ export class RefrenceComponent implements OnInit {
         this.isSaving = false;
         if (!res?.success) return;
 
-     this.router.navigate(['/dashboard/loan/disbursal']);
+     this.router.navigate(['/dashboard/loan/documents']);
      },
       error: () => {
         this.isSaving = false;
