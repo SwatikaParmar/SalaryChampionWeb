@@ -12,6 +12,31 @@
     justify-items: center;
     justify-content: center;
 }
+.action-arr {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    grid-gap: 12px;
+    align-items: center;
+}
+.back-lk {
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 14px;
+    text-decoration: none;
+    border: 2px solid #8541da;
+    color: #8541da;
+    border-radius: 50px;
+}
+.page-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin: 0;
+}
 
 .title {
   font-size: 24px;
@@ -19,9 +44,10 @@
   margin-bottom: 8px;
 }
 .subtitle {
-    font-size: 15px;
-    color: #666;
+    font-size: 18px;
+    color: #444;
     margin-bottom: 40px;
+    max-width: 70%;
 }
 
 .steps {
