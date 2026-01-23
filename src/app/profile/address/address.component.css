@@ -150,11 +150,6 @@ input[formControlName="pincode"] {
     width: 100%;
   }
 }
-/* ===== Make card fit viewport ===== */
-.personal-info-container {
-  height: calc(100vh - 20px);
-  overflow: hidden;
-}
 
 /* ===== LEFT FORM SCROLL ENABLE ===== */
 .personal-info-form {

@@ -125,11 +125,6 @@
 .personal-info-illustration {  
   background: #fff;
 }
-/* Keep page height fixed */
-.personal-info-container {
-  height: calc(100vh - 20px);
-  overflow: hidden;
-}
 
 /* Card full height */
 .personal-info-card {
