@@ -1,0 +1,92 @@
+/* ===== Page Wrapper ===== */
+.personal-info-container {
+  padding: 30px;
+  background: #f5f8ff;
+}
+
+.action-arr {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    grid-gap: 12px;
+    align-items: center;
+}
+.back-lk {
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 14px;
+    text-decoration: none;
+    border: 2px solid #8541da;
+    color: #8541da;
+    border-radius: 50px;
+}
+.page-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.wrapper {      
+    max-width: 100%;
+    padding: 30px;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+}
+
+.salary-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px;
+    border: 1px solid #e9e9e9;
+    margin-bottom: 15px;
+    background: #fff;
+    transition: 0.3s ease;
+}
+.salary-card:hover {
+    border-color: #cfcfcf;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+.salary-left h3 {
+    font-size: 18px;
+    font-weight: 500;
+    color: #1c1c1c;
+    margin-bottom: 6px;
+}
+.salary-left p {
+    font-size: 14px;
+    color: #555;
+    font-weight: 400;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+}
+
+.upload-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: #f4f5ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    transition: 0.3s ease;
+}
+.upload-btn:hover {
+    background: #e8eaff;
+}
+.upload-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #4a63ff;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
