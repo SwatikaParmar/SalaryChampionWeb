@@ -1,25 +1,20 @@
 .ekyc-container {
   min-height: 80vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: #f5f7fb;
+  padding: 30px;
 }
 
 .ekyc-card {
-  width: 520px;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 30px 24px 36px;
+  padding: 30px;
   text-align: center;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .ekyc-title {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 600;
   margin-bottom: 24px;
-  color: #222;
+  color: #3c3c3c;
 }
 
 .ekyc-illustration img {
@@ -35,15 +30,16 @@
 }
 
 .ekyc-btn {
-  background: #e53935;
-  color: #fff;
-  border: none;
-  padding: 10px 24px;
-  font-size: 14px;
-  border-radius: 6px;
-  cursor: pointer;
+    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;  
 }
-
 .ekyc-btn:hover {
-  opacity: 0.9;
+  background: #3c3c3c;
 }
