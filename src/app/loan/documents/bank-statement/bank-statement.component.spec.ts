@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AddressProofComponent } from './address-proof.component';
+import { BankStatementComponent } from './bank-statement.component';
 
-describe('AddressProofComponent', () => {
-  let component: AddressProofComponent;
-  let fixture: ComponentFixture<AddressProofComponent>;
+describe('BankStatementComponent', () => {
+  let component: BankStatementComponent;
+  let fixture: ComponentFixture<BankStatementComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [AddressProofComponent]
+      declarations: [BankStatementComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(AddressProofComponent);
+    fixture = TestBed.createComponent(BankStatementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
