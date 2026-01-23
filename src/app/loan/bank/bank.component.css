@@ -1,39 +1,40 @@
 .bank-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 80vh;
   background: #f5f7fb;
+  padding: 30px;
 }
 
 .bank-card {
-  background: #fff;
-  padding: 32px;
-  width: 420px;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  text-align: center;
+    background: #fff;
+    padding: 30px;
+    text-align: center;
+    display: grid;
+    justify-items: center;
+    justify-content: center;
 }
 
 .title {
-  font-size: 22px;
+  font-size: 24px;
   font-weight: 600;
   margin-bottom: 8px;
 }
-
 .subtitle {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 28px;
+    font-size: 15px;
+    color: #666;
+    margin-bottom: 40px;
 }
 
 .steps {
-  display: flex;
+  display: -webkit-box;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
   align-items: center;
-  justify-content: space-between;
+  -ms-flex-pack: distribute;
+	justify-content: space-around;
   margin-bottom: 30px;
 }
-
 .step {
   display: flex;
   flex-direction: column;
@@ -45,7 +46,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #4a90e2;
+  background: linear-gradient(90deg, #7c4fe0, #4528dc);
   color: #fff;
   display: flex;
   align-items: center;
@@ -64,22 +65,22 @@
   height: 2px;
   background: #ddd;
   margin: 0 8px;
+  width: 80px;
 }
 
 .primary-btn {
-  width: 100%;
-  padding: 12px;
-  font-size: 15px;
-  font-weight: 500;
-  color: #fff;
-  background: linear-gradient(180deg, #4a90e2, #357abd);
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
 }
-
 .primary-btn:hover {
-  opacity: 0.95;
+    background: #3c3c3c;
 }
 
 .secure-text {
