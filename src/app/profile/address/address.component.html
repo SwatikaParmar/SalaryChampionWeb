@@ -16,18 +16,19 @@
         <div class="col-md-12">
           <div class="form-group">
             <label>Address Line 1 *</label>
-            <input type="text" formControlName="line1" placeholder="Enter your address" />
-          </div>
-            <div class="error"
+            <input type="text" formControlName="line1" placeholder="Enter Address Line 1" />
+               <div class="error"
               *ngIf="addressForm.get('line1')?.touched && addressForm.get('line1')?.invalid">
             Address Line 1 is required
           </div>
+          </div>
+         
         </div>
  <div class="col-md-12">
           <div class="form-row">
             <div class="form-group">
               <label>Address Line 2</label>
-              <input type="text" formControlName="line2" />
+              <input type="text" formControlName="line2" placeholder="Enter Address Line 2" />
             </div>
 
             </div>
@@ -39,7 +40,7 @@
 
             <div class="form-group">
               <label>Landmark</label>
-              <input type="text" formControlName="landmark" />
+              <input type="text" formControlName="landmark" placeholder="Enter Landmark"  />
               <div
                 class="error"
                 *ngIf="
@@ -57,12 +58,17 @@
         <div class="col-md-6">
           <div class="form-group">
             <label>Pincode *</label>
-            <input
-              type="text"
-              formControlName="pincode"
-              maxlength="6"
-              (keyup)="onPincodeChange()"
-            />
+       <input
+  type="text"
+  formControlName="pincode"
+  placeholder="Enter Pincode"
+  maxlength="6"
+  inputmode="numeric"
+  pattern="[0-9]*"
+  (keypress)="($event.charCode >= 48 && $event.charCode <= 57)"
+  (keyup)="onPincodeChange()"
+/>
+
 
               <div class="error"
                   *ngIf="addressForm.get('pincode')?.touched && addressForm.get('pincode')?.invalid">
@@ -81,7 +87,7 @@
           <div class="form-row">
             <div class="form-group">
               <label>State *</label>
-              <input type="text" formControlName="state" />
+              <input type="text" formControlName="state" placeholder="Enter State" />
               <div class="error"
                   *ngIf="addressForm.get('state')?.touched && addressForm.get('state')?.invalid">
                 State is required
@@ -90,7 +96,7 @@
 
                       <div class="form-group">
                         <label>City *</label>
-                        <input type="text" formControlName="city" />
+                        <input type="text" formControlName="city" placeholder="Enter City" />
                           <div class="error"
                   *ngIf="addressForm.get('city')?.touched && addressForm.get('city')?.invalid">
                 City is required
