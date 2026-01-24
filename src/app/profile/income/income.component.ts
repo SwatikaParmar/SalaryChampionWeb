@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
-
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-income',
   templateUrl: './income.component.html',
@@ -15,7 +16,9 @@ export class IncomeComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
+       private spinner: NgxSpinnerService,   // ✅ spinner
+    private toastr: ToastrService         // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -32,20 +35,31 @@ export class IncomeComponent implements OnInit {
     this.getBorrowerSnapshot();
   }
 
-  submit() {
+ submit() {
     if (this.incomeForm.invalid) {
       this.incomeForm.markAllAsTouched();
+      this.toastr.warning('Please fill all required income details');
       return;
     }
 
     const payload = this.incomeForm.value;
 
+    this.spinner.show();
+
     this.contentService.saveIncomeDetail(payload).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/profile/selfie']); // or next step
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (res?.success) {
+          this.toastr.success('Income details saved successfully');
+          this.router.navigate(['/dashboard/profile/selfie']); // next step
+        } else {
+          this.toastr.error(res?.message || 'Failed to save income details');
+        }
       },
       error: () => {
-        console.error('Failed to save income details');
+        this.spinner.hide();
+        this.toastr.error('Failed to save income details');
       },
     });
   }

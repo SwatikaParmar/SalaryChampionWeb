@@ -1,63 +1,84 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-bank',
   templateUrl: './bank.component.html',
   styleUrl: './bank.component.css'
 })
-export class BankComponent {
+export class BankComponent implements OnInit {
   applicationId: any;
 
-
-    constructor(
-    private fb: FormBuilder,
+  constructor(
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService       // ✅ toaster
   ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
   }
 
+  // ================= GET APPLICATION ID =================
+  getBorrowerSnapshot() {
+    this.spinner.show();
 
-    // ================= GET & PATCH =================
-getBorrowerSnapshot() {
-  this.contentService.getBorrowerSnapshot().subscribe({
-    next: (res: any) => {
-      if (!res?.success) return;
+    this.contentService.getBorrowerSnapshot().subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
 
-      this.applicationId = res.data.application?.id;
+        if (!res?.success) {
+          this.toastr.error('Failed to load borrower details');
+          return;
+        }
 
-      // if (this.applicationId) {
-      //   this.fetchBankStatement();
-      // }
-    },
-    error: () => console.error('Failed to fetch borrower snapshot'),
-  });
-}
+        this.applicationId = res.data?.application?.id;
 
+        if (!this.applicationId) {
+          this.toastr.warning('Application not found');
+        }
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to fetch borrower snapshot');
+      },
+    });
+  }
 
-fetchBankStatement() {
-  const payload = {
-    applicationId: this.applicationId
-  };
-
-  this.contentService.fetchBankStatement(payload).subscribe({
-    next: (res: any) => {
-      if (res?.success && res?.data?.url) {
-        // ✅ SAME TAB redirect
-        window.location.href = res.data.url;
-      }
-    },
-    error: () => {
-      console.error('Failed to fetch bank statement');
+  // ================= FETCH BANK STATEMENT =================
+  fetchBankStatement() {
+    if (!this.applicationId) {
+      this.toastr.warning('Application ID missing');
+      return;
     }
-  });
-}
 
+    const payload = {
+      applicationId: this.applicationId
+    };
 
+    this.spinner.show();
 
+    this.contentService.fetchBankStatement(payload).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
 
+        if (res?.success && res?.data?.url) {
+          this.toastr.success('Redirecting to bank statement');
+
+          // ✅ SAME TAB redirect
+          window.location.href = res.data.url;
+        } else {
+          this.toastr.error('Failed to generate bank statement link');
+        }
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to fetch bank statement');
+      }
+    });
+  }
 }

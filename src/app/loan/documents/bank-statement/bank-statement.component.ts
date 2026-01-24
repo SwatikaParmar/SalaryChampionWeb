@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-bank-statement',
@@ -17,7 +19,9 @@ export class BankStatementComponent implements OnInit {
 
   constructor(
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
+    private spinner: NgxSpinnerService,   // ✅ spinner
+    private toastr: ToastrService         // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -26,14 +30,22 @@ export class BankStatementComponent implements OnInit {
 
   /* ================= BORROWER SNAPSHOT ================= */
   getBorrowerSnapshot() {
+    this.spinner.show();
+
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
-        if (!res?.success) return;
+        if (!res?.success) {
+          this.spinner.hide();
+          this.toastr.error('Failed to load borrower data');
+          return;
+        }
 
         this.applicationId = res.data.application.id;
-
-        // 🔥 Load checklist once applicationId is ready
         this.loadDocumentChecklist();
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to fetch borrower snapshot');
       }
     });
   }
@@ -43,14 +55,14 @@ export class BankStatementComponent implements OnInit {
     const file: File = event.target.files[0];
     if (!file) return;
 
-    const step = this.steps[this.activeIndex];
     this.isUploading = true;
+    this.spinner.show();
 
     try {
       /* ========= STEP 1: GET PRESIGNED URL ========= */
       const payload = {
         applicationId: this.applicationId,
-        docTypeId: 3,
+        docTypeId: 3, // BANK STATEMENT
         fileName: file.name,
         contentType: file.type,
         password: this.password || null
@@ -60,11 +72,11 @@ export class BankStatementComponent implements OnInit {
         .uploadDocumentMeta(payload)
         .toPromise();
 
-      if (!metaRes?.success) {
+      if (!metaRes?.success || !metaRes?.data?.upload || !metaRes?.data?.fileId) {
         throw new Error('Failed to get upload URL');
       }
 
-      const { upload, fileId, s3Key } = metaRes.data;
+      const { upload, fileId } = metaRes.data;
 
       /* ========= STEP 2: UPLOAD TO S3 ========= */
       const s3Response = await fetch(upload.url, {
@@ -77,7 +89,7 @@ export class BankStatementComponent implements OnInit {
       });
 
       if (!s3Response.ok) {
-        throw new Error('S3 upload failed');
+        throw new Error('Bank statement upload failed');
       }
 
       /* ========= STEP 3: COMPLETE UPLOAD ========= */
@@ -89,12 +101,16 @@ export class BankStatementComponent implements OnInit {
         throw new Error('Failed to complete upload');
       }
 
+      this.toastr.success('Bank statement uploaded successfully ✅');
+
       /* ========= STEP 4: REFRESH CHECKLIST ========= */
       this.loadDocumentChecklist();
 
     } catch (err: any) {
-      alert(err?.message || 'Upload failed');
+      console.error(err);
+      this.toastr.error(err?.message || 'Upload failed');
     } finally {
+      this.spinner.hide();
       this.isUploading = false;
       this.password = '';
       event.target.value = '';
@@ -105,7 +121,12 @@ export class BankStatementComponent implements OnInit {
   loadDocumentChecklist() {
     this.contentService.documentCheckList(this.applicationId).subscribe({
       next: (res: any) => {
-        if (!res?.success) return;
+        this.spinner.hide();
+
+        if (!res?.success) {
+          this.toastr.error('Failed to load document checklist');
+          return;
+        }
 
         const pendingDocs = res.data.checklist.filter(
           (doc: any) => doc.required === true && !doc.uploaded
@@ -116,10 +137,10 @@ export class BankStatementComponent implements OnInit {
           this.navigateToDisbursal();
           return;
         }
-debugger
+
         const nextDoc = pendingDocs[0];
 
-        /* 🔥 ROUTING BASED ON DOC */
+        /* 🔥 ROUTING BASED ON NEXT DOC */
         if (nextDoc.code === 'SALARY_SLIP') {
           this.router.navigate(['/dashboard/loan/salary-slip']);
           return;
@@ -135,6 +156,10 @@ debugger
           }));
           this.activeIndex = 0;
         }
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to fetch document checklist');
       }
     });
   }

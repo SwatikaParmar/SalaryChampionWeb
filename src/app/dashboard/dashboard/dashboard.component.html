@@ -64,52 +64,68 @@
 
     <!-- ================= LOAN CARD ================= -->
     <!-- SHOW ONLY WHEN PROFILE IS COMPLETE -->
-    <div
-      class="loan-dashboard-card col-md-12"
-       *ngIf="profileProgress === 100"
-    >
+<div
+  class="loan-dashboard-card col-md-12"
+  *ngIf="profileProgress === 100"
+>
+  <!-- LEFT -->
+  <div class="loan-left">
+    <h3>Loan Application</h3>
 
-      <!-- LEFT -->
-      <div class="loan-left">
-        <h3>Loan Application</h3>
+    <!-- 🔁 TEXT CHANGE BASED ON PROGRESS -->
+    <p *ngIf="loanProgress < 100">
+      Only few steps left to complete your loan journey.
+    </p>
 
-        <p>
-          Only few steps left to complete your loan journey.
-        </p>
+    <p *ngIf="loanProgress === 100" class="review-text">
+      Your application is under review. Thanks for your patience.
+      <br />
+      Check status for details.
+    </p>
 
-        <!-- LOAN PROGRESS -->
-        <div class="progress-wrapper">
-          <div class="progress-bar">
-            <div
-              class="progress-fill"
-              [style.width.%]="loanProgress"
-            ></div>
-          </div>
-          <span class="progress-text">
-            {{ loanProgress }}%
-          </span>
-        </div>
-
-        <button
-          class="btn-start"
-          routerLink="/dashboard/loan"
-        >
-          Continue
-        </button>
+    <!-- LOAN PROGRESS -->
+    <div class="progress-wrapper">
+      <div class="progress-bar">
+        <div
+          class="progress-fill"
+          [style.width.%]="loanProgress"
+        ></div>
       </div>
-
-      <!-- RIGHT -->
-      <div
-        class="profile-right"
-        style="background: #ffeded; border: 1px solid #ffe0e0;"
-      >
-        <h4>
-          Resume Your
-          <span>Loan</span> Journey
-        </h4>
-      </div>
-
+      <span class="progress-text">
+        {{ loanProgress }}%
+      </span>
     </div>
+
+    <!-- 🔁 BUTTON CHANGE -->
+    <button
+      *ngIf="loanProgress < 100"
+      class="btn-start"
+      routerLink="/dashboard/loan"
+    >
+      Continue
+    </button>
+
+    <button
+      *ngIf="loanProgress === 100"
+      class="btn-start btn-status"
+      
+    >
+      Check Status
+    </button>
+  </div>
+
+  <!-- RIGHT -->
+  <div
+    class="profile-right"
+    style="background: #ffeded; border: 1px solid #ffe0e0;"
+  >
+    <h4>
+      Resume Your
+      <span>Loan</span> Journey
+    </h4>
+  </div>
+</div>
+
     <!-- ================= END LOAN CARD ================= -->
 
 

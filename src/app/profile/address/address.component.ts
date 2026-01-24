@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-address',
@@ -14,7 +16,9 @@ export class AddressComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
+       private spinner: NgxSpinnerService,   // ✅ spinner
+    private toastr: ToastrService         // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -34,20 +38,33 @@ export class AddressComponent implements OnInit {
     this.getBorrowerSnapshot();
   }
 
-  submit() {
+   submit() {
     if (this.addressForm.invalid) {
       this.addressForm.markAllAsTouched();
+      this.toastr.warning('Please fill all required fields');
       return;
     }
 
-    const payload = this.addressForm.getRawValue(); // ✅ includes disabled state
-    debugger;
+    const payload = this.addressForm.getRawValue();
+
+    this.spinner.show(); // ✅ START spinner
+
     this.contentService.saveAddressDetail(payload).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/profile/income']);
+      next: (res: any) => {
+        this.spinner.hide(); // ✅ STOP spinner
+
+        if (res?.success) {
+          this.toastr.success('Address saved successfully'); // ✅ success toast
+
+          // ✅ navigate after success
+          this.router.navigate(['/dashboard/profile/income']);
+        } else {
+          this.toastr.error(res?.message || 'Failed to save address');
+        }
       },
       error: () => {
-        console.error('Failed to save address');
+        this.spinner.hide(); // ✅ STOP spinner
+        this.toastr.error('Failed to save address');
       },
     });
   }

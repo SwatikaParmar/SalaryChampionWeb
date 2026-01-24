@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
-
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-basic-info',
   templateUrl: './basic-info.component.html',
@@ -15,7 +16,9 @@ export class BasicInfoComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
+       private spinner: NgxSpinnerService,   // ✅ spinner
+    private toastr: ToastrService         // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -101,18 +104,29 @@ export class BasicInfoComponent implements OnInit {
   submit() {
     if (this.basicForm.invalid) {
       this.basicForm.markAllAsTouched();
+      this.toastr.warning('Please fill all required fields');
       return;
     }
 
     // ✅ Include disabled fields
     const payload = this.basicForm.getRawValue();
 
+    this.spinner.show();
+
     this.contentService.saveBasicDetail(payload).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/profile/address']);
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (res?.success) {
+          this.toastr.success('Basic information saved successfully');
+          this.router.navigate(['/dashboard/profile/address']);
+        } else {
+          this.toastr.error(res?.message || 'Failed to save basic details');
+        }
       },
       error: () => {
-        console.error('Failed to save basic details');
+        this.spinner.hide();
+        this.toastr.error('Failed to save basic details');
       },
     });
   }

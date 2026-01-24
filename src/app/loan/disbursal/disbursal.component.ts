@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-disbursal',
@@ -13,11 +15,13 @@ export class DisbursalComponent implements OnInit {
   applicationId!: string;
   isSubmitting = false;
   id: any;
-isAccountReadonly = false;
+  isAccountReadonly = false;
 
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
+    private spinner: NgxSpinnerService,   // ✅ spinner
+    private toastr: ToastrService         // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -31,92 +35,86 @@ isAccountReadonly = false;
   initForm() {
     this.disbursalForm = this.fb.group({
       accountNumber: [
-      '',
-      [
-        Validators.required,
-        this.accountNumberValidator.bind(this)
-      ]
-    ],
+        '',
+        [Validators.required, this.accountNumberValidator.bind(this)]
+      ],
       ifsc: [
         '',
-        [
-          Validators.required,
-          Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)
-        ]
+        [Validators.required, Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)]
       ],
       holderName: ['', Validators.required],
       mobile: [
         '',
-        [
-          Validators.required,
-          Validators.pattern(/^[6-9]\d{9}$/)
-        ]
+        [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]
       ],
     });
   }
 
-accountNumberValidator(control: any) {
-  const value: string = control.value;
+  accountNumberValidator(control: any) {
+    const value: string = control.value;
+    if (!value) return null;
 
-  if (!value) return null;
+    // ✅ masked value allowed
+    if (/X/i.test(value)) return null;
 
-  // ✅ masked value allowed
-  if (/X/i.test(value)) {
-    return null;
+    // ✅ real account number validation
+    return /^\d{9,18}$/.test(value) ? null : { invalidAccount: true };
   }
 
-  // ✅ real account number validation
-  const valid = /^\d{9,18}$/.test(value);
-  return valid ? null : { invalidAccount: true };
-}
+  /* ===============================
+     GET SNAPSHOT
+  =============================== */
+  getBorrowerSnapshot() {
+    this.spinner.show();
 
+    this.contentService.getBorrowerSnapshot().subscribe({
+      next: (res: any) => {
+        if (!res?.success) {
+          this.spinner.hide();
+          this.toastr.error('Failed to load borrower details');
+          return;
+        }
+
+        this.applicationId = res.data.application?.id;
+        this.getDisbursalBankDetails();
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to fetch borrower snapshot');
+      },
+    });
+  }
 
   /* ===============================
-     GET SNAPSHOT (PREFILL)
+     GET BANK DETAILS (PREFILL)
   =============================== */
-getBorrowerSnapshot() {
-  this.contentService.getBorrowerSnapshot().subscribe({
-    next: (res: any) => {
-      if (!res?.success) return;
+  getDisbursalBankDetails() {
+    this.contentService
+      .getDisbursalBankStatement(this.applicationId)
+      .subscribe({
+        next: (res: any) => {
+          this.spinner.hide();
 
-      this.applicationId = res.data.application?.id;
+          if (!res?.success || !res.data?.length) return;
 
-      // 🔥 CALL BANK DETAILS API
-      this.getDisbursalBankDetails();
-    },
-    error: () => console.error('Failed to fetch borrower snapshot'),
-  });
-}
+          const bank = res.data[0];
 
+          this.disbursalForm.patchValue({
+            ifsc: bank.ifsc,
+            holderName: bank.holderName,
+            mobile: bank.mobile,
+            accountNumber: bank.accountNumberMasked,
+          });
 
-getDisbursalBankDetails() {
-  this.contentService
-    .getDisbursalBankStatement(this.applicationId)
-    .subscribe({
-      next: (res: any) => {
-        if (!res?.success || !res.data?.length) return;
-
-        const bank = res.data[0];
-
-        this.disbursalForm.patchValue({
-          ifsc: bank.ifsc,
-          holderName: bank.holderName,
-          mobile: bank.mobile,
- accountNumber: bank.accountNumberMasked,         });
-
-        this.id = bank.id;
-
-        // 🔥 IMPORTANT
-        this.isAccountReadonly = true;
-
-        // ❌ Remove validators (masked value invalid)
-      //   this.disbursalForm.get('accountNumber')?.clearValidators();
-      //   this.disbursalForm.get('accountNumber')?.updateValueAndValidity();
-       },
-      error: () => console.error('Failed to fetch bank details'),
-    });
-}
-
+          this.id = bank.id;
+          this.isAccountReadonly = true;
+        },
+        error: () => {
+          this.spinner.hide();
+          this.toastr.error('Failed to fetch bank details');
+        },
+      });
+  }
 
   /* ===============================
      SUBMIT BANK DETAILS
@@ -128,28 +126,31 @@ getDisbursalBankDetails() {
     }
 
     this.isSubmitting = true;
+    this.spinner.show();
 
     const payload = {
       applicationId: this.applicationId,
       id: this.id || '',
-      ...this.disbursalForm.value,
+      ...this.disbursalForm.getRawValue(), // ✅ include masked value
     };
 
     this.contentService.disbursalBankAccount(payload).subscribe({
       next: (res: any) => {
+        this.spinner.hide();
         this.isSubmitting = false;
 
         if (!res?.success) {
-     ///     this.toastr.error('Failed to save bank details');
+          this.toastr.error('Failed to save bank details');
           return;
         }
 
-      //  this.toastr.success('Bank details added successfully ✅');
-        // 🔥 navigate next step if required
+        this.toastr.success('Bank details saved successfully ✅');
+        // 🔥 navigate next step if needed
       },
       error: () => {
+        this.spinner.hide();
         this.isSubmitting = false;
-   //     this.toastr.error('Something went wrong');
+        this.toastr.error('Something went wrong');
       },
     });
   }
@@ -158,12 +159,11 @@ getDisbursalBankDetails() {
      FORM GETTERS
   =============================== */
   get f() {
-  return this.disbursalForm.controls as {
-    accountNumber: any;
-    ifsc: any;
-    holderName: any;
-    mobile: any;
-  };
-}
-
+    return this.disbursalForm.controls as {
+      accountNumber: any;
+      ifsc: any;
+      holderName: any;
+      mobile: any;
+    };
+  }
 }

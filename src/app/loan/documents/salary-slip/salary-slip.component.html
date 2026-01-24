@@ -1,58 +1,70 @@
 <div class="personal-info-container">
 
-<div class="action-arr">
-	<a href="#" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
-	<h2 class="page-title">salary-slip works!</h2>
+  <div class="action-arr">
+    <a class="back-lk" routerLink="/dashboard/loan">
+      <i class="fa-solid fa-arrow-left"></i>
+    </a>
+    <h2 class="page-title">Upload Salary Slips</h2>
+  </div>
+
+  <div class="wrapper mt-3">
+
+    <div
+      class="salary-card"
+      *ngFor="let month of salaryMonths; let i = index"
+    >
+      <div class="salary-left">
+        <h3>Salary Slip - {{ month.label }}</h3>
+        <p *ngIf="!month.uploaded">Upload file</p>
+        <p *ngIf="month.uploaded" class="uploaded-text">Uploaded</p>
+      </div>
+
+      <button
+        class="upload-btn"
+        *ngIf="!month.uploaded"
+        (click)="openUpload(i)"
+      >
+        <svg viewBox="0 0 24 24">
+          <path d="M12 16V4" />
+          <path d="M7 9l5-5 5 5" />
+          <path d="M4 20h16" />
+        </svg>
+      </button>
+
+      <div class="success-icon" *ngIf="month.uploaded">
+        ✔
+      </div>
+    </div>
+
+  </div>
 </div>
 
-<div class="wrapper mt-3">
+<!-- ================= MODAL ================= -->
+<div class="modal-backdrop" *ngIf="showUploadModal">
+  <div class="upload-modal">
 
-    <div class="salary-card">
-      <div class="salary-left">
-        <h3>Salary Slip - December 2025</h3>
-        <p>Upload file</p>
-      </div>
+    <h3>Upload Salary Slip</h3>
 
-      <button class="upload-btn">
-        <!-- Upload Icon -->
-        <svg viewBox="0 0 24 24">
-          <path d="M12 16V4" />
-          <path d="M7 9l5-5 5 5" />
-          <path d="M4 20h16" />
-        </svg>
-      </button>
-    </div>
+    <input
+      type="file"
+      class="form-control"
+      accept=".pdf,.jpg,.jpeg,.png"
+      (change)="onFileChange($event)"
+    />
 
-    <div class="salary-card">
-      <div class="salary-left">
-        <h3>Salary Slip - November 2025</h3>
-        <p>Upload file</p>
-      </div>
+    <input
+      type="password"
+      class="form-control mt-2"
+      placeholder="Password (if PDF is protected)"
+      [(ngModel)]="password"
+    />
 
-      <button class="upload-btn">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 16V4" />
-          <path d="M7 9l5-5 5 5" />
-          <path d="M4 20h16" />
-        </svg>
-      </button>
-    </div>
-
-    <div class="salary-card" style="margin-bottom:0;">
-      <div class="salary-left">
-        <h3>Salary Slip - October 2025</h3>
-        <p>Upload file</p>
-      </div>
-
-      <button class="upload-btn">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 16V4" />
-          <path d="M7 9l5-5 5 5" />
-          <path d="M4 20h16" />
-        </svg>
+    <div class="modal-actions">
+      <button class="btn cancel" (click)="closeUpload()">Cancel</button>
+      <button class="btn upload" (click)="uploadSalarySlip()">
+        Upload
       </button>
     </div>
 
   </div>
-
 </div>

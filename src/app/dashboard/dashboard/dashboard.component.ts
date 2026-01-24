@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -15,15 +17,22 @@ export class DashboardComponent implements OnInit {
   loanProgress = 0;
   overallProgress = 0;
 
-  constructor(private contentService: ContentService) {}
+  constructor(
+    private contentService: ContentService,
+    private spinner: NgxSpinnerService   // ✅ spinner inject
+  ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
   }
 
   getBorrowerSnapshot() {
+    this.spinner.show();   // ✅ START spinner
+
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
+        this.spinner.hide();   // ✅ STOP spinner
+
         if (!res?.success) return;
 
         const data = res.data;
@@ -36,7 +45,10 @@ export class DashboardComponent implements OnInit {
         // ✅ Profile completion check
         this.isProfileComplete = this.profileProgress === 100;
       },
-      error: () => console.error('Failed to fetch borrower snapshot'),
+      error: () => {
+        this.spinner.hide();   // ✅ STOP spinner on error
+        console.error('Failed to fetch borrower snapshot');
+      },
     });
   }
 }
