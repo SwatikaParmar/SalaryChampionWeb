@@ -9,14 +9,13 @@ import { NgxSpinnerService } from 'ngx-spinner';
   styleUrls: ['./loan-application-home.component.css'],
 })
 export class LoanApplicationHomeComponent implements OnInit {
-
   flowSteps: any = {};
   flowPercent = 0;
 
   constructor(
     private contentService: ContentService,
     private router: Router,
-    private spinner: NgxSpinnerService   // ✅ ADD
+    private spinner: NgxSpinnerService, // ✅ ADD
   ) {}
 
   ngOnInit(): void {
@@ -41,7 +40,7 @@ export class LoanApplicationHomeComponent implements OnInit {
       error: () => {
         this.spinner.hide(); // ✅ STOP EVEN ON ERROR
         console.error('Failed to load application flow');
-      }
+      },
     });
   }
 
@@ -72,7 +71,6 @@ export class LoanApplicationHomeComponent implements OnInit {
     let foundActive = false;
 
     for (const key of Object.keys(this.flowSteps)) {
-
       // completed → locked
       if (this.flowSteps[key] === true && key === step) {
         return true;

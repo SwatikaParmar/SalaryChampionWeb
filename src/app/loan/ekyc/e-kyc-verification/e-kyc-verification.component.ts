@@ -7,10 +7,9 @@ import { ContentService } from '../../../../service/content.service';
 @Component({
   selector: 'app-e-kyc-verification',
   templateUrl: './e-kyc-verification.component.html',
-  styleUrl: './e-kyc-verification.component.css'
+  styleUrl: './e-kyc-verification.component.css',
 })
 export class EKYCVerificationComponent implements OnInit {
-
   applicationId!: string;
   requestId!: string;
 
@@ -19,7 +18,7 @@ export class EKYCVerificationComponent implements OnInit {
     private contentService: ContentService,
     private router: Router,
     private spinner: NgxSpinnerService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -56,7 +55,7 @@ export class EKYCVerificationComponent implements OnInit {
       },
       error: () => {
         this.toastr.error('Failed to load application');
-      }
+      },
     });
   }
 
@@ -64,7 +63,7 @@ export class EKYCVerificationComponent implements OnInit {
   verifyEkyc() {
     const payload = {
       requestId: this.requestId,
-      applicationId: this.applicationId
+      applicationId: this.applicationId,
     };
 
     this.spinner.show();
@@ -85,7 +84,7 @@ export class EKYCVerificationComponent implements OnInit {
       error: () => {
         this.spinner.hide();
         this.toastr.error('e-KYC verification failed');
-      }
+      },
     });
   }
 }
