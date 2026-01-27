@@ -1,0 +1,35 @@
+<div class="ekyc-container">
+  <div class="ekyc-card error-card">
+
+    <!-- Title -->
+    <h2 class="ekyc-title text-danger">
+      ❌ e-KYC Verification Failed
+    </h2>
+
+    <!-- Illustration -->
+    <div class="ekyc-illustration">
+      <img
+        src="assets/images/ekyc_failed.webp"
+        class="img-fluid"
+        alt="eKYC Failed"
+      />
+    </div>
+
+    <!-- Message -->
+    <p class="ekyc-text text-center">
+      {{ reason || 'Verification was cancelled or failed. Please try again.' }}
+    </p>
+
+    <!-- Actions -->
+    <div class="action-buttons">
+      <button class="btn-outline" (click)="goBack()">
+        Go Back
+      </button>
+
+      <button class="btn-primary" (click)="retry()">
+        Retry e-KYC
+      </button>
+    </div>
+
+  </div>
+</div>

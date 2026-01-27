@@ -9,32 +9,29 @@
 
   <div class="wrapper mt-3">
 
-    <div
-      class="salary-card"
-      *ngFor="let month of salaryMonths; let i = index"
-    >
-      <div class="salary-left">
-        <h3>Salary Slip - {{ month.label }}</h3>
-        <p *ngIf="!month.uploaded">Upload file</p>
-        <p *ngIf="month.uploaded" class="uploaded-text">Uploaded</p>
-      </div>
+<div
+  class="salary-card"
+  *ngFor="let month of salaryMonths; let i = index"
+>
+  <div class="salary-left">
+    <h3>{{ month.label }}</h3>
+    <p *ngIf="!month.uploaded">Upload file</p>
+    <p *ngIf="month.uploaded" class="uploaded-text">Uploaded</p>
+  </div>
 
-      <button
-        class="upload-btn"
-        *ngIf="!month.uploaded"
-        (click)="openUpload(i)"
-      >
-        <svg viewBox="0 0 24 24">
-          <path d="M12 16V4" />
-          <path d="M7 9l5-5 5 5" />
-          <path d="M4 20h16" />
-        </svg>
-      </button>
+  <button
+    class="upload-btn"
+    *ngIf="!month.uploaded"
+    (click)="openUpload(i)"
+  >
+    ⬆
+  </button>
 
-      <div class="success-icon" *ngIf="month.uploaded">
-        ✔
-      </div>
-    </div>
+  <div class="success-icon" *ngIf="month.uploaded">
+    ✔
+  </div>
+</div>
+
 
   </div>
 </div>

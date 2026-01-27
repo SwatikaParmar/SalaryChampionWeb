@@ -12,6 +12,9 @@ import { EmploymentComponent } from './employment/employment.component';
 import { LoanApplicationHomeComponent } from './loan-application-home/loan-application-home.component';
 import { RefrenceComponent } from './refrence/refrence.component';
 import { BankStatementComponent } from './documents/bank-statement/bank-statement.component';
+import { EKycErrorComponent } from './ekyc/e-kyc-error/e-kyc-error.component';
+import { SummaryComponent } from './summary/summary.component';
+import { ErrorVerificationComponent } from './bank/error-verification/error-verification.component';
 const routes: Routes = [
   { path: '', component: LoanApplicationHomeComponent },
   { path: 'calculator', component: CalculatorComponent },
@@ -20,11 +23,14 @@ const routes: Routes = [
   { path: 'bank', component: BankComponent },
   { path: 'documents', component: DocumentsComponent },
   { path: 'disbursal', component: DisbursalComponent },
-  { path: 'e-kyc-verification/:requestId', component: EKYCVerificationComponent },
+  { path: 'ekyc-verification', component: EKYCVerificationComponent },
   { path: 'bank-verification', component: BankVerificationComponent },
   { path: 'salary-slip', component: SalarySlipComponent },
   { path: 'reference', component: RefrenceComponent },
-  { path: 'bank-statement', component:BankStatementComponent}
+  { path: 'bank-statement', component:BankStatementComponent},
+  { path: 'ekyc-error', component:EKycErrorComponent},
+  { path: 'summary', component:SummaryComponent},
+  { path: 'error-verification', component:ErrorVerificationComponent}
 ];
 
 @NgModule({

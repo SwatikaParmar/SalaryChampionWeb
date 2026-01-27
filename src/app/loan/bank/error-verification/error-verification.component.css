@@ -1,0 +1,60 @@
+.bank-verify-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+}
+
+.bank-verify-card {
+  width: 420px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+}
+
+.bank-verify-card.error {
+  border-top: 5px solid #ff4d4f;
+}
+
+.illustration img {
+  width: 140px;
+  margin-bottom: 20px;
+}
+
+.error-title {
+  color: #d32f2f;
+  margin-bottom: 10px;
+}
+
+.verify-text {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 20px;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.error-btn {
+  background: #ff4d4f;
+  color: white;
+}
+
+.secondary-actions {
+  margin-top: 15px;
+  font-size: 13px;
+}
+
+.secondary-actions a {
+  cursor: pointer;
+  color: #007bff;
+  text-decoration: underline;
+}

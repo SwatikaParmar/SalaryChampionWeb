@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { ContentService } from '../../../service/content.service';
 
 @Component({
   selector: 'app-bank',
@@ -58,6 +58,7 @@ export class BankComponent implements OnInit {
 
     const payload = {
       applicationId: this.applicationId,
+      redirectUrl: 'http://localhost:4200/dashboard/loan/bank-verification',
     };
 
     this.spinner.show();

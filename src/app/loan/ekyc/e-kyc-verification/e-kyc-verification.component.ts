@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ContentService } from '../../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ContentService } from '../../../../service/content.service';
+
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-e-kyc-verification',
@@ -10,60 +12,45 @@ import { ContentService } from '../../../../service/content.service';
   styleUrl: './e-kyc-verification.component.css',
 })
 export class EKYCVerificationComponent implements OnInit {
-  applicationId!: string;
-  requestId!: string;
+
+  requestId = '';
+  applicationId = '';
+  showSuccessModal = false;
 
   constructor(
     private route: ActivatedRoute,
     private contentService: ContentService,
     private router: Router,
     private spinner: NgxSpinnerService,
-    private toastr: ToastrService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
-    // ✅ 1️⃣ requestId 
-    this.requestId = this.route.snapshot.paramMap.get('requestId') || '';
+    this.route.queryParams.subscribe(params => {
+      this.requestId = params['requestId'] || '';
+      const status = params['status'];
 
-    if (!this.requestId) {
-      this.toastr.error('Invalid e-KYC callback');
-      return;
-    }
+      if (!this.requestId || status !== 'success') {
+        this.router.navigate(['/dashboard/loan/e-kyc-error']);
+        return;
+      }
 
-    // ✅ 2️⃣ applicationId 
-    this.getBorrowerSnapshot();
-  }
-
-  // ================= GET APPLICATION ID =================
-  getBorrowerSnapshot() {
-    this.contentService.getBorrowerSnapshot().subscribe({
-      next: (res: any) => {
-        if (!res?.success) {
-          this.toastr.error('Failed to load application');
-          return;
-        }
-
-        this.applicationId = res.data?.application?.id;
-
-        if (!this.applicationId) {
-          this.toastr.error('Application not found');
-          return;
-        }
-
-        // ✅ 3️⃣ verify eKYC
-        this.verifyEkyc();
-      },
-      error: () => {
-        this.toastr.error('Failed to load application');
-      },
+      this.getBorrowerSnapshot();
     });
   }
 
-  // ================= VERIFY EKYC =================
+  getBorrowerSnapshot() {
+    this.contentService.getBorrowerSnapshot().subscribe(res => {
+      if (res?.success) {
+        this.applicationId = res.data.application.id;
+      }
+    });
+  }
+
   verifyEkyc() {
     const payload = {
       requestId: this.requestId,
-      applicationId: this.applicationId,
+      applicationId: this.applicationId
     };
 
     this.spinner.show();
@@ -73,18 +60,31 @@ export class EKYCVerificationComponent implements OnInit {
         this.spinner.hide();
 
         if (res?.success) {
-          this.toastr.success('e-KYC verified successfully');
-
-          // ✅ 4️⃣ SUCCESS → Reference Page
-          this.router.navigate(['dashboard/loan/reference']);
+          this.openSuccessModal();
         } else {
-          this.toastr.error(res?.message || 'e-KYC verification failed');
+          this.router.navigate(['/dashboard/loan/e-kyc-error']);
         }
       },
       error: () => {
         this.spinner.hide();
-        this.toastr.error('e-KYC verification failed');
-      },
+        this.router.navigate(['/dashboard/loan/e-kyc-error']);
+      }
     });
+  }
+
+  /* ================= MODAL CONTROLS ================= */
+
+  openSuccessModal() {
+    const modalEl = document.getElementById('ekycSuccessModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+  }
+
+  onSuccessOk() {
+    this.router.navigate(['/dashboard/loan/reference']);
+  }
+
+  onSuccessCancel() {
+    this.router.navigate(['/dashboard/loan']);
   }
 }

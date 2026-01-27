@@ -155,4 +155,8 @@ saveReference(data:any){
 verifyEkyc(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.verifyEkyc,data)
 }
+
+pennyDrop(data:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.pennyDrop,data)
+}
 }

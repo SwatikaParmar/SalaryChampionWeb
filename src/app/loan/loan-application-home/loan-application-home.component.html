@@ -66,22 +66,24 @@
         </div>
       </div>
 
-      <!-- Fetch Bank Statement -->
+         <!-- Documentation -->
       <div
         class="loan-step"
         [ngClass]="{
-          'completed': isCompleted('fetchBankStatement'),
-          'active': isActive('fetchBankStatement'),
-          'locked': isLocked('fetchBankStatement')
+          'completed': isCompleted('documents'),
+          'active': isActive('documents'),
+          'locked': isLocked('documents')
         }"
-        (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
+        (click)="navigate('documents','/dashboard/loan/bank-statement')"
       >
-        <div class="loan-step-icon">🏦</div>
+        <div class="loan-step-icon">📄</div>
         <div class="loan-step-text">
-          <h5>Fetch Bank Statement</h5>
-          <p>Share your bank statements through consent.</p>
+          <h5>Documentation Verification</h5>
+          <p>Upload required documents.</p>
         </div>
       </div>
+
+ 
 
     </div>
 
@@ -123,20 +125,20 @@
         </div>
       </div>
 
-      <!-- Documentation -->
+        <!-- Fetch Bank Statement -->
       <div
         class="loan-step"
         [ngClass]="{
-          'completed': isCompleted('documents'),
-          'active': isActive('documents'),
-          'locked': isLocked('documents')
+          'completed': isCompleted('fetchBankStatement'),
+          'active': isActive('fetchBankStatement'),
+          'locked': isLocked('fetchBankStatement')
         }"
-        (click)="navigate('documents','/dashboard/loan/bank-statement')"
+        (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
       >
-        <div class="loan-step-icon">📄</div>
+        <div class="loan-step-icon">🏦</div>
         <div class="loan-step-text">
-          <h5>Documentation Verification</h5>
-          <p>Upload required documents.</p>
+          <h5>Fetch Bank Statement</h5>
+          <p>Share your bank statements through consent.</p>
         </div>
       </div>
 
@@ -158,6 +160,12 @@
           <p>Share bank details for verification.</p>
         </div>
       </div>
+
+ <div class="loan-submit-wrapper" *ngIf="flowPercent === 100">
+  <button class="btn btn-primary btn-submit" (click)="submitApplication()">
+    Submit
+  </button>
+</div>
 
     </div>
 

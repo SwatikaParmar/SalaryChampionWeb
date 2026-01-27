@@ -1,38 +1,81 @@
 <div class="personal-info-container">
 
   <div class="action-arr">
-    <a class="back-lk" >
+    <a class="back-lk">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
     <h2 class="page-title">Upload Bank Statement</h2>
   </div>
 
+  <!-- Upload Card -->
   <div class="upload-wrapper mt-3">
-    <div class="upload-title">
-      <p>Upload your bank statement for financial behaviour verification</p>
-    </div>
+    <p>Upload your bank statement for financial behaviour verification</p>
 
-    <label class="upload-box">
-      <input
-        type="file"
-        accept=".pdf"
-        (change)="onFileSelect($event)"
-        [disabled]="isUploading"
-      />
-
-      <div class="upload-icon">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-          <path d="M12 3V14" stroke="#4F46E5" stroke-width="2"/>
-          <path d="M8 7L12 3L16 7" stroke="#4F46E5" stroke-width="2"/>
-          <path d="M4 14V17C4 18.6 5.3 20 7 20H17C18.6 20 20 18.6 20 17V14"
-                stroke="#4F46E5" stroke-width="2"/>
-        </svg>
-      </div>
-
-      <div class="upload-text">
-        {{ isUploading ? 'Uploading...' : 'Upload your file here' }}
-      </div>
-    </label>
+    <button class="btn-primary" (click)="openUploadModal()">
+      Upload your file
+    </button>
   </div>
 
+  <!-- CONTINUE BUTTON -->
+  <div class="mt-4 text-center" *ngIf="uploadCompleted">
+    <button class="btn-primary" (click)="continue()">
+      Continue
+    </button>
+  </div>
+</div>
+
+<!-- ================= MODAL ================= -->
+<div class="modal fade" id="bankUploadModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3 rounded-4">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title">Upload Bank Statement</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- File -->
+        <label class="form-label">Select PDF File</label>
+        <input
+          type="file"
+          accept=".pdf"
+          class="form-control"
+          (change)="onFilePicked($event)"
+        />
+
+        <!-- Password -->
+        <label class="form-label mt-3">
+          Password (if protected)
+        </label>
+        <input
+          type="text"
+          class="form-control"
+          [(ngModel)]="password"
+          placeholder="Optional"
+        />
+
+      </div>
+
+      <div class="modal-footer border-0">
+        <button
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          [disabled]="isUploading"
+        >
+          Cancel
+        </button>
+
+        <button
+          class="btn btn-primary"
+          (click)="confirmUpload()"
+          [disabled]="isUploading"
+        >
+          {{ isUploading ? 'Uploading...' : 'OK' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>

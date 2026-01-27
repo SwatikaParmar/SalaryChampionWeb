@@ -26,15 +26,19 @@
       <span class="required" *ngIf="steps[activeIndex]?.required">*</span>
     </h3>
 
-    <p class="success-text" *ngIf="steps[activeIndex]?.uploaded">
-      ✔ File uploaded successfully
-    </p>
-
-  <button class="primary-btn"
+<button class="primary-btn"
+        *ngIf="!steps[activeIndex]?.uploaded"
         (click)="openUpload()"
         [disabled]="isUploading">
-  {{ steps[activeIndex]?.uploaded ? 'Edit ✏️' : 'Upload ⬆' }}
+  Upload ⬆
 </button>
+
+<!-- Uploaded badge -->
+<p class="success-text" *ngIf="steps[activeIndex]?.uploaded">
+  ✔ File uploaded successfully
+</p>
+
+
 
   </div>
 
@@ -64,17 +68,20 @@
       <button class="close-btn" (click)="closeUpload()">✖</button>
     </div>
 
-<label class="upload-box" [class.disabled]="isUploading">
-  <span *ngIf="!isUploading">⬆ Tap to upload</span>
-  <span *ngIf="isUploading">Uploading...</span>
+    <!-- FILE SELECT -->
+    <label class="upload-box" [class.disabled]="isUploading">
+      <span *ngIf="!selectedFile">⬆ Tap to select file</span>
+      <span *ngIf="selectedFile">📄 {{ selectedFile.name }}</span>
 
-  <input type="file"
-         hidden
-         [disabled]="isUploading"
-         (change)="onFileSelect($event)" />
-</label>
+      <input
+        type="file"
+        hidden
+        [disabled]="isUploading"
+        (change)="onFileSelect($event)"
+      />
+    </label>
 
-
+    <!-- PASSWORD -->
     <p class="hint">
       If the document is password protected, enter password below
     </p>
@@ -86,7 +93,19 @@
       class="password-input"
     />
 
-    <button class="cancel-btn" (click)="closeUpload()">Cancel</button>
-  </div>
+    <!-- ACTIONS -->
+    <div class="modal-actions">
+      <button class="cancel-btn" (click)="closeUpload()">Cancel</button>
+<br>
+      <button
+        class="primary-btn"
+        (click)="confirmUpload()"
+        [disabled]="isUploading || !selectedFile"
+      >
+        {{ isUploading ? 'Uploading...' : 'Continue' }}
+      </button>
+    </div>
 
+  </div>
 </div>
+

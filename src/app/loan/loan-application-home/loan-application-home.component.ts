@@ -96,4 +96,15 @@ export class LoanApplicationHomeComponent implements OnInit {
     if (this.isLocked(step)) return;
     this.router.navigate([route]);
   }
+
+  submitApplication() {
+  // Optional: safety check
+  if (this.flowPercent !== 100) return;
+
+  // 🔥 Submit / move to next stage
+  this.router.navigate(['/dashboard/loan/summary']);
+  // ya
+  // this.router.navigate(['/dashboard/loan/status']);
+}
+
 }

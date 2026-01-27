@@ -17,6 +17,9 @@ import { BankVerificationComponent } from './bank/bank-verification/bank-verific
 import { SalarySlipComponent } from './documents/salary-slip/salary-slip.component';
 import { RefrenceComponent } from './refrence/refrence.component';
 import { BankStatementComponent } from './documents/bank-statement/bank-statement.component';
+import { EKycErrorComponent } from './ekyc/e-kyc-error/e-kyc-error.component';
+import { ErrorVerificationComponent } from './bank/error-verification/error-verification.component';
+import { SummaryComponent } from './summary/summary.component';
 @NgModule({
   declarations: [
     CalculatorComponent,
@@ -31,7 +34,10 @@ import { BankStatementComponent } from './documents/bank-statement/bank-statemen
     BankVerificationComponent,
     SalarySlipComponent,
     RefrenceComponent,
-    BankStatementComponent
+    BankStatementComponent,
+    EKycErrorComponent,
+    ErrorVerificationComponent,
+    SummaryComponent
   ],
   imports: [CommonModule, LoanRoutingModule, FormsModule,ReactiveFormsModule],
 })

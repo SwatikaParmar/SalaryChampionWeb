@@ -68,58 +68,79 @@ export class DocumentsComponent implements OnInit {
   /* ===============================
      LOAD DOCUMENT CHECKLIST
   =============================== */
-  loadDocumentChecklist() {
-    this.contentService.documentCheckList(this.applicationId).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
+loadDocumentChecklist() {
+  this.contentService.documentCheckList(this.applicationId).subscribe({
+    next: (res: any) => {
+      this.spinner.hide();
 
-        if (!res?.success) {
-          this.toastr.error('Failed to load document checklist');
-          return;
-        }
+      if (!res?.success || !res.data?.checklist) {
+        this.toastr.error('Failed to load document checklist');
+        return;
+      }
 
-        const requiredDocs = res.data.checklist.filter(
-          (doc: any) => doc.required === true,
-        );
+      const checklist = res.data.checklist;
 
-        // 🔥 NO DOCUMENTS REQUIRED
-        if (requiredDocs.length === 0) {
-          this.navigateToDisbursal();
-          return;
-        }
+      // 🔥 ONLY required & NOT uploaded documents
+      const pendingRequiredDocs = checklist.filter(
+        (doc: any) => doc.required === true && doc.uploaded === false
+      );
 
-        this.steps = requiredDocs.map((doc: any) => ({
-          label: doc.label,
-          code: doc.code,
-          docTypeId: doc.docTypeId,
-          docPart: doc.docPart,
-          required: doc.required,
-          uploaded: doc.uploaded,
-          url: doc.url,
-          image: this.getImageByDocTypeId(doc.docTypeId),
-        }));
+      /**
+       * ✅ CASE 1:
+       * No required pending docs
+       * → skip this component
+       */
+      if (pendingRequiredDocs.length === 0) {
+        this.navigateToDisbursal();
+        return;
+      }
 
-        this.activeIndex = 0;
-      },
-      error: () => {
-        this.spinner.hide();
-        this.toastr.error('Failed to fetch document checklist');
-      },
-    });
-  }
+      /**
+       * ✅ CASE 2:
+       * Show only pending required documents
+       */
+      this.steps = pendingRequiredDocs.map((doc: any) => ({
+        label: doc.label,
+        code: doc.code,
+        docTypeId: doc.docTypeId,
+        docPart: doc.docPart,
+        required: doc.required,
+        uploaded: doc.uploaded,
+        url: doc.url,
+        image: this.getImageByDocTypeId(doc.docTypeId),
+      }));
+
+      this.activeIndex = 0;
+    },
+    error: () => {
+      this.spinner.hide();
+      this.toastr.error('Failed to fetch document checklist');
+    },
+  });
+}
+
 
   navigateToDisbursal() {
     setTimeout(() => {
-      this.router.navigate(['/dashboard/loan/bank']);
+      this.router.navigate(['/dashboard/loan/disbursal']);
     }, 300);
   }
 
   /* ===============================
      MODAL HANDLERS
   =============================== */
-  openUpload() {
-    this.showUploadModal = true;
+openUpload() {
+  const step = this.steps[this.activeIndex];
+
+  // ❌ Do not allow edit if already uploaded
+  if (step.uploaded) {
+    this.toastr.info('Document already uploaded');
+    return;
   }
+
+  this.showUploadModal = true;
+}
+
 
   closeUpload() {
     this.showUploadModal = false;
@@ -129,78 +150,86 @@ export class DocumentsComponent implements OnInit {
   /* ===============================
      FILE UPLOAD FLOW
   =============================== */
-  async onFileSelect(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
+selectedFile!: File;
 
-    const step = this.steps[this.activeIndex];
-    this.isUploading = true;
-    this.spinner.show();
+onFileSelect(event: any) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    try {
-      /* 1️⃣ REQUEST UPLOAD META */
-      const payload = {
-        applicationId: this.applicationId,
-        docTypeId: step.docTypeId,
-        docPart: step.docPart,
-        fileName: file.name,
-        contentType: file.type,
-        password: this.password || null,
-      };
+  this.selectedFile = file;
+}
 
-      const metaRes: any = await this.contentService
-        .uploadDocumentMeta(payload)
-        .toPromise();
 
-      if (
-        !metaRes?.success ||
-        !metaRes?.data?.upload ||
-        !metaRes?.data?.fileId
-      ) {
-        throw new Error('Failed to get upload URL');
-      }
-
-      const { upload, fileId, s3Key } = metaRes.data;
-
-      /* 2️⃣ UPLOAD TO S3 */
-      const s3Response = await fetch(upload.url, {
-        method: upload.method || 'PUT',
-        headers: {
-          ...(upload.headers || {}),
-          'Content-Type': file.type,
-        },
-        body: file,
-      });
-
-      if (!s3Response.ok) {
-        throw new Error(`Upload failed (${s3Response.status})`);
-      }
-
-      /* 3️⃣ COMPLETE UPLOAD */
-      const completeRes: any = await this.contentService
-        .completeUpload(fileId)
-        .toPromise();
-
-      if (!completeRes?.success) {
-        throw new Error('Failed to complete upload');
-      }
-
-      /* 4️⃣ UPDATE UI */
-      step.uploaded = true;
-      step.file = file;
-      step.url = s3Key;
-
-      this.toastr.success('Document uploaded successfully ✅');
-      this.closeUpload();
-    } catch (err: any) {
-      console.error('Upload failed', err);
-      this.toastr.error(err?.message || 'Document upload failed');
-    } finally {
-      this.spinner.hide();
-      this.isUploading = false;
-      this.password = '';
-    }
+async confirmUpload() {
+  if (!this.selectedFile) {
+    this.toastr.warning('Please select a file');
+    return;
   }
+
+  const step = this.steps[this.activeIndex];
+  this.isUploading = true;
+  this.spinner.show();
+
+  try {
+    const payload = {
+      applicationId: this.applicationId,
+      docTypeId: step.docTypeId,
+      docPart: step.docPart,
+      fileName: this.selectedFile.name,
+      contentType: this.selectedFile.type,
+      password: this.password || null,
+    };
+
+    const metaRes: any = await this.contentService
+      .uploadDocumentMeta(payload)
+      .toPromise();
+
+    if (!metaRes?.success) {
+      throw new Error('Failed to get upload URL');
+    }
+
+    const { upload, fileId, s3Key } = metaRes.data;
+
+    // Upload to S3
+    const s3Response = await fetch(upload.url, {
+      method: upload.method || 'PUT',
+      headers: {
+        ...(upload.headers || {}),
+        'Content-Type': this.selectedFile.type,
+      },
+      body: this.selectedFile,
+    });
+
+    if (!s3Response.ok) {
+      throw new Error('Upload failed');
+    }
+
+    // Complete upload
+    const completeRes: any = await this.contentService
+      .completeUpload(fileId)
+      .toPromise();
+
+    if (!completeRes?.success) {
+      throw new Error('Failed to complete upload');
+    }
+
+    // UI update
+    step.uploaded = true;
+    step.url = s3Key;
+
+    this.toastr.success('Document uploaded successfully ✅');
+    this.closeUpload();
+
+  } catch (err: any) {
+    this.toastr.error(err?.message || 'Upload failed');
+  } finally {
+    this.spinner.hide();
+    this.isUploading = false;
+    this.password = '';
+    this.selectedFile = undefined as any;
+  }
+}
+
 
   /* ===============================
      NAVIGATION

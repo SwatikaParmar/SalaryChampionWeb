@@ -7,7 +7,7 @@ import { ContentService } from '../../../../service/content.service';
 interface SalaryMonth {
   label: string;
   uploaded: boolean;
-  file?: File;
+  docTypeId: number;
 }
 
 @Component({
@@ -34,35 +34,23 @@ export class SalarySlipComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.generateLastThreeMonths();
     this.getBorrowerSnapshot();
   }
 
-  /* ================= GENERATE LAST 3 MONTHS ================= */
-  generateLastThreeMonths() {
-    const now = new Date();
-
-    this.salaryMonths = Array.from({ length: 3 }).map((_, i) => {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      return {
-        label: d.toLocaleString('default', { month: 'long', year: 'numeric' }),
-        uploaded: false,
-      };
-    });
-  }
-
-  /* ================= BORROWER SNAPSHOT ================= */
+  /* ================= SNAPSHOT ================= */
   getBorrowerSnapshot() {
     this.spinner.show();
 
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
-        this.spinner.hide();
         if (!res?.success) {
+          this.spinner.hide();
           this.toastr.error('Failed to load borrower data');
           return;
         }
+
         this.applicationId = res.data.application.id;
+        this.loadSalaryChecklist();
       },
       error: () => {
         this.spinner.hide();
@@ -71,8 +59,44 @@ export class SalarySlipComponent implements OnInit {
     });
   }
 
+  /* ================= LOAD SALARY SLIPS FROM CHECKLIST ================= */
+  loadSalaryChecklist() {
+    this.contentService.documentCheckList(this.applicationId).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (!res?.success || !res.data?.checklist) return;
+
+        // 🔥 filter salary slips
+        const salaryDocs = res.data.checklist.filter(
+          (doc: any) => doc.code === 'SALARY_SLIP'
+        );
+
+        this.salaryMonths = salaryDocs.map((doc: any) => ({
+          label: doc.label,
+          uploaded:
+            doc.uploaded === true &&
+            doc.uploadStatus === 'UPLOADED' &&
+            doc.status === 'UPLOADED',
+          docTypeId: doc.docTypeId,
+        }));
+
+        // 🔥 all uploaded → next page
+        if (this.salaryMonths.length && this.salaryMonths.every(m => m.uploaded)) {
+          this.router.navigate(['/dashboard/loan/documents']);
+        }
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to load salary checklist');
+      },
+    });
+  }
+
   /* ================= OPEN MODAL ================= */
   openUpload(index: number) {
+    if (this.salaryMonths[index].uploaded) return;
+
     this.activeIndex = index;
     this.selectedFile = null;
     this.password = '';
@@ -89,7 +113,7 @@ export class SalarySlipComponent implements OnInit {
     this.selectedFile = event.target.files[0];
   }
 
-  /* ================= UPLOAD SALARY SLIP ================= */
+  /* ================= UPLOAD ================= */
   async uploadSalarySlip() {
     if (!this.selectedFile || this.isUploading) return;
 
@@ -97,9 +121,11 @@ export class SalarySlipComponent implements OnInit {
     this.spinner.show();
 
     try {
+      const current = this.salaryMonths[this.activeIndex];
+
       const payload = {
         applicationId: this.applicationId,
-        docTypeId: 4, // 🔥 SALARY SLIP
+        docTypeId: current.docTypeId, // 🔥 dynamic
         fileName: this.selectedFile.name,
         contentType: this.selectedFile.type,
         password: this.password || null,
@@ -108,10 +134,6 @@ export class SalarySlipComponent implements OnInit {
       const metaRes: any = await this.contentService
         .uploadDocumentMeta(payload)
         .toPromise();
-
-      if (!metaRes?.success) {
-        throw new Error('Failed to get upload URL');
-      }
 
       const { upload, fileId } = metaRes.data;
 
@@ -126,17 +148,17 @@ export class SalarySlipComponent implements OnInit {
 
       await this.contentService.completeUpload(fileId).toPromise();
 
-      // ✅ Mark uploaded
+      // ✅ mark uploaded
       this.salaryMonths[this.activeIndex].uploaded = true;
-      this.toastr.success('Salary slip uploaded successfully');
+      this.toastr.success('Salary slip uploaded');
 
       this.closeUpload();
 
-      // 🔥 If all uploaded → Documents
-      if (this.salaryMonths.every((m) => m.uploaded)) {
+      // 🔥 all uploaded → documents
+      if (this.salaryMonths.every(m => m.uploaded)) {
         setTimeout(() => {
           this.router.navigate(['/dashboard/loan/documents']);
-        }, 400);
+        }, 300);
       }
     } catch (err: any) {
       this.toastr.error(err?.message || 'Upload failed');

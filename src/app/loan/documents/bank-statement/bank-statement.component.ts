@@ -4,6 +4,8 @@ import { ContentService } from '../../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 
+declare var bootstrap: any;
+
 @Component({
   selector: 'app-bank-statement',
   templateUrl: './bank-statement.component.html',
@@ -11,23 +13,27 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class BankStatementComponent implements OnInit {
   applicationId!: string;
-  steps: any[] = [];
-  activeIndex = 0;
-  isUploading = false;
+
+  selectedFile!: File;
   password: string = '';
+
+  isUploading = false;
+  uploadCompleted = false;
+
+  uploadModal: any;
 
   constructor(
     private contentService: ContentService,
     private router: Router,
-    private spinner: NgxSpinnerService, // ✅ spinner
-    private toastr: ToastrService, // ✅ toaster
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
   }
 
-  /* ================= BORROWER SNAPSHOT ================= */
+  /* ================= SNAPSHOT ================= */
   getBorrowerSnapshot() {
     this.spinner.show();
 
@@ -35,141 +41,121 @@ export class BankStatementComponent implements OnInit {
       next: (res: any) => {
         if (!res?.success) {
           this.spinner.hide();
-          this.toastr.error('Failed to load borrower data');
+          this.toastr.error('Failed to load borrower snapshot');
           return;
         }
 
         this.applicationId = res.data.application.id;
-        this.loadDocumentChecklist();
+
+        // 🔥 CHECK BANK STATEMENT STATUS
+        this.checkBankStatementStatus();
       },
       error: () => {
         this.spinner.hide();
-        this.toastr.error('Failed to fetch borrower snapshot');
+        this.toastr.error('Failed to load borrower snapshot');
       },
     });
   }
 
-  /* ================= FILE SELECT ================= */
-  async onFileSelect(event: any) {
-    const file: File = event.target.files[0];
-    if (!file) return;
+  /* ================= CHECKLIST ================= */
+  checkBankStatementStatus() {
+    this.contentService.documentCheckList(this.applicationId).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
 
-    this.isUploading = true;
+        if (!res?.success || !res.data?.checklist) return;
+
+        const bankDoc = res.data.checklist.find(
+          (doc: any) => doc.code === 'BANK_STATEMENT_3M'
+        );
+
+        // ✅ ALREADY UPLOADED → SALARY PAGE
+        if (
+          bankDoc &&
+          bankDoc.uploaded === true &&
+          bankDoc.uploadStatus === 'UPLOADED' &&
+          bankDoc.status === 'UPLOADED'
+        ) {
+          this.router.navigate(['/dashboard/loan/salary-slip']);
+          return;
+        }
+
+        // ❌ else stay here (upload UI visible)
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to load document checklist');
+      },
+    });
+  }
+
+  /* ================= OPEN MODAL ================= */
+  openUploadModal() {
+    const modalEl = document.getElementById('bankUploadModal');
+    this.uploadModal = new bootstrap.Modal(modalEl);
+    this.uploadModal.show();
+  }
+
+  /* ================= FILE PICK ================= */
+  onFilePicked(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  /* ================= CONFIRM UPLOAD ================= */
+  async confirmUpload() {
+    if (!this.selectedFile) {
+      this.toastr.warning('Please select a file');
+      return;
+    }
+
     this.spinner.show();
+    this.isUploading = true;
 
     try {
-      /* ========= STEP 1: GET PRESIGNED URL ========= */
-      const payload = {
+      // STEP 1: META
+      const metaPayload = {
         applicationId: this.applicationId,
-        docTypeId: 3, // BANK STATEMENT
-        fileName: file.name,
-        contentType: file.type,
+        docTypeId: 3,
+        fileName: this.selectedFile.name,
+        contentType: this.selectedFile.type,
         password: this.password || null,
       };
 
       const metaRes: any = await this.contentService
-        .uploadDocumentMeta(payload)
+        .uploadDocumentMeta(metaPayload)
         .toPromise();
-
-      if (
-        !metaRes?.success ||
-        !metaRes?.data?.upload ||
-        !metaRes?.data?.fileId
-      ) {
-        throw new Error('Failed to get upload URL');
-      }
 
       const { upload, fileId } = metaRes.data;
 
-      /* ========= STEP 2: UPLOAD TO S3 ========= */
-      const s3Response = await fetch(upload.url, {
+      // STEP 2: S3 UPLOAD
+      await fetch(upload.url, {
         method: upload.method || 'PUT',
         headers: {
           ...(upload.headers || {}),
-          'Content-Type': file.type,
+          'Content-Type': this.selectedFile.type,
         },
-        body: file,
+        body: this.selectedFile,
       });
 
-      if (!s3Response.ok) {
-        throw new Error('Bank statement upload failed');
-      }
-
-      /* ========= STEP 3: COMPLETE UPLOAD ========= */
-      const completeRes: any = await this.contentService
-        .completeUpload(fileId)
-        .toPromise();
-
-      if (!completeRes?.success) {
-        throw new Error('Failed to complete upload');
-      }
+      // STEP 3: COMPLETE
+      await this.contentService.completeUpload(fileId).toPromise();
 
       this.toastr.success('Bank statement uploaded successfully ✅');
+      this.uploadCompleted = true;
 
-      /* ========= STEP 4: REFRESH CHECKLIST ========= */
-      this.loadDocumentChecklist();
+      this.uploadModal.hide();
     } catch (err: any) {
-      console.error(err);
       this.toastr.error(err?.message || 'Upload failed');
     } finally {
       this.spinner.hide();
       this.isUploading = false;
       this.password = '';
-      event.target.value = '';
+      this.selectedFile = undefined as any;
     }
   }
 
-  /* ================= CHECKLIST ================= */
-  loadDocumentChecklist() {
-    this.contentService.documentCheckList(this.applicationId).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
-
-        if (!res?.success) {
-          this.toastr.error('Failed to load document checklist');
-          return;
-        }
-
-        const pendingDocs = res.data.checklist.filter(
-          (doc: any) => doc.required === true && !doc.uploaded,
-        );
-
-        /* 🔥 NO DOCS LEFT → DISBURSAL */
-        if (pendingDocs.length === 0) {
-          this.navigateToDisbursal();
-          return;
-        }
-
-        const nextDoc = pendingDocs[0];
-
-        /* 🔥 ROUTING BASED ON NEXT DOC */
-        if (nextDoc.code === 'SALARY_SLIP') {
-          this.router.navigate(['/dashboard/loan/salary-slip']);
-          return;
-        }
-
-        if (nextDoc.code === 'BANK_STATEMENT') {
-          this.steps = pendingDocs.map((doc: any) => ({
-            label: doc.label,
-            code: doc.code,
-            docTypeId: doc.docTypeId,
-            docPart: doc.docPart,
-            uploaded: doc.uploaded,
-          }));
-          this.activeIndex = 0;
-        }
-      },
-      error: () => {
-        this.spinner.hide();
-        this.toastr.error('Failed to fetch document checklist');
-      },
-    });
-  }
-
-  /* ================= DISBURSAL ================= */
-  navigateToDisbursal() {
-    setTimeout(() => {
-      this.router.navigate(['/dashboard/loan/bank']);
-    }, 300);
+  /* ================= CONTINUE ================= */
+  continue() {
+    this.router.navigate(['/dashboard/loan/salary-slip']);
   }
 }

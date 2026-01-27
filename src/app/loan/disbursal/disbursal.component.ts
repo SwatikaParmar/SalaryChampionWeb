@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { Router } from '@angular/router';
+declare var bootstrap: any;
 
 @Component({
   selector: 'app-disbursal',
@@ -21,6 +23,7 @@ export class DisbursalComponent implements OnInit {
     private contentService: ContentService,
     private spinner: NgxSpinnerService, // ✅ spinner
     private toastr: ToastrService, // ✅ toaster
+    private router:Router
   ) {}
 
   ngOnInit(): void {
@@ -115,41 +118,91 @@ export class DisbursalComponent implements OnInit {
   /* ===============================
      SUBMIT BANK DETAILS
   =============================== */
-  submit() {
-    if (this.disbursalForm.invalid || this.isSubmitting) {
-      this.disbursalForm.markAllAsTouched();
-      return;
-    }
+submit() {
+  if (this.disbursalForm.invalid || this.isSubmitting) {
+    this.disbursalForm.markAllAsTouched();
+    return;
+  }
 
-    this.isSubmitting = true;
-    this.spinner.show();
+  this.isSubmitting = true;
+  this.spinner.show();
 
-    const payload = {
-      applicationId: this.applicationId,
-      id: this.id || '',
-      ...this.disbursalForm.getRawValue(), // ✅ include masked value
-    };
+  // ✅ payload me id sirf tab add hogi jab value ho
+  const payload: any = {
+    applicationId: this.applicationId,
+    ...this.disbursalForm.getRawValue(),
+    ...(this.id ? { id: this.id } : {}) // 🔥 MAGIC LINE
+  };
 
-    this.contentService.disbursalBankAccount(payload).subscribe({
-      next: (res: any) => {
+  this.contentService.disbursalBankAccount(payload).subscribe({
+    next: (res: any) => {
+      if (!res?.success) {
         this.spinner.hide();
         this.isSubmitting = false;
+        this.toastr.error('Failed to save bank details');
+        return;
+      }
 
-        if (!res?.success) {
-          this.toastr.error('Failed to save bank details');
-          return;
+      // ✅ STEP 1: Bank details saved
+      this.toastr.success('Bank details saved successfully ✅');
+
+      // ✅ STEP 2: Penny Drop hit
+      this.hitPennyDrop();
+    },
+    error: () => {
+      this.spinner.hide();
+      this.isSubmitting = false;
+      this.toastr.error('Something went wrong');
+    },
+  });
+}
+
+hitPennyDrop() {
+  const payload = {
+    applicationId: this.applicationId
+  };
+
+  this.contentService.pennyDrop(payload).subscribe({
+    next: (res: any) => {
+      this.spinner.hide();
+      this.isSubmitting = false;
+
+      if (res?.success) {
+        // 🔥 OPEN SUCCESS MODAL
+        const modalEl = document.getElementById('pennyDropSuccessModal');
+        if (modalEl) {
+          const modal = new bootstrap.Modal(modalEl);
+          modal.show();
         }
 
-        this.toastr.success('Bank details saved successfully ✅');
-        // 🔥 navigate next step if needed
-      },
-      error: () => {
-        this.spinner.hide();
-        this.isSubmitting = false;
-        this.toastr.error('Something went wrong');
-      },
-    });
+        //  this.router.navigate(['/dashboard/loan']);
+
+      } else {
+        this.toastr.warning(
+          res?.message || 'Penny drop verification failed'
+        );
+      }
+    },
+    error: () => {
+      this.spinner.hide();
+      this.isSubmitting = false;
+      this.toastr.error('Penny drop failed');
+    }
+  });
+}
+
+onPennyDropOk() {
+  const modalEl = document.getElementById('pennyDropSuccessModal');
+  if (modalEl) {
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    modal?.hide();
   }
+
+  // 🔥 NAVIGATE AFTER OK
+  this.router.navigate(['/dashboard/loan']);
+  // 👆 change route as per your flow
+}
+
 
   /* ===============================
      FORM GETTERS
