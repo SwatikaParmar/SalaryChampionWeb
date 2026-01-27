@@ -67,7 +67,7 @@ export class LoanApplicationHomeComponent implements OnInit {
   // - OR comes after active step
   isLocked(step: string): boolean {
     // 🔥 Disbursal always editable
-    if (step === 'disbursalBankDetails') return false;
+    // if (step === 'disbursalBankDetails') return false;
 
     let foundActive = false;
 

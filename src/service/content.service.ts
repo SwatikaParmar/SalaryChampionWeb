@@ -150,4 +150,9 @@ return this.http.get<any>(environment.apiUrl + ApiEndPoint.getDisbursalBankState
 saveReference(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.saveReference,data)
 }
+
+
+verifyEkyc(data:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.verifyEkyc,data)
+}
 }

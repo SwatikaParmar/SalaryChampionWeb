@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
-
+import { ActivatedRoute } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-ekyc',
   templateUrl: './ekyc.component.html',

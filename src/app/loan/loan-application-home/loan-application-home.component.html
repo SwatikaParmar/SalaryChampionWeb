@@ -143,9 +143,12 @@
       <!-- 🔥 Disbursal Bank Details (ALWAYS OPEN) -->
       <div
         class="loan-step"
-        [ngClass]="{
+    
+
+         [ngClass]="{
           'completed': isCompleted('disbursalBankDetails'),
-          'active': isActive('disbursalBankDetails')
+          'active': isActive('disbursalBankDetails'),
+          'locked': isLocked('disbursalBankDetails')
         }"
         (click)="navigate('disbursalBankDetails','/dashboard/loan/disbursal')"
       >

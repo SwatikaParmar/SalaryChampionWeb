@@ -31,9 +31,15 @@ export class IncomeComponent implements OnInit {
       modeOfIncome: ['SALARY', Validators.required],
       existingEmiTotal: ['', [Validators.required, Validators.min(0)]],
     });
+
+      // 🔥 IMPORTANT: default selection logic
+  this.setEmploymentType('SALARIED');
+
     // 🔥 Load existing employment (if any)
     this.getBorrowerSnapshot();
   }
+
+ 
 
  submit() {
     if (this.incomeForm.invalid) {
@@ -64,22 +70,25 @@ export class IncomeComponent implements OnInit {
     });
   }
 
-  setEmploymentType(type: string) {
-    this.incomeForm.patchValue({ employmentType: type });
+ setEmploymentType(type?: string) {
+  const finalType = type || 'SALARIED';
 
-    const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
+  this.incomeForm.patchValue({ employmentType: finalType });
 
-    if (type === 'SALARIED') {
-      salaryDateCtrl?.setValidators(Validators.required);
-      salaryDateCtrl?.enable();
-    } else {
-      salaryDateCtrl?.clearValidators();
-      salaryDateCtrl?.reset();
-      salaryDateCtrl?.disable();
-    }
+  const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
 
-    salaryDateCtrl?.updateValueAndValidity();
+  if (finalType === 'SALARIED') {
+    salaryDateCtrl?.setValidators(Validators.required);
+    salaryDateCtrl?.enable();
+  } else {
+    salaryDateCtrl?.clearValidators();
+    salaryDateCtrl?.reset();
+    salaryDateCtrl?.disable();
   }
+
+  salaryDateCtrl?.updateValueAndValidity();
+}
+
 
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({
@@ -94,16 +103,20 @@ export class IncomeComponent implements OnInit {
     });
   }
 
-  patchEmploymentData(employment: any) {
-    this.incomeForm.patchValue({
-      employmentType: employment.employmentType || 'SALARIED',
-      netMonthlyIncome: employment.netMonthlyIncome || '',
-      nextSalaryDate: employment.nextSalaryDate || '',
-      modeOfIncome: employment.modeOfIncome || 'SALARY',
-      existingEmiTotal: employment.existingEmiTotal ?? '',
-    });
+patchEmploymentData(employment: any) {
 
-    // 🔁 Apply salary date enable/disable logic
-    this.setEmploymentType(employment.employmentType);
-  }
+  const type = employment?.employmentType || 'SALARIED';
+
+  this.incomeForm.patchValue({
+    employmentType: type,
+    netMonthlyIncome: employment?.netMonthlyIncome || '',
+    nextSalaryDate: employment?.nextSalaryDate || '',
+    modeOfIncome: employment?.modeOfIncome || 'SALARY',
+    existingEmiTotal: employment?.existingEmiTotal ?? '',
+  });
+
+  // ✅ ALWAYS pass a valid type
+  this.setEmploymentType(type);
+}
+
 }

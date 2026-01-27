@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: 'bank', component: BankComponent },
   { path: 'documents', component: DocumentsComponent },
   { path: 'disbursal', component: DisbursalComponent },
-  { path: 'ekyc-verification', component: EKYCVerificationComponent },
+  { path: 'e-kyc-verification/:requestId', component: EKYCVerificationComponent },
   { path: 'bank-verification', component: BankVerificationComponent },
   { path: 'salary-slip', component: SalarySlipComponent },
   { path: 'reference', component: RefrenceComponent },
