@@ -22,7 +22,7 @@ export class EKYCVerificationComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // ✅ 1️⃣ requestId URL se lo
+    // ✅ 1️⃣ requestId 
     this.requestId = this.route.snapshot.paramMap.get('requestId') || '';
 
     if (!this.requestId) {
@@ -30,7 +30,7 @@ export class EKYCVerificationComponent implements OnInit {
       return;
     }
 
-    // ✅ 2️⃣ applicationId snapshot se lo
+    // ✅ 2️⃣ applicationId 
     this.getBorrowerSnapshot();
   }
 
@@ -50,7 +50,7 @@ export class EKYCVerificationComponent implements OnInit {
           return;
         }
 
-        // ✅ 3️⃣ dono mil gaye → verify eKYC
+        // ✅ 3️⃣ verify eKYC
         this.verifyEkyc();
       },
       error: () => {

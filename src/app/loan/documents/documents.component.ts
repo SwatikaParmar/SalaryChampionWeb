@@ -22,7 +22,6 @@ interface DocumentStep {
   styleUrls: ['./documents.component.css'],
 })
 export class DocumentsComponent implements OnInit {
-
   applicationId!: string;
   steps: DocumentStep[] = [];
   activeIndex = 0;
@@ -34,8 +33,8 @@ export class DocumentsComponent implements OnInit {
   constructor(
     private contentService: ContentService,
     private router: Router,
-    private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +61,7 @@ export class DocumentsComponent implements OnInit {
       error: () => {
         this.spinner.hide();
         this.toastr.error('Failed to fetch borrower snapshot');
-      }
+      },
     });
   }
 
@@ -80,7 +79,7 @@ export class DocumentsComponent implements OnInit {
         }
 
         const requiredDocs = res.data.checklist.filter(
-          (doc: any) => doc.required === true
+          (doc: any) => doc.required === true,
         );
 
         // 🔥 NO DOCUMENTS REQUIRED
@@ -105,7 +104,7 @@ export class DocumentsComponent implements OnInit {
       error: () => {
         this.spinner.hide();
         this.toastr.error('Failed to fetch document checklist');
-      }
+      },
     });
   }
 
@@ -146,14 +145,18 @@ export class DocumentsComponent implements OnInit {
         docPart: step.docPart,
         fileName: file.name,
         contentType: file.type,
-        password: this.password || null
+        password: this.password || null,
       };
 
       const metaRes: any = await this.contentService
         .uploadDocumentMeta(payload)
         .toPromise();
 
-      if (!metaRes?.success || !metaRes?.data?.upload || !metaRes?.data?.fileId) {
+      if (
+        !metaRes?.success ||
+        !metaRes?.data?.upload ||
+        !metaRes?.data?.fileId
+      ) {
         throw new Error('Failed to get upload URL');
       }
 
@@ -164,9 +167,9 @@ export class DocumentsComponent implements OnInit {
         method: upload.method || 'PUT',
         headers: {
           ...(upload.headers || {}),
-          'Content-Type': file.type
+          'Content-Type': file.type,
         },
-        body: file
+        body: file,
       });
 
       if (!s3Response.ok) {
@@ -189,7 +192,6 @@ export class DocumentsComponent implements OnInit {
 
       this.toastr.success('Document uploaded successfully ✅');
       this.closeUpload();
-
     } catch (err: any) {
       console.error('Upload failed', err);
       this.toastr.error(err?.message || 'Document upload failed');
@@ -220,17 +222,28 @@ export class DocumentsComponent implements OnInit {
   =============================== */
   getImageByDocTypeId(docTypeId: number): string {
     switch (docTypeId) {
-      case 10: return 'assets/images/utility_bill.png';
-      case 11: return 'assets/images/sale_deed.png';
-      case 12: return 'assets/images/conveyance_deed.png';
-      case 13: return 'assets/images/allotment_letter.png';
-      case 14: return 'assets/images/house_tax_receipt.png';
-      case 15: return 'assets/images/credit_card_statement.png';
-      case 16: return 'assets/images/electricity_bill.png';
-      case 17: return 'assets/images/landline_bill.png';
-      case 18: return 'assets/images/gas_bill.png';
-      case 19: return 'assets/images/water_bill.png';
-      case 20: return 'assets/images/rent_agreement.png';
+      case 10:
+        return 'assets/images/utility_bill.png';
+      case 11:
+        return 'assets/images/sale_deed.png';
+      case 12:
+        return 'assets/images/conveyance_deed.png';
+      case 13:
+        return 'assets/images/allotment_letter.png';
+      case 14:
+        return 'assets/images/house_tax_receipt.png';
+      case 15:
+        return 'assets/images/credit_card_statement.png';
+      case 16:
+        return 'assets/images/electricity_bill.png';
+      case 17:
+        return 'assets/images/landline_bill.png';
+      case 18:
+        return 'assets/images/gas_bill.png';
+      case 19:
+        return 'assets/images/water_bill.png';
+      case 20:
+        return 'assets/images/rent_agreement.png';
 
       default:
         return 'assets/images/default_document.png';

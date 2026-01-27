@@ -10,7 +10,6 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./disbursal.component.css'],
 })
 export class DisbursalComponent implements OnInit {
-
   disbursalForm!: FormGroup;
   applicationId!: string;
   isSubmitting = false;
@@ -20,8 +19,8 @@ export class DisbursalComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
-    private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -36,17 +35,14 @@ export class DisbursalComponent implements OnInit {
     this.disbursalForm = this.fb.group({
       accountNumber: [
         '',
-        [Validators.required, this.accountNumberValidator.bind(this)]
+        [Validators.required, this.accountNumberValidator.bind(this)],
       ],
       ifsc: [
         '',
-        [Validators.required, Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)]
+        [Validators.required, Validators.pattern(/^[A-Z]{4}0[A-Z0-9]{6}$/)],
       ],
       holderName: ['', Validators.required],
-      mobile: [
-        '',
-        [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]
-      ],
+      mobile: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
     });
   }
 

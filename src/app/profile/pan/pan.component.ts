@@ -21,8 +21,8 @@ export class PanComponent {
     private ContentService: ContentService,
     private router: Router,
     private fb: FormBuilder,
-       private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +86,7 @@ export class PanComponent {
       });
   }
 
- // 🔍 STEP 1: PREVIEW PAN
+  // 🔍 STEP 1: PREVIEW PAN
   previewPan() {
     if (!this.panNumber || this.panNumber.length !== 10) {
       this.toastr.warning('Please enter a valid PAN number');

@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-bank',
   templateUrl: './bank.component.html',
-  styleUrl: './bank.component.css'
+  styleUrl: './bank.component.css',
 })
 export class BankComponent implements OnInit {
   applicationId: any;
@@ -16,7 +16,7 @@ export class BankComponent implements OnInit {
     private contentService: ContentService,
     private router: Router,
     private spinner: NgxSpinnerService, // ✅ spinner
-    private toastr: ToastrService       // ✅ toaster
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +57,7 @@ export class BankComponent implements OnInit {
     }
 
     const payload = {
-      applicationId: this.applicationId
+      applicationId: this.applicationId,
     };
 
     this.spinner.show();
@@ -78,7 +78,7 @@ export class BankComponent implements OnInit {
       error: () => {
         this.spinner.hide();
         this.toastr.error('Failed to fetch bank statement');
-      }
+      },
     });
   }
 }

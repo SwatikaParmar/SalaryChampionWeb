@@ -7,10 +7,9 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-bank-statement',
   templateUrl: './bank-statement.component.html',
-  styleUrls: ['./bank-statement.component.css']
+  styleUrls: ['./bank-statement.component.css'],
 })
 export class BankStatementComponent implements OnInit {
-
   applicationId!: string;
   steps: any[] = [];
   activeIndex = 0;
@@ -20,8 +19,8 @@ export class BankStatementComponent implements OnInit {
   constructor(
     private contentService: ContentService,
     private router: Router,
-    private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -46,7 +45,7 @@ export class BankStatementComponent implements OnInit {
       error: () => {
         this.spinner.hide();
         this.toastr.error('Failed to fetch borrower snapshot');
-      }
+      },
     });
   }
 
@@ -65,14 +64,18 @@ export class BankStatementComponent implements OnInit {
         docTypeId: 3, // BANK STATEMENT
         fileName: file.name,
         contentType: file.type,
-        password: this.password || null
+        password: this.password || null,
       };
 
       const metaRes: any = await this.contentService
         .uploadDocumentMeta(payload)
         .toPromise();
 
-      if (!metaRes?.success || !metaRes?.data?.upload || !metaRes?.data?.fileId) {
+      if (
+        !metaRes?.success ||
+        !metaRes?.data?.upload ||
+        !metaRes?.data?.fileId
+      ) {
         throw new Error('Failed to get upload URL');
       }
 
@@ -83,9 +86,9 @@ export class BankStatementComponent implements OnInit {
         method: upload.method || 'PUT',
         headers: {
           ...(upload.headers || {}),
-          'Content-Type': file.type
+          'Content-Type': file.type,
         },
-        body: file
+        body: file,
       });
 
       if (!s3Response.ok) {
@@ -105,7 +108,6 @@ export class BankStatementComponent implements OnInit {
 
       /* ========= STEP 4: REFRESH CHECKLIST ========= */
       this.loadDocumentChecklist();
-
     } catch (err: any) {
       console.error(err);
       this.toastr.error(err?.message || 'Upload failed');
@@ -129,7 +131,7 @@ export class BankStatementComponent implements OnInit {
         }
 
         const pendingDocs = res.data.checklist.filter(
-          (doc: any) => doc.required === true && !doc.uploaded
+          (doc: any) => doc.required === true && !doc.uploaded,
         );
 
         /* 🔥 NO DOCS LEFT → DISBURSAL */
@@ -152,7 +154,7 @@ export class BankStatementComponent implements OnInit {
             code: doc.code,
             docTypeId: doc.docTypeId,
             docPart: doc.docPart,
-            uploaded: doc.uploaded
+            uploaded: doc.uploaded,
           }));
           this.activeIndex = 0;
         }
@@ -160,7 +162,7 @@ export class BankStatementComponent implements OnInit {
       error: () => {
         this.spinner.hide();
         this.toastr.error('Failed to fetch document checklist');
-      }
+      },
     });
   }
 

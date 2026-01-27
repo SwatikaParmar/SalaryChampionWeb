@@ -8,7 +8,6 @@ import { ContentService } from '../../../service/content.service';
   styleUrl: './calculator.component.css',
 })
 export class CalculatorComponent implements OnInit {
-
   // UI
   purpose = 'PERSONAL';
 
@@ -38,7 +37,7 @@ export class CalculatorComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private contentService: ContentService
+    private contentService: ContentService,
   ) {}
 
   ngOnInit(): void {
@@ -121,31 +120,28 @@ export class CalculatorComponent implements OnInit {
     });
   }
 
-acceptLoan() {
-  if (!this.applicationId) return;
+  acceptLoan() {
+    if (!this.applicationId) return;
 
-  const payload = {
-    applicationId: this.applicationId,
-    decision: 'ACCEPT',
-    amountApproved: this.principal,
-    roi: this.interestRateMonthly / 100, // convert % to decimal
-    tenureMonths: Math.ceil(this.tenure / 30), // days → months (safe)
-    remarks: 'Customer accepted the quote',
-  };
+    const payload = {
+      applicationId: this.applicationId,
+      decision: 'ACCEPT',
+      amountApproved: this.principal,
+      roi: this.interestRateMonthly / 100, // convert % to decimal
+      tenureMonths: Math.ceil(this.tenure / 30), // days → months (safe)
+      remarks: 'Customer accepted the quote',
+    };
 
-  this.contentService.accetLoanDecision(payload).subscribe({
-    next: (res: any) => {
-      if (res?.success) {
-        // ✅ SUCCESS → NEXT STEP
-        this.router.navigate(['dashboard/loan/employment']);
-      }
-    },
-    error: () => {
-      console.error('Accept loan failed');
-    },
-  });
-}
-
-
-
+    this.contentService.accetLoanDecision(payload).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          // ✅ SUCCESS → NEXT STEP
+          this.router.navigate(['dashboard/loan/employment']);
+        }
+      },
+      error: () => {
+        console.error('Accept loan failed');
+      },
+    });
+  }
 }

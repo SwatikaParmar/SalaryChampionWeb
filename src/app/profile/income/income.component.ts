@@ -17,8 +17,8 @@ export class IncomeComponent implements OnInit {
     private fb: FormBuilder,
     private contentService: ContentService,
     private router: Router,
-       private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -32,16 +32,14 @@ export class IncomeComponent implements OnInit {
       existingEmiTotal: ['', [Validators.required, Validators.min(0)]],
     });
 
-      // 🔥 IMPORTANT: default selection logic
-  this.setEmploymentType('SALARIED');
+    // 🔥 IMPORTANT: default selection logic
+    this.setEmploymentType('SALARIED');
 
     // 🔥 Load existing employment (if any)
     this.getBorrowerSnapshot();
   }
 
- 
-
- submit() {
+  submit() {
     if (this.incomeForm.invalid) {
       this.incomeForm.markAllAsTouched();
       this.toastr.warning('Please fill all required income details');
@@ -70,25 +68,24 @@ export class IncomeComponent implements OnInit {
     });
   }
 
- setEmploymentType(type?: string) {
-  const finalType = type || 'SALARIED';
+  setEmploymentType(type?: string) {
+    const finalType = type || 'SALARIED';
 
-  this.incomeForm.patchValue({ employmentType: finalType });
+    this.incomeForm.patchValue({ employmentType: finalType });
 
-  const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
+    const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
 
-  if (finalType === 'SALARIED') {
-    salaryDateCtrl?.setValidators(Validators.required);
-    salaryDateCtrl?.enable();
-  } else {
-    salaryDateCtrl?.clearValidators();
-    salaryDateCtrl?.reset();
-    salaryDateCtrl?.disable();
+    if (finalType === 'SALARIED') {
+      salaryDateCtrl?.setValidators(Validators.required);
+      salaryDateCtrl?.enable();
+    } else {
+      salaryDateCtrl?.clearValidators();
+      salaryDateCtrl?.reset();
+      salaryDateCtrl?.disable();
+    }
+
+    salaryDateCtrl?.updateValueAndValidity();
   }
-
-  salaryDateCtrl?.updateValueAndValidity();
-}
-
 
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({
@@ -103,20 +100,18 @@ export class IncomeComponent implements OnInit {
     });
   }
 
-patchEmploymentData(employment: any) {
+  patchEmploymentData(employment: any) {
+    const type = employment?.employmentType || 'SALARIED';
 
-  const type = employment?.employmentType || 'SALARIED';
+    this.incomeForm.patchValue({
+      employmentType: type,
+      netMonthlyIncome: employment?.netMonthlyIncome || '',
+      nextSalaryDate: employment?.nextSalaryDate || '',
+      modeOfIncome: employment?.modeOfIncome || 'SALARY',
+      existingEmiTotal: employment?.existingEmiTotal ?? '',
+    });
 
-  this.incomeForm.patchValue({
-    employmentType: type,
-    netMonthlyIncome: employment?.netMonthlyIncome || '',
-    nextSalaryDate: employment?.nextSalaryDate || '',
-    modeOfIncome: employment?.modeOfIncome || 'SALARY',
-    existingEmiTotal: employment?.existingEmiTotal ?? '',
-  });
-
-  // ✅ ALWAYS pass a valid type
-  this.setEmploymentType(type);
-}
-
+    // ✅ ALWAYS pass a valid type
+    this.setEmploymentType(type);
+  }
 }
