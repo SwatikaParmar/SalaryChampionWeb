@@ -1,56 +1,65 @@
 <div class="ekyc-wrapper">
-  <div class="row">
+  <div class="row align-items-center">
 
-       <div class="action-arr mb-3">
-          <a [routerLink]="['/dashboard/loan']" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
-          <h3 class="page-title">eKYC Verification</h3>
-        </div>
+    <!-- HEADER -->
+    <div class="action-arr mb-4">
+      <a [routerLink]="['/dashboard/loan']" class="back-lk">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <h3 class="page-title">eKYC Verification</h3>
+    </div>
+
+    <!-- LEFT CONTENT -->
     <div class="col-md-6">
       <div class="ekyc-box">
-     
 
         <p class="desc">
-          Complete your identity verification using DigiLocker to proceed further. 
+          Complete your identity verification securely using DigiLocker to proceed further.
         </p>
-                
-        <h5>To initiate eKYC verification</h5>
+
+        <h6 class="sub-title">To initiate eKYC verification</h6>
 
         <!-- ERROR -->
-        <p class="error" *ngIf="errorMsg">{{ errorMsg }}</p>
+        <p class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</p>
 
         <!-- START BUTTON -->
         <button
           class="btn-primary mt-3"
           (click)="startEkyc()"
-          [disabled]="loading || !applicationId || ekycUrl"
+          [disabled]="loading || !applicationId"
         >
           <span *ngIf="!loading">Start eKYC</span>
-          <span *ngIf="loading">Loading...</span>
+          <span *ngIf="loading">Processing...</span>
         </button>
 
-        <!-- ================= EMBEDDED EKYC ================= -->
-        <div class="ekyc-frame-wrapper" *ngIf="ekycUrl">
+        <!-- EMBEDDED EKYC (optional future use) -->
+        <div class="ekyc-frame-wrapper mt-4" *ngIf="ekycUrl">
           <iframe
             [src]="ekycUrl | safeUrl"
             frameborder="0"
-            allowfullscreen
           ></iframe>
         </div>
 
         <!-- CONTINUE -->
         <button
-          class="btn-secondary"
+          class="btn-secondary mt-3"
           *ngIf="ekycUrl"
           (click)="continueAfterEkyc()"
         >
           Continue
         </button>
+
       </div>
     </div>
 
-    <div class="col-md-6">
+    <!-- RIGHT ILLUSTRATION -->
+    <div class="col-md-6 text-center">
       <div class="rfigure">
-        <img src="assets/images/adharcard.png" class="img-fluid"> 
+        <img
+          src="assets/images/adharcard.png"
+          class="img-fluid"
+          alt="Aadhaar Verification"
+        />
       </div>
     </div>
 

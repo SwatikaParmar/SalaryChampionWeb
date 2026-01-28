@@ -2,7 +2,7 @@
   <div class="ekyc-card error-card">
 
     <!-- Title -->
-    <h2 class="ekyc-title text-danger">
+    <h2 class="ekyc-title">
       ❌ e-KYC Verification Failed
     </h2>
 
@@ -10,13 +10,12 @@
     <div class="ekyc-illustration">
       <img
         src="assets/images/ekyc_failed.webp"
-        class="img-fluid"
         alt="eKYC Failed"
       />
     </div>
 
     <!-- Message -->
-    <p class="ekyc-text text-center">
+    <p class="ekyc-text">
       {{ reason || 'Verification was cancelled or failed. Please try again.' }}
     </p>
 
