@@ -1,32 +1,48 @@
 <div class="status-container">
-  <div class="status-card">
 
+<div class="action-arr">
+	<a href="#" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
+	<h2 class="page-title">Status of Application</h2>
+</div>
+
+<div class="status-card mt-3">
+  <div class="row">
     <!-- LEFT : STATUS -->
-    <div class="status-left">
-      <h3 class="title">STATUS OF APPLICATION</h3>
+    <div class="col-md-6">
+      <div class="status-left">
+        <div class="status-list">
+          <div class="status-item disabled">disbursement</div>
+          <div class="status-item disabled">esign</div>
+          <div class="status-item disabled">sanction</div>
 
-      <div class="status-list">
-        <div class="status-item disabled">DISBURSEMENT</div>
-        <div class="status-item disabled">ESIGN</div>
-        <div class="status-item disabled">SANCTION</div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="status-item active">
+                Application in review
+              </div>
+            </div>
 
-        <div class="status-item active">
-          APPLICATION IN REVIEW
+            <div class="col-md-6">
+              <div class="status-item completed">
+                Application submitted
+                <span class="check">✔</span>
+              </div>
+            </div>
+          </div>
+
         </div>
 
-        <div class="status-item completed">
-          APPLICATION SUBMITTED
-          <span class="check">✔</span>
-        </div>
+        <button class="btn-theme mt-3">Refresh</button>
       </div>
-
-      <button class="refresh-btn">REFRESH</button>
     </div>
 
     <!-- RIGHT : ILLUSTRATION -->
-    <div class="status-right">
-      <img src="assets/images/status-illustration.svg" alt="Status Illustration" />
+    <div class="col-md-6">
+      <div class="status-right">
+      <img src="assets/images/status_of_application.webp" alt="Status of Application" />
+    </div>
     </div>
 
+  </div>
   </div>
 </div>
