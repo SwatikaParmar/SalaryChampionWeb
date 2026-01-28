@@ -16,8 +16,12 @@ export class PreviewComponent implements OnInit {
   address: any;
   employment: any;
   profilePic: string | null = null;
+  hasEvaluatedEligibilityOnce = false; // 🔥 ADD THIS
 
-  constructor(private contentService: ContentService, private router: Router) {}
+  constructor(
+    private contentService: ContentService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
@@ -33,6 +37,10 @@ export class PreviewComponent implements OnInit {
         this.address = data.addresses?.[0];
         this.employment = data.employment;
         this.profilePic = data.user?.profilePicUrl;
+
+        // 🔥 eligibility flag
+        this.hasEvaluatedEligibilityOnce =
+          data.offer?.hasEvaluatedEligibilityOnce === true;
       },
     });
   }
@@ -53,35 +61,30 @@ export class PreviewComponent implements OnInit {
     }
   }
 
-checkEligibility() {
-  this.contentService.checkEligibility().subscribe({
-    next: (res) => {
-      /**
-       * Example response:
-       * { success: true }
-       * { success: false, message: 'Not eligible' }
-       */
-debugger
-      if (res?.success === true) {
-        this.router.navigate(
-          ['/dashboard/profile/success-eligibility']
-        );
-      } else {
-        this.router.navigate(
-          ['/dashboard/profile/error-eligibility'],
-          { state: { message: res?.message } }
-        );
-      }
-    },
+  checkEligibility() {
+    this.contentService.checkEligibility().subscribe({
+      next: (res) => {
+        /**
+         * Example response:
+         * { success: true }
+         * { success: false, message: 'Not eligible' }
+         */
+        debugger;
+        if (res?.success === true) {
+          this.router.navigate(['/dashboard/profile/success-eligibility']);
+        } else {
+          this.router.navigate(['/dashboard/profile/error-eligibility'], {
+            state: { message: res?.message },
+          });
+        }
+      },
 
-    error: () => {
-      // server / network error
-      this.router.navigate(
-        ['/dashboard/profile/error-eligibility'],
-        { state: { message: 'Something went wrong' } }
-      );
-    }
-  });
-}
-
+      error: () => {
+        // server / network error
+        this.router.navigate(['/dashboard/profile/error-eligibility'], {
+          state: { message: 'Something went wrong' },
+        });
+      },
+    });
+  }
 }

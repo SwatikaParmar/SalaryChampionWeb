@@ -20,5 +20,7 @@ export enum ApiEndPoint {
   UploadDocument = 'loan/createLoanDocUploadIntent',
   disbursalBankAccount = 'loan/upsertDisbursalBankAccounts',
   getDisbursalBankStatement = 'loan/getDisbursalBankAccounts',
-  saveReference = 'lead/saveReferences'
+  saveReference = 'lead/saveReferences',
+  verifyEkyc = 'kyc/aadhaar/fetch-and-save',
+  pennyDrop = 'kyc/bank/pennydrop/verify'
 }

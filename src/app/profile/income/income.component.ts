@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
-
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-income',
   templateUrl: './income.component.html',
@@ -15,7 +16,9 @@ export class IncomeComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
-    private router: Router
+    private router: Router,
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -28,6 +31,10 @@ export class IncomeComponent implements OnInit {
       modeOfIncome: ['SALARY', Validators.required],
       existingEmiTotal: ['', [Validators.required, Validators.min(0)]],
     });
+
+    // 🔥 IMPORTANT: default selection logic
+    this.setEmploymentType('SALARIED');
+
     // 🔥 Load existing employment (if any)
     this.getBorrowerSnapshot();
   }
@@ -35,27 +42,40 @@ export class IncomeComponent implements OnInit {
   submit() {
     if (this.incomeForm.invalid) {
       this.incomeForm.markAllAsTouched();
+      this.toastr.warning('Please fill all required income details');
       return;
     }
 
     const payload = this.incomeForm.value;
 
+    this.spinner.show();
+
     this.contentService.saveIncomeDetail(payload).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard/profile/selfie']); // or next step
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (res?.success) {
+          this.toastr.success('Income details saved successfully');
+          this.router.navigate(['/dashboard/profile/selfie']); // next step
+        } else {
+          this.toastr.error(res?.message || 'Failed to save income details');
+        }
       },
       error: () => {
-        console.error('Failed to save income details');
+        this.spinner.hide();
+        this.toastr.error('Failed to save income details');
       },
     });
   }
 
-  setEmploymentType(type: string) {
-    this.incomeForm.patchValue({ employmentType: type });
+  setEmploymentType(type?: string) {
+    const finalType = type || 'SALARIED';
+
+    this.incomeForm.patchValue({ employmentType: finalType });
 
     const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
 
-    if (type === 'SALARIED') {
+    if (finalType === 'SALARIED') {
       salaryDateCtrl?.setValidators(Validators.required);
       salaryDateCtrl?.enable();
     } else {
@@ -81,15 +101,17 @@ export class IncomeComponent implements OnInit {
   }
 
   patchEmploymentData(employment: any) {
+    const type = employment?.employmentType || 'SALARIED';
+
     this.incomeForm.patchValue({
-      employmentType: employment.employmentType || 'SALARIED',
-      netMonthlyIncome: employment.netMonthlyIncome || '',
-      nextSalaryDate: employment.nextSalaryDate || '',
-      modeOfIncome: employment.modeOfIncome || 'SALARY',
-      existingEmiTotal: employment.existingEmiTotal ?? '',
+      employmentType: type,
+      netMonthlyIncome: employment?.netMonthlyIncome || '',
+      nextSalaryDate: employment?.nextSalaryDate || '',
+      modeOfIncome: employment?.modeOfIncome || 'SALARY',
+      existingEmiTotal: employment?.existingEmiTotal ?? '',
     });
 
-    // 🔁 Apply salary date enable/disable logic
-    this.setEmploymentType(employment.employmentType);
+    // ✅ ALWAYS pass a valid type
+    this.setEmploymentType(type);
   }
 }

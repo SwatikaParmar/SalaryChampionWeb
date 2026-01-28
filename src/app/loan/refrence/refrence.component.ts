@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ContentService } from '../../../service/content.service';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-refrence',
   templateUrl: './refrence.component.html',
@@ -18,7 +21,10 @@ export class RefrenceComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
- private router: Router  ) {}
+    private router: Router,
+    private spinner: NgxSpinnerService,   // ✅ ADD
+    private toastr: ToastrService         // ✅ ADD
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
@@ -53,14 +59,18 @@ export class RefrenceComponent implements OnInit {
      GET SNAPSHOT + PATCH
   =============================== */
   getBorrowerSnapshot() {
+    this.spinner.show(); // 🔥 START LOADER
+
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
+        this.spinner.hide(); // ✅ STOP LOADER
+
         if (!res?.success) return;
 
         this.applicationId = res.data.application?.id;
         this.userId = res.data.user?.id;
 
-        const refs = res.data.references; // 🔥 backend key
+        const refs = res.data.references;
 
         if (refs?.length) {
           this.references.clear();
@@ -76,7 +86,10 @@ export class RefrenceComponent implements OnInit {
           });
         }
       },
-      error: () => console.error('Snapshot failed')
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Failed to load references');
+      }
     });
   }
 
@@ -91,6 +104,7 @@ export class RefrenceComponent implements OnInit {
     }
 
     this.isSaving = true;
+    this.spinner.show(); // 🔥 START LOADER
 
     const payload = {
       applicationId: this.applicationId,
@@ -101,13 +115,20 @@ export class RefrenceComponent implements OnInit {
     this.contentService.saveReference(payload).subscribe({
       next: (res: any) => {
         this.isSaving = false;
-        if (!res?.success) return;
+        this.spinner.hide(); // ✅ STOP LOADER
 
-     this.router.navigate(['/dashboard/loan/documents']);
-     },
+        if (!res?.success) {
+          this.toastr.error('Failed to save references');
+          return;
+        }
+
+        this.toastr.success('References saved successfully ✅');
+        this.router.navigate(['/dashboard/loan/documents']);
+      },
       error: () => {
         this.isSaving = false;
-        alert('Something went wrong ❌');
+        this.spinner.hide();
+        this.toastr.error('Something went wrong ❌');
       }
     });
   }

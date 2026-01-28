@@ -1,24 +1,48 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-bank-verification',
   templateUrl: './bank-verification.component.html',
-  styleUrls: ['./bank-verification.component.css']
+  styleUrls: ['./bank-verification.component.css'],
 })
-export class BankVerificationComponent {
+export class BankVerificationComponent implements OnInit {
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      const success = params['success'];
+      const errorMsg = params['errormsg'];
+      const errorCode = params['errorcode'];
+
+      // 🔥 IMPORTANT: redirect on failure
+      if (success === 'false') {
+        this.router.navigate(
+          ['/dashboard/loan/error-verification'],
+          {
+            queryParams: {
+              errorcode: errorCode,
+              errormsg: errorMsg
+            }
+          }
+        );
+      }
+    });
+  }
 
   verifyBankConsent() {
-    // ✅ Call consent-status API or redirect
     console.log('Verify bank consent clicked');
   }
 
   skipProcess() {
-    console.log('User skipped bank verification');
-    // route to next step
+    this.router.navigate(['/dashboard/loan']);
   }
 
   reInitiate() {
-    console.log('Re-initiate bank consent flow');
-    // call API to re-create consent
+    this.router.navigate(['/dashboard/loan/bank']);
   }
 }

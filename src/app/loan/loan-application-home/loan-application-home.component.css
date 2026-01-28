@@ -145,3 +145,19 @@
     width: 100%;
   }
 }
+
+
+.loan-step.locked {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.loan-step.completed {
+  border-left: 4px solid #22c55e;
+}
+
+.loan-step.active {
+  border-left: 4px solid #6366f1;
+  background: #f5f3ff;
+}

@@ -3,6 +3,8 @@ import { Router } from '@angular/router';
 import { Camera } from '@mediapipe/camera_utils';
 import { FaceDetection } from '@mediapipe/face_detection';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-selfie',
@@ -21,9 +23,12 @@ export class SelfieComponent implements OnDestroy {
   capturedBlob: Blob | null = null;
   previewUrl: string | null = null;
 
-  fileError = '';
-
-  constructor(private contentService: ContentService, private router: Router) {}
+  constructor(
+    private contentService: ContentService,
+    private router: Router,
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService        // ✅ toaster
+  ) {}
 
   /** 📸 OPEN CAMERA */
   startCamera() {
@@ -59,12 +64,14 @@ export class SelfieComponent implements OnDestroy {
     });
   }
 
-  /** 📸 CAPTURE (NO UPLOAD HERE) */
+  /** 📸 CAPTURE SELFIE */
   captureSelfie() {
-    if (!this.faceDetected || !this.video?.nativeElement) return;
+    if (!this.faceDetected || !this.video?.nativeElement) {
+      this.toastr.warning('Face not detected properly');
+      return;
+    }
 
     const videoEl = this.video.nativeElement;
-
     const width = videoEl.videoWidth;
     const height = videoEl.videoHeight;
 
@@ -85,18 +92,24 @@ export class SelfieComponent implements OnDestroy {
         this.previewUrl = URL.createObjectURL(blob);
 
         this.stopCamera();
+        this.toastr.success('Selfie captured successfully');
       },
       'image/jpeg',
       0.9
     );
   }
 
-  /** ☁️ UPLOAD ONLY WHEN USER CONFIRMS */
+  /** ☁️ UPLOAD SELFIE */
   async uploadCapturedImage(): Promise<void> {
-    if (!this.capturedBlob) return;
+    if (!this.capturedBlob) {
+      this.toastr.warning('Please capture selfie first');
+      return;
+    }
 
     try {
-      // 1️⃣ Get upload intent
+      this.spinner.show();
+
+      // 1️⃣ Get upload metadata
       const metaPayload = {
         type: 'PhotoProfile',
         accessLevel: 'Private',
@@ -113,7 +126,7 @@ export class SelfieComponent implements OnDestroy {
       }
 
       const upload = res.data.upload;
-      const fileId = res.data.fileId; // ✅ IMPORTANT
+      const fileId = res.data.fileId;
 
       // 2️⃣ Upload to S3
       const s3Response = await fetch(upload.url, {
@@ -126,18 +139,21 @@ export class SelfieComponent implements OnDestroy {
       });
 
       if (!s3Response.ok) {
-        throw new Error(`S3 upload failed: ${s3Response.status}`);
+        throw new Error('Image upload failed');
       }
 
-      // 3️⃣ Tell backend upload is complete
+      // 3️⃣ Complete upload
       await this.contentService.completeUpload(fileId).toPromise();
 
-      // ✅ FINAL SUCCESS
-      alert('Selfie uploaded successfully ✅');
+      this.spinner.hide();
+      this.toastr.success('Selfie uploaded successfully');
+
+      // 🚀 NEXT STEP
       this.router.navigateByUrl('/dashboard/profile');
     } catch (err: any) {
-      console.error('Selfie upload failed', err);
-      alert(err?.message || 'Image upload failed');
+      this.spinner.hide();
+      console.error(err);
+      this.toastr.error(err?.message || 'Selfie upload failed');
     }
   }
 

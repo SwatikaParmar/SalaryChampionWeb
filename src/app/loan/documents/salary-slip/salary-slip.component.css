@@ -90,3 +90,88 @@
     stroke-linecap: round;
     stroke-linejoin: round;
 }
+
+
+.salary-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: #fff;
+}
+
+.salary-left h3 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.uploaded-text {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.upload-btn {
+  background: #f3f3f3;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  border: none;
+  cursor: pointer;
+}
+
+.upload-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke: #333;
+  fill: none;
+  stroke-width: 2;
+}
+
+.success-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #2e7d32;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* MODAL */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.upload-modal {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+  gap: 10px;
+}
+
+.btn.cancel {
+  background: #ddd;
+}
+
+.btn.upload {
+  background: #2e7d32;
+  color: #fff;
+}

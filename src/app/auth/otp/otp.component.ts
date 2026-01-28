@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../../service/auth-service.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-otp',
@@ -18,7 +20,9 @@ export class OtpComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private auth: AuthServiceService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService
   ) {}
 
   ngOnInit(): void {
@@ -45,11 +49,15 @@ export class OtpComponent implements OnInit {
       input.nextElementSibling?.focus();
     }
   }
-
+ /* ================= VERIFY OTP ================= */
   verifyOtp() {
-    if (this.otpForm.invalid || this.isLoading) return;
+    if (this.otpForm.invalid || this.isLoading) {
+      this.toastr.warning('Please enter complete OTP');
+      return;
+    }
 
     this.isLoading = true;
+    this.spinner.show();
 
     const code = Object.values(this.otpForm.value).join('');
 
@@ -62,28 +70,31 @@ export class OtpComponent implements OnInit {
     this.auth.verifyOtp(payload).subscribe({
       next: (res: any) => {
         this.isLoading = false;
+        this.spinner.hide();
 
         if (!res?.success) {
-          alert('Invalid OTP');
+          this.toastr.error(res?.message || 'Invalid OTP');
           return;
         }
 
         const data = res.data;
 
-        // 🔐 SAVE TOKENS
+        // 🔐 Save tokens
         localStorage.setItem('accessToken', data.auth.access_token);
         localStorage.setItem('refreshToken', data.auth.refresh_token);
 
-        // ✅ THIS WAS MISSING (CRITICAL)
+        // ✅ Set logged-in user
         this.auth.setCurrentUser(data.user);
 
-        // 🚦 FLOW BASED ROUTING
+        this.toastr.success('OTP verified successfully');
+
+        // 🚦 Flow based routing
         const roles = data.user.roles || [];
 
         if (roles.includes('BORROWER')) {
-          if (!data.basicFlow.steps.panVerification) {
+          if (!data.basicFlow?.steps?.panVerification) {
             this.router.navigate(['/dashboard/profile/pan']);
-          } else if (!data.basicFlow.steps.basicInformation) {
+          } else if (!data.basicFlow?.steps?.basicInformation) {
             this.router.navigate(['/dashboard/profile/basic-info']);
           } else {
             this.router.navigate(['/dashboard']);
@@ -92,21 +103,37 @@ export class OtpComponent implements OnInit {
           this.router.navigate(['/dashboard']);
         }
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        alert('OTP verification failed');
+        this.spinner.hide();
+        this.toastr.error(err?.error?.message || 'OTP verification failed');
       },
     });
   }
 
+  /* ================= RESEND OTP ================= */
   resendOtp() {
+    if (this.isLoading) return;
+
+    this.isLoading = true;
+    this.spinner.show();
+
     const payload = {
       phone: this.phone,
       purpose: 'login',
     };
 
-    this.auth.otp(payload).subscribe(() => {
-      alert('OTP resent successfully');
+    this.auth.otp(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        this.spinner.hide();
+        this.toastr.success(res?.message || 'OTP resent successfully');
+      },
+      error: () => {
+        this.isLoading = false;
+        this.spinner.hide();
+        this.toastr.error('Failed to resend OTP');
+      },
     });
   }
 }

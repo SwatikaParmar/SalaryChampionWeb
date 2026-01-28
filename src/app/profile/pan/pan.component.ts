@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-pan',
   templateUrl: './pan.component.html',
@@ -18,7 +20,9 @@ export class PanComponent {
   constructor(
     private ContentService: ContentService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
@@ -82,9 +86,10 @@ export class PanComponent {
       });
   }
 
+  // 🔍 STEP 1: PREVIEW PAN
   previewPan() {
-    if (this.panNumber.length !== 10) {
-      alert('Enter valid PAN number');
+    if (!this.panNumber || this.panNumber.length !== 10) {
+      this.toastr.warning('Please enter a valid PAN number');
       return;
     }
 
@@ -92,26 +97,28 @@ export class PanComponent {
       pan: this.panNumber.toUpperCase(),
     };
 
+    this.spinner.show();
+
     this.ContentService.previewPan(payload).subscribe({
       next: (res: any) => {
+        this.spinner.hide();
+
         if (!res?.success) {
-          alert('PAN verification failed');
+          this.toastr.error('PAN verification failed');
           return;
         }
 
-        // ✅ store preview data
         this.panData = res.data;
-
-        // ✅ open modal
         this.showModal = true;
 
         // ✅ store PAN preview for next screen
         localStorage.setItem('panPreviewData', JSON.stringify(res.data));
 
-        this.showModal = true;
+        this.toastr.success('PAN preview fetched successfully');
       },
       error: () => {
-        alert('Server error while verifying PAN');
+        this.spinner.hide();
+        this.toastr.error('Server error while verifying PAN');
       },
     });
   }

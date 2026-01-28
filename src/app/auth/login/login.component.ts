@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
 import { AuthServiceService } from '../../../service/auth-service.service';
 
 @Component({
@@ -15,7 +17,9 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthServiceService,
-    private router: Router
+    private router: Router,
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -24,34 +28,41 @@ export class LoginComponent implements OnInit {
       agree: [false, Validators.requiredTrue],
     });
   }
-
   sendOtp() {
-    if (this.mobileForm.invalid || this.isLoading) return;
+    if (this.mobileForm.invalid || this.isLoading) {
+      this.toastr.warning('Please enter valid mobile & accept terms');
+      return;
+    }
 
     this.isLoading = true;
+    this.spinner.show(); // ✅ SHOW SPINNER
 
     const payload = {
       phone: '+91' + this.mobileForm.value.mobile,
       purpose: 'login',
     };
 
-    console.log('SEND OTP PAYLOAD', payload);
-
     this.authService.otp(payload).subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.isLoading = false;
-
+        this.spinner.hide(); // ✅ HIDE SPINNER
+        debugger;
         if (res?.success) {
-          // ✅ store phone for OTP screen
           localStorage.setItem('loginPhone', payload.phone);
-
-          // ✅ go to OTP screen
+          this.toastr.success(res?.message || 'OTP sent successfully');
           this.router.navigate(['/auth/otp']);
+        } else {
+          this.toastr.error(res?.message || 'Failed to send OTP');
         }
       },
-      error: () => {
+
+      error: (err) => {
         this.isLoading = false;
-        alert('Failed to send OTP');
+        this.spinner.hide(); // ✅ HIDE SPINNER
+
+        this.toastr.error(
+          err?.error?.message || 'Something went wrong. Try again',
+        );
       },
     });
   }
