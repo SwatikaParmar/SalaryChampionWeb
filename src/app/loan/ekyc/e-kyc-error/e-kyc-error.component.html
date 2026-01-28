@@ -1,34 +1,37 @@
 <div class="ekyc-container">
-  <div class="ekyc-card error-card">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="ekyc-card error-card">
+        <!-- Title -->
+        <h2 class="ekyc-title">
+          ❌ e-KYC Verification Failed
+        </h2>
 
-    <!-- Title -->
-    <h2 class="ekyc-title">
-      ❌ e-KYC Verification Failed
-    </h2>
+        <!-- Illustration -->
+        <div class="ekyc-illustration">
+          <img src="assets/images/remove.png" alt="eKYC Failed" class="img-fluid"/>
+        </div>
 
-    <!-- Illustration -->
-    <div class="ekyc-illustration">
-      <img
-        src="assets/images/ekyc_failed.webp"
-        alt="eKYC Failed"
-      />
+        <!-- Message -->
+        <p class="ekyc-text">
+          {{ reason || 'Verification was cancelled or failed. Please try again.' }}
+        </p>
+
+        <!-- Actions -->
+        <div class="action-buttons">
+          <button class="btn-outline" (click)="goBack()">
+            Go Back
+          </button>
+
+          <button class="btn-primary" (click)="retry()">
+            Retry e-KYC
+          </button>
+        </div>
+      </div>
     </div>
 
-    <!-- Message -->
-    <p class="ekyc-text">
-      {{ reason || 'Verification was cancelled or failed. Please try again.' }}
-    </p>
-
-    <!-- Actions -->
-    <div class="action-buttons">
-      <button class="btn-outline" (click)="goBack()">
-        Go Back
-      </button>
-
-      <button class="btn-primary" (click)="retry()">
-        Retry e-KYC
-      </button>
+    <div class="col-md-6">
+      <img src="assets/images/e_kyc_verification_failed.webp" alt="eKYC Failed" class="img-fluid"/>
     </div>
-
   </div>
 </div>

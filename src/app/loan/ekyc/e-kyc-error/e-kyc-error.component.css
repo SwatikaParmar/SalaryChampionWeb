@@ -1,48 +1,52 @@
 .ekyc-container {
-  min-height: 70vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #f4f6fb;
-  padding: 20px;
+    min-height: 70vh;
+    background: #f4f6fb;
+    padding: 30px;
 }
 
 /* CARD */
 .ekyc-card {
-  background: #ffffff;
-  border-radius: 14px;
-  padding: 32px 28px;
-  max-width: 460px;
-  width: 100%;
-  text-align: center;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    background: #ffffff;
+    padding: 30px 30px;
+    width: 100%;
+    text-align: center;
+    height: 100%;
 }
 
 .error-card {
-  border-top: 5px solid #ff4d4f;
+    border-top: 5px solid #7c4fe0;
 }
 
 /* TITLE */
 .ekyc-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: #ff4d4f;
+  font-family: "Poppins", sans-serif;
+  font-size: 24px;
+  color: #7c4fe0;
   margin-bottom: 18px;
+}
+.ekyc-illustration{
+    margin: 20px auto 10px;
+    display: grid;
+    grid-gap: 10px;
+    justify-items: center;
+    align-items: center;
+    font-family: "Poppins", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
 }
 
 /* IMAGE */
 .ekyc-illustration img {
-  width: 160px;
-  margin: 10px auto 18px;
-  display: block;
+    display: block;
 }
 
 /* TEXT */
 .ekyc-text {
-  font-size: 14px;
-  color: #555;
-  margin-bottom: 26px;
-  line-height: 1.5;
+    font-family: "Poppins", sans-serif;
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 25px;
+    line-height: 1.5;
 }
 
 /* BUTTONS */
@@ -53,26 +57,30 @@
 }
 
 .btn-primary {
-  background: #ff4d4f;
-  border: none;
-  color: #fff;
-  padding: 10px 22px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
+    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 7px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
 }
-
 .btn-primary:hover {
-  background: #d9363e;
+  background: #3c3c3c;
 }
 
 .btn-outline {
-  border: 1px solid #ccc;
-  background: transparent;
-  padding: 10px 22px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
+    border: 1px solid #ccc;
+    background: transparent;
+    font-family: "Poppins", sans-serif;
+    padding: 14px 30px;
+    border-radius: 7px;
+    color: #444;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
 }
 
 .btn-outline:hover {
