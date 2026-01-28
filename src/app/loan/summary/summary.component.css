@@ -32,30 +32,29 @@
 .status-item.active {
     background: linear-gradient(270deg, #7c4fe0, #4528dc);
     color: #fff;
-    font-size: 16px;
+    font-size: 15px;
     font-family: "Poppins", sans-serif;
     text-transform: capitalize;
     height: 60px;
     display: grid;
     align-items: center;
-    justify-items: center;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .status-item.completed {
     background: linear-gradient(90deg, #2c8cff, #5ad1ff);
     color: #fff;
-    font-size: 16px;
+    font-size: 15px;
     font-family: "Poppins", sans-serif;
     text-transform: capitalize;
     height: 60px;
     display: grid;
+    justify-content: space-between;
     grid-template-columns: auto 16px;
     grid-gap: 15px;
     align-items: center;
     justify-items: center;
-    font-weight: 500;
-    justify-content: center;
+    font-weight: 400;
 }
 
 .check {
