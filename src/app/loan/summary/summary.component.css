@@ -35,7 +35,6 @@
     font-size: 15px;
     font-family: "Poppins", sans-serif;
     text-transform: capitalize;
-    height: 60px;
     display: grid;
     align-items: center;
     font-weight: 400;
@@ -47,7 +46,6 @@
     font-size: 15px;
     font-family: "Poppins", sans-serif;
     text-transform: capitalize;
-    height: 60px;
     display: grid;
     justify-content: space-between;
     grid-template-columns: auto 16px;
