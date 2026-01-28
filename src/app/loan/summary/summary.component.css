@@ -22,15 +22,15 @@
 
 /* STATES */
 .status-item.disabled {
-    background: #fbf8ff;
-    border: 2px solid #ecddff;
-    color: #444;
+    background: linear-gradient(270deg, #7c4fe0, #4528dc);
+    border: 1px solid #8440da;
+    color: #fff;
     font-size: 15px;
     font-family: "Poppins", sans-serif;
 }
 
 .status-item.active {
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    background: #3c3c3c;
     color: #fff;
     font-size: 16px;
     font-family: "Poppins", sans-serif;
