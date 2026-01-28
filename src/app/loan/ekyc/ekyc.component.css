@@ -1,46 +1,97 @@
-.error-card {
-  border-top: 5px solid #ff4d4f;
+.ekyc-wrapper {
+  padding: 30px;
+  background: #f4f6fb;
 }
 
-.ekyc-title {
-  text-align: center;
-  font-weight: 700;
-}
-
-.ekyc-text {
-  margin-top: 1rem;
-  font-size: 15px;
-  color: #555;
-}
-
-.action-buttons {
+/* HEADER */
+.action-arr {
   display: flex;
+  align-items: center;
   gap: 12px;
-  justify-content: center;
-  margin-top: 24px;
 }
 
+.back-lk {
+  color: #333;
+  font-size: 18px;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* BOX */
+.ekyc-box {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.desc {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.sub-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ERROR */
+.error-msg {
+  color: #ff4d4f;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+/* BUTTONS */
 .btn-primary {
   background: #ff4d4f;
   border: none;
   color: #fff;
-  padding: 10px 22px;
+  padding: 10px 26px;
   border-radius: 6px;
+  font-size: 14px;
   cursor: pointer;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-primary:hover {
   background: #d9363e;
 }
 
-.btn-outline {
-  border: 1px solid #ccc;
-  background: transparent;
-  padding: 10px 22px;
+.btn-secondary {
+  background: #1d4ed8;
+  border: none;
+  color: #fff;
+  padding: 10px 26px;
   border-radius: 6px;
+  font-size: 14px;
   cursor: pointer;
 }
 
-.btn-outline:hover {
-  background: #f5f5f5;
+.btn-secondary:hover {
+  background: #1e40af;
+}
+
+/* IFRAME */
+.ekyc-frame-wrapper iframe {
+  width: 100%;
+  height: 450px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* RIGHT IMAGE */
+.rfigure img {
+  max-width: 85%;
+  opacity: 0.95;
 }
