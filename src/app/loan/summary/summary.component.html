@@ -1,7 +1,7 @@
 <div class="status-container">
 
 <div class="action-arr">
-	<a href="#" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
+	<a [routerLink]="['/dashboard']" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
 	<h2 class="page-title">Status of Application</h2>
 </div>
 
@@ -11,6 +11,10 @@
     <div class="col-md-6">
       <div class="status-left">
         <div class="status-list">
+               <div class="status-item completed">
+            Application submitted
+            <span class="check">✔</span>
+          </div>
           <div class="status-item disabled">disbursement</div>
           <div class="status-item disabled">esign</div>
           <div class="status-item disabled">sanction</div>          
@@ -19,10 +23,7 @@
             Application in review
           </div>
                       
-          <div class="status-item completed">
-            Application submitted
-            <span class="check">✔</span>
-          </div>
+     
           
         </div>
 

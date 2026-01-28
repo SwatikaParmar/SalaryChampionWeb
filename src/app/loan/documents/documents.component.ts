@@ -82,7 +82,7 @@ loadDocumentChecklist() {
 
       // 🔥 ONLY required & NOT uploaded documents
       const pendingRequiredDocs = checklist.filter(
-        (doc: any) => doc.required === true && doc.uploaded === false
+        (doc: any) => doc.required === true && doc.uploaded === true
       );
 
       /**

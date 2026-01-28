@@ -58,36 +58,49 @@ export class BankStatementComponent implements OnInit {
   }
 
   /* ================= CHECKLIST ================= */
-  checkBankStatementStatus() {
-    this.contentService.documentCheckList(this.applicationId).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
+checkBankStatementStatus() {
+  this.contentService.documentCheckList(this.applicationId).subscribe({
+    next: (res: any) => {
+      this.spinner.hide();
 
-        if (!res?.success || !res.data?.checklist) return;
+      if (!res?.success || !res.data?.checklist) {
+        // ❌ checklist hi nahi aayi → allow next
+        this.router.navigate(['/dashboard/loan/salary-slip']);
+        return;
+      }
 
-        const bankDoc = res.data.checklist.find(
-          (doc: any) => doc.code === 'BANK_STATEMENT_3M'
-        );
+      const checklist = res.data.checklist;
 
-        // ✅ ALREADY UPLOADED → SALARY PAGE
-        if (
-          bankDoc &&
-          bankDoc.uploaded === true &&
-          bankDoc.uploadStatus === 'UPLOADED' &&
-          bankDoc.status === 'UPLOADED'
-        ) {
-          this.router.navigate(['/dashboard/loan/salary-slip']);
-          return;
-        }
+      const bankDoc = checklist.find(
+        (doc: any) => doc.code === 'BANK_STATEMENT_3M'
+      );
 
-        // ❌ else stay here (upload UI visible)
-      },
-      error: () => {
-        this.spinner.hide();
-        this.toastr.error('Failed to load document checklist');
-      },
-    });
-  }
+      // ✅ CASE 1: Bank statement NOT REQUIRED
+      if (!bankDoc) {
+        this.router.navigate(['/dashboard/loan/salary-slip']);
+        return;
+      }
+
+      // ✅ CASE 2: Bank statement ALREADY UPLOADED
+      if (
+        bankDoc.uploaded === true &&
+        bankDoc.uploadStatus === 'UPLOADED' &&
+        bankDoc.status === 'UPLOADED'
+      ) {
+        this.router.navigate(['/dashboard/loan/salary-slip']);
+        return;
+      }
+
+      // ❌ CASE 3: Required but NOT uploaded
+      // stay on this page → upload UI visible
+    },
+    error: () => {
+      this.spinner.hide();
+      this.toastr.error('Failed to load document checklist');
+    },
+  });
+}
+
 
   /* ================= OPEN MODAL ================= */
   openUploadModal() {

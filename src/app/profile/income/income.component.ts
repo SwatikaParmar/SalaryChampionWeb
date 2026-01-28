@@ -29,7 +29,7 @@ export class IncomeComponent implements OnInit {
       netMonthlyIncome: ['', [Validators.required, Validators.min(1)]],
       nextSalaryDate: ['', Validators.required],
       modeOfIncome: ['SALARY', Validators.required],
-      existingEmiTotal: ['', [Validators.required, Validators.min(0)]],
+      existingEmiTotal: [''],
     });
 
     // 🔥 IMPORTANT: default selection logic
