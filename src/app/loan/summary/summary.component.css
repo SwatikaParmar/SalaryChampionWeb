@@ -30,7 +30,7 @@
 }
 
 .status-item.active {
-    background: #3c3c3c;
+    background: linear-gradient(270deg, #7c4fe0, #4528dc);
     color: #fff;
     font-size: 16px;
     font-family: "Poppins", sans-serif;
