@@ -127,6 +127,11 @@
     color: #fff;
 }
 
+.modal-actions{
+  display: grid;
+  grid-gap: 10px;
+}
+
 /* ================= MODAL ================= */
 
 .modal-overlay {
@@ -141,8 +146,8 @@
 
 .upload-modal {
   background: #ffffff;
-  padding: 20px;
-  border-radius: 16px;
+  padding: 30px;
+  border-radius: 15px;
   width: 90%;
   max-width: 360px;
   text-align: center;
@@ -155,6 +160,10 @@
   justify-content: space-between;
   align-items: center;
 }
+.modal-header h3{
+    margin: 0;
+    font-size: 24px;
+}
 
 .close-btn {
   background: none;
@@ -165,12 +174,13 @@
 
 /* UPLOAD */
 .upload-box {
-  display: block;
-  padding: 20px;
-  border: 2px dashed #2563eb;
-  border-radius: 12px;
-  margin: 16px 0;
-  cursor: pointer;
+    display: block;
+    padding: 20px;
+    border: 3px dashed #8340da;
+    border-radius: 12px;
+    margin: 16px 0;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
 }
 
 .upload-icon {
@@ -182,23 +192,32 @@
 /* PASSWORD */
 .password-input {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 12px 15px;
+  border-radius: 7px;
   border: 1px solid #cbd5e1;
   margin-bottom: 12px;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  text-transform: capitalize;
 }
 
 .hint {
+  font-family: "Poppins", sans-serif;
   font-size: 13px;
-  color: #6b7280;
+  color: #555;
 }
 
 /* CANCEL */
 .cancel-btn {
   width: 100%;
-  height: 42px;
-  border-radius: 10px;
+  font-family: "Poppins", sans-serif;
   border: none;
+  padding: 10px 30px;
+  border-radius: 7px;
+  height: 48px;
+  color: #444;
+  font-size: 14px;
+  cursor: pointer;
   background: #e5e7eb;
   cursor: pointer;
 }
