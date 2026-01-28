@@ -108,7 +108,7 @@
     <button
       *ngIf="loanProgress === 100"
       class="btn-start btn-status"
-      
+     [routerLink]="['/dashboard/loan/summary']" 
     >
       Check Status
     </button>
@@ -148,6 +148,9 @@
         </small>
       </div>
     </div> -->
+
+
+    
 
   </div>
 
