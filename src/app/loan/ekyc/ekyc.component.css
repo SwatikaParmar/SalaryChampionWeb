@@ -5,40 +5,61 @@
 
 /* HEADER */
 .action-arr {
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    grid-gap: 12px;
+    align-items: center;
+}
+.back-lk {
+    background: #fff;
+    display: grid;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-items: center;
+    font-size: 14px;
+    text-decoration: none;
+    border: 2px solid #8541da;
+    color: #8541da;
+    border-radius: 50px;
+}
+.page-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    margin: 0;
+}
+
+.action-arr {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.back-lk {
-  color: #333;
-  font-size: 18px;
-}
-
-.page-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-}
-
 /* BOX */
 .ekyc-box {
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 28px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    background: #ffffff;
+    padding: 30px;
+    min-height: 300px;
+    text-align: center;
+    display: grid;
+    align-content: center;
+    justify-items: center;
 }
 
 .desc {
-  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
   color: #555;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
 .sub-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 10px;
+    font-family: "Poppins", sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 0px;
+    text-transform: capitalize;
 }
 
 /* ERROR */
@@ -50,17 +71,18 @@
 
 /* BUTTONS */
 .btn-primary {
-  background: #ff4d4f;
-  border: none;
-  color: #fff;
-  padding: 10px 26px;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
+    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 14px 30px;
+    border-radius: 7px;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
 }
 
 .btn-primary:disabled {
-  opacity: 0.6;
   cursor: not-allowed;
 }
 
@@ -91,7 +113,15 @@
 }
 
 /* RIGHT IMAGE */
+.rfigure{
+    background: #fff;
+    padding: 30px;
+    height: 100%;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
 .rfigure img {
-  max-width: 85%;
-  opacity: 0.95;
+    max-width: 250px;
+    height: auto;
 }
