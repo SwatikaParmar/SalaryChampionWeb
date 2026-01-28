@@ -1,29 +1,38 @@
 <div class="bank-verify-wrapper">
-  <div class="bank-verify-card">
+  <div class="row">
 
-    <!-- Illustration -->
-    <div class="illustration">
-      <img
-        src="assets/images/bank-verification.svg"
-        alt="Bank Verification"
-      />
+    <div class="col-md-6">
+      <div class="bank-verify-card">
+
+        <!-- Illustration -->
+        <div class="illustration">
+          <img src="assets/images/bank-verification.svg" alt="Bank Verification" class="img-fluid"/>
+        </div>
+
+        <!-- Message -->
+        <p class="verify-text">
+          Please click here to confirm the status of your provided consent.
+        </p>
+
+        <!-- Primary CTA -->
+        <button class="primary-btn" (click)="verifyBankConsent()">
+          Verify Now
+        </button>
+
+        <!-- Secondary Actions -->
+        <div class="secondary-actions">
+          <a (click)="skipProcess()">Skip this process</a>
+          <span>|</span>
+          <a (click)="reInitiate()">Re-initiate this process</a>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Message -->
-    <p class="verify-text">
-      Please click here to confirm the status of your provided consent.
-    </p>
-
-    <!-- Primary CTA -->
-    <button class="primary-btn" (click)="verifyBankConsent()">
-      Verify Now
-    </button>
-
-    <!-- Secondary Actions -->
-    <div class="secondary-actions">
-      <a (click)="skipProcess()">Skip this process</a>
-      <span>|</span>
-      <a (click)="reInitiate()">Re-initiate this process</a>
+    <div class="col-md-6">
+      <div class="right-htfigure">
+        <img src="assets/images/bank_verification_vector.webp" alt="Bank Verification" class="img-fluid"/>
+      </div>
     </div>
 
   </div>
