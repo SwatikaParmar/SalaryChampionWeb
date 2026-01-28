@@ -2,18 +2,26 @@
   <div class="auth-card">
     <div class="left_boxx">
       <img src="assets/images/logo.png" class="img-fluid logo-login">
-    <h2>Enter your mobile number</h2>
+<h5 class="text-center">
+  When money is your need,<br>
+  we are a solution
+</h5>
     <form [formGroup]="mobileForm" (ngSubmit)="sendOtp()">
 
       <!-- MOBILE INPUT -->
       <div class="mobile-input">
         <span>+91</span>
-        <input
-          type="text"
-          formControlName="mobile"
-          placeholder="Enter 10-digit mobile number"
-          maxlength="10"
-        />
+      <input
+  type="text"
+  formControlName="mobile"
+  placeholder="Enter 10-digit mobile number"
+  maxlength="10"
+  inputmode="numeric"
+  pattern="[0-9]*"
+  (keypress)="allowNumbersOnly($event)"
+  (input)="removeNonNumeric($event)"
+/>
+
       </div>
 
       <!-- ERROR -->

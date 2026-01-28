@@ -98,21 +98,31 @@
     </div>
 
     <!-- 🔁 BUTTON CHANGE -->
-    <button
-      *ngIf="loanProgress < 100"
-      class="btn-start"
-      routerLink="/dashboard/loan"
-    >
-      Continue
-    </button>
+  <button
+  *ngIf="loanProgress === 0"
+  class="btn-start"
+  routerLink="/dashboard/loan"
+>
+  View & Apply
+</button>
 
-    <button
-      *ngIf="loanProgress === 100"
-      class="btn-start btn-status"
-     [routerLink]="['/dashboard/loan/summary']" 
-    >
-      Check Status
-    </button>
+<!-- loanProgress between 1 and 99 -->
+<button
+  *ngIf="loanProgress > 0 && loanProgress < 100"
+  class="btn-start"
+  routerLink="/dashboard/loan"
+>
+  Continue
+</button>
+
+<!-- loanProgress === 100 -->
+<button
+  *ngIf="loanProgress === 100"
+  class="btn-start btn-status"
+  [routerLink]="['/dashboard/loan/summary']"
+>
+  Check Status
+</button>
   </div>
 
   <!-- RIGHT -->

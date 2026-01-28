@@ -159,4 +159,10 @@ verifyEkyc(data:any){
 pennyDrop(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.pennyDrop,data)
 }
+
+verifyBank(id: any) {
+  const url = ApiEndPoint.verifyBank.replace('{id}', id);
+  return this.http.get<any>(environment.apiUrl + url);
+}
+
 }

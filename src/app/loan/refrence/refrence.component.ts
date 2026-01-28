@@ -123,7 +123,7 @@ export class RefrenceComponent implements OnInit {
         }
 
         this.toastr.success('References saved successfully ✅');
-        this.router.navigate(['/dashboard/loan/documents']);
+        this.router.navigate(['/dashboard/loan/bank']);
       },
       error: () => {
         this.isSaving = false;

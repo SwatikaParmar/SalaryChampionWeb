@@ -107,7 +107,7 @@ export class IncomeComponent implements OnInit {
       employmentType: type,
       netMonthlyIncome: employment?.netMonthlyIncome || '',
       nextSalaryDate: employment?.nextSalaryDate || '',
-      modeOfIncome: employment?.modeOfIncome || 'SALARY',
+      modeOfIncome: employment?.modeOfIncome || 'BANK_TRANSFER',
       existingEmiTotal: employment?.existingEmiTotal ?? '',
     });
 

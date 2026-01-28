@@ -66,4 +66,26 @@ export class LoginComponent implements OnInit {
       },
     });
   }
+
+  allowNumbersOnly(event: KeyboardEvent) {
+  const charCode = event.which ? event.which : event.keyCode;
+
+  // Allow only 0–9
+  if (charCode < 48 || charCode > 57) {
+    event.preventDefault();
+  }
+}
+
+removeNonNumeric(event: Event) {
+  const input = event.target as HTMLInputElement;
+
+  // Remove anything except digits
+  input.value = input.value.replace(/[^0-9]/g, '');
+
+  // Sync value back to form control
+  this.mobileForm.get('mobile')?.setValue(input.value, {
+    emitEvent: false,
+  });
+}
+
 }

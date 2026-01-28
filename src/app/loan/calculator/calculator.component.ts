@@ -96,7 +96,7 @@ export class CalculatorComponent implements OnInit {
       applicationId: this.applicationId,
       principal: this.principal,
       tenure: this.tenure,
-      repaymentType: 'MONTHLY',
+      repaymentType: 'BULLET',
       rate: this.interestRateMonthly * 12, // API expects annual
       processingFee: this.processingFeePercent,
       loanPurpose: this.purpose,
@@ -105,11 +105,11 @@ export class CalculatorComponent implements OnInit {
     this.contentService.emiLoanQuote(payload).subscribe({
       next: (res: any) => {
         this.isCalculating = false;
-
+debugger
         if (res?.success && res?.data) {
           this.emi = res.data.emi;
           this.totalInterest = res.data.totalInterest;
-          this.grandTotalPayable = res.data.grandTotalPayable;
+          this.grandTotalPayable = res.data.totalPayable;
           this.netDisbursal = res.data.netDisbursal;
         }
       },

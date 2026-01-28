@@ -22,5 +22,6 @@ export enum ApiEndPoint {
   getDisbursalBankStatement = 'loan/getDisbursalBankAccounts',
   saveReference = 'lead/saveReferences',
   verifyEkyc = 'kyc/aadhaar/fetch-and-save',
-  pennyDrop = 'kyc/bank/pennydrop/verify'
+  pennyDrop = 'kyc/bank/pennydrop/verify',
+  verifyBank = 'kyc/aa/consents/{id}/fetch-status'
 }
