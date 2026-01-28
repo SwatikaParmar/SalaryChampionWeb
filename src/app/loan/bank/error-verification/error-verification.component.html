@@ -1,31 +1,39 @@
 <div class="bank-verify-wrapper">
-  <div class="bank-verify-card error">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="bank-verify-card error">
 
-    <!-- Illustration -->
-    <div class="illustration">
-      <img
-        src="assets/images/bank-error.svg"
-        alt="Bank Verification Failed"
-      />
+        <!-- Illustration -->
+        <div class="illustration">
+          <img src="assets/images/bank-error.svg" alt="Bank Verification Failed" />
+        </div>
+
+        <!-- Title -->
+        <h3 class="error-title">Bank Verification Failed</h3>
+
+        <!-- Error Message -->
+        <p class="verify-text">
+          {{ errorMessage }}
+        </p>
+
+        <!-- Primary CTA -->
+        <button class="primary-btn error-btn" (click)="retryBankFlow()">
+          Retry Bank Verification
+        </button>
+
+        <!-- Secondary Action -->
+        <div class="secondary-actions">
+          <a (click)="goToLoanDashboard()">Go to Dashboard</a>
+        </div>
+
+      </div>
     </div>
 
-    <!-- Title -->
-    <h3 class="error-title">Bank Verification Failed</h3>
-
-    <!-- Error Message -->
-    <p class="verify-text">
-      {{ errorMessage }}
-    </p>
-
-    <!-- Primary CTA -->
-    <button class="primary-btn error-btn" (click)="retryBankFlow()">
-      Retry Bank Verification
-    </button>
-
-    <!-- Secondary Action -->
-    <div class="secondary-actions">
-      <a (click)="goToLoanDashboard()">Go to Dashboard</a>
+    <div class="col-md-6">
+      <div class="right-htfigure">
+        <img src="assets/images/bank_verification_failed.webp" class="img-fluid">
+      </div>
     </div>
-
+    
   </div>
 </div>
