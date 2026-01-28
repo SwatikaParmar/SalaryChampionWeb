@@ -157,4 +157,16 @@ export class PanComponent {
       },
     });
   }
+
+  onPanInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+
+  // 🔥 Allow only A–Z and 0–9, force uppercase
+  input.value = input.value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+
+  this.panNumber = input.value;
+}
+
 }

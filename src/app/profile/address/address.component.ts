@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { ContentService } from '../../../service/content.service';
 
 @Component({
   selector: 'app-address',
@@ -12,16 +12,23 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class AddressComponent implements OnInit {
   addressForm!: FormGroup;
+  years: number[] = [];
 
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
     private router: Router,
-       private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+    private spinner: NgxSpinnerService, // ✅ spinner
+    private toastr: ToastrService, // ✅ toaster
   ) {}
 
   ngOnInit(): void {
+    const currentYear = new Date().getFullYear();
+
+    for (let i = 0; i < 52; i++) {
+      this.years.push(currentYear - i);
+    }
+
     this.addressForm = this.fb.group({
       typeCode: ['CURRENT'],
       line1: ['', Validators.required],
@@ -38,15 +45,20 @@ export class AddressComponent implements OnInit {
     this.getBorrowerSnapshot();
   }
 
-   submit() {
+  submit() {
     if (this.addressForm.invalid) {
       this.addressForm.markAllAsTouched();
       this.toastr.warning('Please fill all required fields');
       return;
     }
 
-    const payload = this.addressForm.getRawValue();
+    const year = this.addressForm.value.residingSince;
 
+    // 🔥 Convert year to date (01-01-YYYY)
+    const payload = {
+      ...this.addressForm.getRawValue(),
+      residingSince: `${year}-01-01`,
+    };
     this.spinner.show(); // ✅ START spinner
 
     this.contentService.saveAddressDetail(payload).subscribe({
@@ -121,7 +133,7 @@ export class AddressComponent implements OnInit {
       next: (res: any) => {
         if (res?.success && res?.data?.addresses?.length) {
           const currentAddress = res.data.addresses.find(
-            (addr: any) => addr.typeCode === 'CURRENT'
+            (addr: any) => addr.typeCode === 'CURRENT',
           );
 
           if (currentAddress) {

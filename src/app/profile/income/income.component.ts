@@ -68,24 +68,25 @@ export class IncomeComponent implements OnInit {
     });
   }
 
-  setEmploymentType(type?: string) {
-    const finalType = type || 'SALARIED';
+setEmploymentType(type?: string) {
+  const finalType = type || 'SALARIED';
 
-    this.incomeForm.patchValue({ employmentType: finalType });
+  this.incomeForm.patchValue({ employmentType: finalType });
 
-    const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
+  const salaryDateCtrl = this.incomeForm.get('nextSalaryDate');
 
-    if (finalType === 'SALARIED') {
-      salaryDateCtrl?.setValidators(Validators.required);
-      salaryDateCtrl?.enable();
-    } else {
-      salaryDateCtrl?.clearValidators();
-      salaryDateCtrl?.reset();
-      salaryDateCtrl?.disable();
-    }
-
-    salaryDateCtrl?.updateValueAndValidity();
+  if (finalType === 'SALARIED') {
+    salaryDateCtrl?.setValidators(Validators.required);
+    salaryDateCtrl?.enable();
+  } else {
+    salaryDateCtrl?.clearValidators();
+    salaryDateCtrl?.reset();
+    salaryDateCtrl?.disable();
   }
+
+  salaryDateCtrl?.updateValueAndValidity();
+}
+
 
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({

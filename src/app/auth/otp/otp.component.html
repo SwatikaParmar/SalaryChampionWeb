@@ -9,7 +9,13 @@
   <div class="otp-right text-center">
     <div class="verification_box">
       <h2>OTP Verification</h2>
-      <p>Please enter the OTP sent to <b>{{ phone }}</b></p>
+<p>
+  Please enter the OTP sent to <b>{{ phone }}</b>
+</p>
+
+<p class="edit-number" (click)="editNumber()" style="color: blue;">
+  ✏️ Edit Number
+</p>
 
       <form [formGroup]="otpForm" (ngSubmit)="verifyOtp()">
 
@@ -29,7 +35,9 @@
         <small class="error" *ngIf="otpForm.touched && otpForm.invalid">
           Please enter valid 6-digit OTP
         </small>
-
+<div class="timer" *ngIf="!showResend">
+  {{ displayTime }}
+</div>
         <!-- BUTTON -->
         <button
           class="btn-primary sendOtp"
@@ -41,10 +49,15 @@
       </form>
 
       <!-- RESEND -->
-      <div class="resend">
-        Didn’t receive OTP?
-        <span (click)="resendOtp()">Resend again</span>
-      </div>
+     <!-- TIMER -->
+
+
+<!-- RESEND -->
+<div class="resend" *ngIf="showResend">
+  Didn’t receive OTP?
+  <span (click)="resendOtp()">Resend again</span>
+</div>
+
     </div>
   </div>
 

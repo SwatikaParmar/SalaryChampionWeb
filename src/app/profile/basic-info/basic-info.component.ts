@@ -62,7 +62,7 @@ export class BasicInfoComponent implements OnInit {
     this.basicForm.patchValue({
       name: user.name,
       gender: user.gender,
-      maritalStatus: user.maritalStatus,
+      maritalStatus: user.maritalStatus || '',
       email: user.email,
       spouseName: user.spouseName,
       spouseOccupation: user.spouseOccupation,

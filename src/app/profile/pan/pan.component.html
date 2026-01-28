@@ -15,13 +15,15 @@
     </p>
 
     <!-- PAN INPUT -->
-    <input
-      type="text"
-      class="pan-input"
-      maxlength="10"
-      placeholder="Enter PAN Number"
-      [(ngModel)]="panNumber"
-    />
+<input
+  type="text"
+  class="pan-input"
+  maxlength="10"
+  placeholder="Enter PAN Number"
+  [(ngModel)]="panNumber"
+  (input)="onPanInput($event)"
+/>
+
 
     <!-- CONTINUE BUTTON -->
     <button class="continue-btn" (click)="previewPan()">

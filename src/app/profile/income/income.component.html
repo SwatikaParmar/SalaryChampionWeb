@@ -57,22 +57,34 @@
         </div>
 
         <!-- Next Salary Date -->
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Next Salary Date *</label>
-            <input type="date" formControlName="nextSalaryDate" [min]="minSalaryDate"/>
+       <!-- Next Salary Date -->
+<!-- Next Salary Date (ONLY FOR SALARIED) -->
+<div
+  class="col-md-6"
+  *ngIf="incomeForm.value.employmentType === 'SALARIED'"
+>
+  <div class="form-group">
+    <label>Next Salary Date *</label>
 
-            <div
-              class="error"
-              *ngIf="
-                incomeForm.get('nextSalaryDate')?.touched &&
-                incomeForm.get('nextSalaryDate')?.invalid
-              "
-            >
-              Salary date is required
-            </div>
-          </div>
-        </div>
+    <input
+      type="date"
+      formControlName="nextSalaryDate"
+      [min]="minSalaryDate"
+    />
+
+    <div
+      class="error"
+      *ngIf="
+        incomeForm.get('nextSalaryDate')?.touched &&
+        incomeForm.get('nextSalaryDate')?.invalid
+      "
+    >
+      Salary date is required
+    </div>
+  </div>
+</div>
+
+
 
         <!-- Mode of Income -->
         <div class="col-md-12">

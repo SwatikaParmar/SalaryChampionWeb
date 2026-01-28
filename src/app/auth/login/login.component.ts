@@ -22,12 +22,22 @@ export class LoginComponent implements OnInit {
     private toastr: ToastrService,
   ) {}
 
-  ngOnInit(): void {
-    this.mobileForm = this.fb.group({
-      mobile: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
-      agree: [false, Validators.requiredTrue],
+ngOnInit(): void {
+  this.mobileForm = this.fb.group({
+    mobile: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
+    agree: [false, Validators.requiredTrue],
+  });
+
+  // 🔥 PATCH NUMBER IF COMING FROM OTP
+  const savedMobile = localStorage.getItem('loginMobile');
+  if (savedMobile) {
+    this.mobileForm.patchValue({
+      mobile: savedMobile,
+      agree: true
     });
   }
+}
+
   sendOtp() {
     if (this.mobileForm.invalid || this.isLoading) {
       this.toastr.warning('Please enter valid mobile & accept terms');
@@ -47,11 +57,19 @@ export class LoginComponent implements OnInit {
         this.isLoading = false;
         this.spinner.hide(); // ✅ HIDE SPINNER
         debugger;
-        if (res?.success) {
-          localStorage.setItem('loginPhone', payload.phone);
-          this.toastr.success(res?.message || 'OTP sent successfully');
-          this.router.navigate(['/auth/otp']);
-        } else {
+    if (res?.success) {
+  localStorage.setItem('loginPhone', payload.phone); // +91xxxxxxxxxx
+  localStorage.setItem('loginMobile', this.mobileForm.value.mobile); // 🔥 plain number
+
+  localStorage.setItem(
+    'otpTimer',
+    res?.data?.nextRequestInSec?.toString() || '45'
+  );
+
+  this.toastr.success(res?.message || 'OTP sent successfully');
+  this.router.navigate(['/auth/otp']);
+}
+ else {
           this.toastr.error(res?.message || 'Failed to send OTP');
         }
       },

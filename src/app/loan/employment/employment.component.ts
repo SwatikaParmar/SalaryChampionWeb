@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-employment',
@@ -17,6 +18,7 @@ export class EmploymentComponent implements OnInit {
     private fb: FormBuilder,
     private contentService: ContentService,
     private router: Router,
+      private spinner: NgxSpinnerService 
   ) {}
 
   ngOnInit(): void {
@@ -61,30 +63,38 @@ export class EmploymentComponent implements OnInit {
   }
 
   // ================= SAVE =================
-  save() {
-    debugger;
-    this.submitted = true;
+save() {
+  this.submitted = true;
 
-    // 🔥 FORCE validation for ALL controls (including address)
-    this.employmentForm.markAllAsTouched();
+  // 🔥 Force validation
+  this.employmentForm.markAllAsTouched();
+  if (this.employmentForm.invalid) return;
 
-    if (this.employmentForm.invalid) return;
+  const payload = {
+    applicationId: this.applicationId,
+    employmentType: 'SALARIED',
+    ...this.employmentForm.getRawValue(),
+  };
 
-    const payload = {
-      applicationId: this.applicationId,
-      employmentType: 'SALARIED',
-      ...this.employmentForm.getRawValue(),
-    };
+  // ✅ SHOW SPINNER
+  this.spinner.show();
 
-    this.contentService.postEmploymentDetail(payload).subscribe({
-      next: (res: any) => {
-        if (res?.success) {
-          this.router.navigateByUrl('/dashboard/loan/ekyc');
-        }
-      },
-      error: () => console.error('Save failed'),
-    });
-  }
+  this.contentService.postEmploymentDetail(payload).subscribe({
+    next: (res: any) => {
+      this.spinner.hide(); // ✅ HIDE SPINNER
+
+      if (res?.success) {
+        this.router.navigateByUrl('/dashboard/loan/ekyc');
+      }
+    },
+    error: () => {
+      this.spinner.hide(); // ✅ ALWAYS HIDE
+      console.error('Save failed');
+    },
+  });
+}
+
+
 
   // ================= HELPERS =================
   get f() {

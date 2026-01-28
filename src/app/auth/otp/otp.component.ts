@@ -16,6 +16,10 @@ export class OtpComponent implements OnInit {
   phone!: string;
 
   otpControls = ['d1', 'd2', 'd3', 'd4', 'd5', 'd6'];
+timer = 0;
+displayTime = '00:00';
+showResend = false;
+private intervalId: any;
 
   constructor(
     private fb: FormBuilder,
@@ -25,23 +29,56 @@ export class OtpComponent implements OnInit {
     private spinner: NgxSpinnerService
   ) {}
 
-  ngOnInit(): void {
-    this.phone = localStorage.getItem('loginPhone') || '';
+ ngOnInit(): void {
+  this.phone = localStorage.getItem('loginPhone') || '';
 
-    if (!this.phone) {
-      this.router.navigate(['/auth/login']);
-      return;
-    }
-
-    this.otpForm = this.fb.group({
-      d1: ['', Validators.required],
-      d2: ['', Validators.required],
-      d3: ['', Validators.required],
-      d4: ['', Validators.required],
-      d5: ['', Validators.required],
-      d6: ['', Validators.required],
-    });
+  if (!this.phone) {
+    this.router.navigate(['/auth/login']);
+    return;
   }
+
+  this.otpForm = this.fb.group({
+    d1: ['', Validators.required],
+    d2: ['', Validators.required],
+    d3: ['', Validators.required],
+    d4: ['', Validators.required],
+    d5: ['', Validators.required],
+    d6: ['', Validators.required],
+  });
+
+  // 🔥 READ TIMER VALUE
+  const savedTimer = localStorage.getItem('otpTimer');
+  this.timer = savedTimer ? +savedTimer : 45;
+
+  this.startCountdown();
+}
+
+startCountdown() {
+  this.showResend = false;
+  this.updateDisplayTime();
+
+  this.intervalId = setInterval(() => {
+    this.timer--;
+
+    this.updateDisplayTime();
+
+    if (this.timer <= 0) {
+      clearInterval(this.intervalId);
+      this.showResend = true;
+    }
+  }, 1000);
+}
+
+updateDisplayTime() {
+  const minutes = Math.floor(this.timer / 60);
+  const seconds = this.timer % 60;
+
+  this.displayTime =
+    `${minutes.toString().padStart(2, '0')}:` +
+    `${seconds.toString().padStart(2, '0')}`;
+}
+
+
 
   moveNext(event: any, index: number) {
     const input = event.target;
@@ -112,28 +149,44 @@ export class OtpComponent implements OnInit {
   }
 
   /* ================= RESEND OTP ================= */
-  resendOtp() {
-    if (this.isLoading) return;
+resendOtp() {
+  if (this.isLoading || !this.showResend) return;
 
-    this.isLoading = true;
-    this.spinner.show();
+  this.isLoading = true;
+  this.spinner.show();
 
-    const payload = {
-      phone: this.phone,
-      purpose: 'login',
-    };
+  const payload = {
+    phone: this.phone,
+    purpose: 'login',
+  };
 
-    this.auth.otp(payload).subscribe({
-      next: (res: any) => {
-        this.isLoading = false;
-        this.spinner.hide();
+  this.auth.otp(payload).subscribe({
+    next: (res: any) => {
+      this.isLoading = false;
+      this.spinner.hide();
+
+      if (res?.success) {
         this.toastr.success(res?.message || 'OTP resent successfully');
-      },
-      error: () => {
-        this.isLoading = false;
-        this.spinner.hide();
-        this.toastr.error('Failed to resend OTP');
-      },
-    });
-  }
+
+        // 🔥 RESET TIMER FROM API
+        this.timer = res?.data?.nextRequestInSec || 45;
+        this.startCountdown();
+      }
+    },
+    error: () => {
+      this.isLoading = false;
+      this.spinner.hide();
+      this.toastr.error('Failed to resend OTP');
+    },
+  });
+}
+
+
+editNumber() {
+  // Go back to login screen
+  this.router.navigate(['/auth/login'], {
+    queryParams: { edit: true }
+  });
+}
+
 }
