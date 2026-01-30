@@ -69,6 +69,6 @@ export class EkycComponent implements OnInit {
 
   // ================= AFTER EKYC =================
   continueAfterEkyc() {
-    this.router.navigate(['dashboard/loan/reference']);
+    this.router.navigate(['dashboard/loan/bank']);
   }
 }

@@ -23,5 +23,5 @@ export enum ApiEndPoint {
   saveReference = 'lead/saveReferences',
   verifyEkyc = 'kyc/aadhaar/fetch-and-save',
   pennyDrop = 'kyc/bank/pennydrop/verify',
-  verifyBank = '/kyc/aa/consents/{id}/sessions'
+  verifyBank = 'kyc/aa/consents/{id}/sessions'
 }

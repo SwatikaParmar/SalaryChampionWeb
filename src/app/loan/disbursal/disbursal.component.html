@@ -29,7 +29,13 @@
     <div class="col-md-6">
       <div class="form-group">
         <label>IFSC Code <span>*</span></label>
-        <input type="text" formControlName="ifsc" placeholder="Enter IFSC code" />
+<input
+  type="text"
+  formControlName="ifsc"
+  placeholder="Enter IFSC code"
+  maxlength="11"
+  (input)="onIfscInput($event)"
+/>
         <small *ngIf="f.ifsc.touched && f.ifsc.invalid">
           Enter valid IFSC (e.g. HDFC0001234)
         </small>

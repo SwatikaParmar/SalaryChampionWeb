@@ -49,22 +49,24 @@
         </div>
       </div>
 
-      <!-- References -->
+             <!-- Fetch Bank Statement -->
       <div
         class="loan-step"
         [ngClass]="{
-          'completed': isCompleted('references'),
-          'active': isActive('references'),
-          'locked': isLocked('references')
+          'completed': isCompleted('fetchBankStatement'),
+          'active': isActive('fetchBankStatement'),
+          'locked': isLocked('fetchBankStatement')
         }"
-        (click)="navigate('references','/dashboard/loan/reference')"
+        (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
       >
-        <div class="loan-step-icon">🧾</div>
+        <div class="loan-step-icon">🏦</div>
         <div class="loan-step-text">
-          <h5>Add Reference</h5>
-          <p>Add a reference person for verification.</p>
+          <h5>Fetch Bank Statement</h5>
+          <p>Share your bank statements through consent.</p>
         </div>
       </div>
+
+
 
          <!-- Documentation -->
       <div
@@ -125,20 +127,20 @@
         </div>
       </div>
 
-        <!-- Fetch Bank Statement -->
+       <!-- References -->
       <div
         class="loan-step"
         [ngClass]="{
-          'completed': isCompleted('fetchBankStatement'),
-          'active': isActive('fetchBankStatement'),
-          'locked': isLocked('fetchBankStatement')
+          'completed': isCompleted('references'),
+          'active': isActive('references'),
+          'locked': isLocked('references')
         }"
-        (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
+        (click)="navigate('references','/dashboard/loan/reference')"
       >
-        <div class="loan-step-icon">🏦</div>
+        <div class="loan-step-icon">🧾</div>
         <div class="loan-step-text">
-          <h5>Fetch Bank Statement</h5>
-          <p>Share your bank statements through consent.</p>
+          <h5>Add Reference</h5>
+          <p>Add a reference person for verification.</p>
         </div>
       </div>
 

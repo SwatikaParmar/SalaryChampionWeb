@@ -62,7 +62,7 @@ export class BankVerificationComponent implements OnInit {
           this.toastr.success(res.messages || 'Bank verification successful');
 
           // ✅ Go to next step
-          this.router.navigate(['/dashboard/loan/bank-statement']);
+          this.router.navigate(['/dashboard/loan/reference']);
         } else {
           this.toastr.error(res?.messages || 'Verification failed');
         }

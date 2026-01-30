@@ -157,6 +157,19 @@ submit() {
   });
 }
 
+
+onIfscInput(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const upperValue = input.value.toUpperCase();
+
+  // update input UI
+  input.value = upperValue;
+
+  // update form control without infinite loop
+  this.disbursalForm.get('ifsc')?.setValue(upperValue, { emitEvent: false });
+}
+
+
 hitPennyDrop() {
   const payload = {
     applicationId: this.applicationId

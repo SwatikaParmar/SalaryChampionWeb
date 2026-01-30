@@ -81,9 +81,10 @@ loadDocumentChecklist() {
       const checklist = res.data.checklist;
 
       // 🔥 ONLY required & NOT uploaded documents
-      const pendingRequiredDocs = checklist.filter(
-        (doc: any) => doc.required === true && doc.uploaded === true
-      );
+const pendingRequiredDocs = checklist.filter(
+  (doc: any) => doc.required === true && doc.uploaded !== true
+);
+
 
       /**
        * ✅ CASE 1:
@@ -188,9 +189,9 @@ async confirmUpload() {
       throw new Error('Failed to get upload URL');
     }
 
-    const { upload, fileId, s3Key } = metaRes.data;
+    const { upload, fileId } = metaRes.data;
 
-    // Upload to S3
+    // ✅ S3 Upload
     const s3Response = await fetch(upload.url, {
       method: upload.method || 'PUT',
       headers: {
@@ -204,7 +205,7 @@ async confirmUpload() {
       throw new Error('Upload failed');
     }
 
-    // Complete upload
+    // ✅ Complete upload
     const completeRes: any = await this.contentService
       .completeUpload(fileId)
       .toPromise();
@@ -213,12 +214,12 @@ async confirmUpload() {
       throw new Error('Failed to complete upload');
     }
 
-    // UI update
-    step.uploaded = true;
-    step.url = s3Key;
-
     this.toastr.success('Document uploaded successfully ✅');
     this.closeUpload();
+
+    // 🔥🔥🔥 IMPORTANT FIX
+    // 🔁 ALWAYS REFRESH CHECKLIST AFTER UPLOAD
+    this.loadDocumentChecklist();
 
   } catch (err: any) {
     this.toastr.error(err?.message || 'Upload failed');
@@ -229,6 +230,7 @@ async confirmUpload() {
     this.selectedFile = undefined as any;
   }
 }
+
 
 
   /* ===============================
