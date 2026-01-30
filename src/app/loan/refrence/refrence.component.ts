@@ -38,7 +38,7 @@ export class RefrenceComponent implements OnInit {
     this.referenceForm = this.fb.group({
       references: this.fb.array([
         this.createReference(),
-        this.createReference()
+        this.createReference(),
       ])
     });
   }
