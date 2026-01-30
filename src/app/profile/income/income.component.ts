@@ -115,4 +115,27 @@ setEmploymentType(type?: string) {
     // ✅ ALWAYS pass a valid type
     this.setEmploymentType(type);
   }
+
+  onSalaryDateChange() {
+  const ctrl = this.incomeForm.get('nextSalaryDate');
+  if (!ctrl?.value) return;
+
+  const selected = new Date(ctrl.value);
+  const min = new Date(this.minSalaryDate);
+
+  // 🔥 remove time part
+  selected.setHours(0,0,0,0);
+  min.setHours(0,0,0,0);
+
+  // ❌ past date typed manually
+  if (selected < min) {
+    ctrl.setErrors({ minDate: true });
+  } else {
+    // ✅ clear only our error
+    if (ctrl.hasError('minDate')) {
+      ctrl.setErrors(null);
+    }
+  }
+}
+
 }

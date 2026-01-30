@@ -66,21 +66,30 @@
   <div class="form-group">
     <label>Next Salary Date *</label>
 
-    <input
-      type="date"
-      formControlName="nextSalaryDate"
-      [min]="minSalaryDate"
-    />
+  <input
+  type="date"
+  formControlName="nextSalaryDate"
+  [min]="minSalaryDate"
+  (change)="onSalaryDateChange()"
+  (blur)="onSalaryDateChange()"
+/>
 
-    <div
-      class="error"
-      *ngIf="
-        incomeForm.get('nextSalaryDate')?.touched &&
-        incomeForm.get('nextSalaryDate')?.invalid
-      "
-    >
-      Salary date is required
-    </div>
+
+<div class="error"
+  *ngIf="
+    incomeForm.get('nextSalaryDate')?.touched &&
+    incomeForm.get('nextSalaryDate')?.errors
+  "
+>
+  <span *ngIf="incomeForm.get('nextSalaryDate')?.errors?.['required']">
+    Salary date is required
+  </span>
+
+  <span *ngIf="incomeForm.get('nextSalaryDate')?.errors?.['minDate']">
+    Please select a future date
+  </span>
+</div>
+
   </div>
 </div>
 
@@ -108,12 +117,7 @@
         </div>
 
         <!-- Existing EMI -->
-        <div class="col-md-12">
-          <div class="form-group">
-            <label>Total Existing EMI </label>
-            <input type="number" formControlName="existingEmiTotal" placeholder="Enter EMI amount" />
-          </div>
-        </div>
+
 
         <div class="col-md-6">
           <button class="btn-primary" type="submit">Continue</button>

@@ -13,6 +13,7 @@ export class EmploymentComponent implements OnInit {
   employmentForm!: FormGroup;
   applicationId = '';
   submitted = false;
+maxJoiningDate!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -22,6 +23,8 @@ export class EmploymentComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+     const today = new Date();
+  this.maxJoiningDate = today.toISOString().split('T')[0];
     this.initForm();
     this.getBorrowerSnapshot();
   }
@@ -95,6 +98,21 @@ save() {
 }
 
 
+blockFutureTyping(event: KeyboardEvent) {
+  // allow navigation + backspace
+  const allowedKeys = [
+    'Backspace',
+    'Tab',
+    'ArrowLeft',
+    'ArrowRight',
+    'Delete'
+  ];
+
+  if (allowedKeys.includes(event.key)) return;
+
+  // prevent manual typing
+  event.preventDefault();
+}
 
   // ================= HELPERS =================
   get f() {

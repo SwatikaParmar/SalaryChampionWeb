@@ -1,56 +1,56 @@
 <div class="profile-container">
 
- <p class="info-text">
-  Register now to explore a range of tailored services just for you.
-</p>
+  <p class="info-text">
+    Register now to explore a range of tailored services just for you.
+  </p>
 
-<!-- PROGRESS -->
-<div class="progress-card">
-  <div class="progress-header">
-    <h4>Profile Registration</h4>
-    <span class="percent">{{ progress }}%</span>
-  </div>
-
-  <div class="progress-bar">
-    <div class="progress-fill" [style.width.%]="progress"></div>
-  </div>
-</div>
-
-<!-- STEPS -->
-<div class="steps-grid">
-
-  <div
-    class="step-card"
-    *ngFor="let step of steps; let i = index"
-    [class.completed]="isCompleted(step.key)"
-    [class.disabled]="!canOpen(i)"
-    (click)="go(step, i)"
-  >
-
-    <div class="icon">
-      <span *ngIf="!isCompleted(step.key)">{{ step.icon }}</span>
-      <span *ngIf="isCompleted(step.key)">✅</span>
+  <!-- PROGRESS -->
+  <div class="progress-card">
+    <div class="progress-header">
+      <h4>Profile Registration</h4>
+      <span class="percent">{{ progress }}%</span>
     </div>
 
-    <div class="text">
-      <h5>{{ step.title }}</h5>
-      <p>{{ step.desc }}</p>
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progress"></div>
     </div>
-
-    <span class="arrow" *ngIf="canOpen(i)">›</span>
   </div>
 
-</div>
+  <!-- STEPS -->
+  <div class="steps-grid">
 
-<!-- PREVIEW -->
-<div class="action-area" *ngIf="progress  == 100">
-  <button
-    class="btn-primary theme-btn"
-    routerLink="/dashboard/profile/preview"
-    [disabled]="progress < 100"
-  >
-    Preview
-  </button>
-</div>
+    <div
+      class="step-card"
+      *ngFor="let step of steps; let i = index"
+      [class.completed]="isCompleted(step.key)"
+      [class.disabled]="!canOpen(i) || isCompleted(step.key)"
+      (click)="go(step, i)"
+    >
+
+      <div class="icon">
+        <span *ngIf="!isCompleted(step.key)">{{ step.icon }}</span>
+        <span *ngIf="isCompleted(step.key)">✅</span>
+      </div>
+
+      <div class="text">
+        <h5>{{ step.title }}</h5>
+        <p>{{ step.desc }}</p>
+      </div>
+
+      <!-- arrow sirf tab dikhe jab open ho sakta ho -->
+      <span class="arrow" *ngIf="canOpen(i) && !isCompleted(step.key)">›</span>
+    </div>
+
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="action-area" *ngIf="progress === 100">
+    <button
+      class="btn-primary theme-btn"
+      routerLink="/dashboard/profile/preview"
+    >
+      Preview
+    </button>
+  </div>
 
 </div>

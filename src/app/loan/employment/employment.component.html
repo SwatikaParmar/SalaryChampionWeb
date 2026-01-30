@@ -103,17 +103,33 @@
           </div>
 
           <!-- DOJ -->
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Date Of Joining *</label>
-              <input
-                type="date"
-                formControlName="dateOfJoining" />
-              <small *ngIf="submitted && f['dateOfJoining']?.errors?.['required']">
-                Date of joining is required
-              </small>
-            </div>
-          </div>
+     <div class="col-md-6">
+  <div class="form-group">
+    <label>Date Of Joining *</label>
+
+    <input
+      type="date"
+      formControlName="dateOfJoining"
+      [max]="maxJoiningDate"
+      (keydown)="blockFutureTyping($event)"
+    />
+
+    <small
+      *ngIf="submitted && f['dateOfJoining']?.errors?.['required']"
+      class="text-danger"
+    >
+      Date of joining is required
+    </small>
+
+    <small
+      *ngIf="submitted && f['dateOfJoining']?.errors?.['max']"
+      class="text-danger"
+    >
+      Future date not allowed
+    </small>
+  </div>
+</div>
+
 
        
           <!-- OTHER INCOME -->

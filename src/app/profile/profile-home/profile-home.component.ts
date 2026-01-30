@@ -12,13 +12,15 @@ export class ProfileHomeComponent implements OnInit {
   stepStatus: any = {};
   progress = 0;
 
-  constructor(private contentService: ContentService, private router: Router) {}
+  constructor(
+    private contentService: ContentService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
   }
 
-  // 🔥 API HIT
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
@@ -36,15 +38,24 @@ export class ProfileHomeComponent implements OnInit {
     return this.stepStatus?.[stepKey] === true;
   }
 
-  // 🚫 Can user open this step?
+  // 🚫 Can open ONLY if:
+  // - previous step completed
+  // - current step NOT completed
   canOpen(index: number): boolean {
-    if (index === 0) return true; // first step always allowed
+    if (index === 0) {
+      return !this.isCompleted(this.steps[0].key);
+    }
 
     const prevKey = this.steps[index - 1].key;
-    return this.stepStatus?.[prevKey] === true;
+    const currKey = this.steps[index].key;
+
+    return (
+      this.stepStatus?.[prevKey] === true &&
+      this.stepStatus?.[currKey] !== true
+    );
   }
 
-  // 👉 Safe navigation
+  // 👉 Navigation (final guard)
   go(step: any, index: number) {
     if (!this.canOpen(index)) return;
     this.router.navigate([step.route]);
