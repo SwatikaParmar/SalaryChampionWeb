@@ -58,7 +58,7 @@ export class BankComponent implements OnInit {
 
     const payload = {
       applicationId: this.applicationId,
-      redirectUrl: 'http://localhost:4200/dashboard/loan/bank-verification',
+      redirectUrl: 'https://d2sgezubpok1gq.cloudfront.net/dashboard/loan/bank-verification',
     };
 
     this.spinner.show();

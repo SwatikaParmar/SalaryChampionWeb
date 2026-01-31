@@ -17,24 +17,24 @@
 
     <img
       class="doc-img"
-      [src]="steps[activeIndex]?.image"
+      [src]="steps[activeIndex].image"
       alt="Document image"
     />
 
     <h3 class="doc-title">
-      {{ steps[activeIndex]?.label }}
-      <span class="required" *ngIf="steps[activeIndex]?.required">*</span>
+      {{ steps[activeIndex].label }}
+      <span class="required" *ngIf="steps[activeIndex].required">*</span>
     </h3>
 
 <button class="primary-btn"
-        *ngIf="!steps[activeIndex]?.uploaded"
+        *ngIf="!steps[activeIndex].uploaded"
         (click)="openUpload()"
         [disabled]="isUploading">
   Upload ⬆
 </button>
 
 <!-- Uploaded badge -->
-<p class="success-text" *ngIf="steps[activeIndex]?.uploaded">
+<p class="success-text" *ngIf="steps[activeIndex].uploaded">
   ✔ File uploaded successfully
 </p>
 
@@ -64,7 +64,7 @@
   <div class="upload-modal">
 
     <div class="modal-header">
-      <h3>{{ steps[activeIndex]?.label }}</h3>
+      <h3>{{ steps[activeIndex].label }}</h3>
       <button class="close-btn" (click)="closeUpload()">✖</button>
     </div>
 

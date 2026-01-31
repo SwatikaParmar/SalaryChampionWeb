@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { ContentService } from '../../../service/content.service';
+import { error } from 'console';
 @Component({
   selector: 'app-pan',
   templateUrl: './pan.component.html',
@@ -98,7 +99,7 @@ export class PanComponent {
     };
 
     this.spinner.show();
-
+debugger
     this.ContentService.previewPan(payload).subscribe({
       next: (res: any) => {
         this.spinner.hide();
@@ -141,32 +142,38 @@ export class PanComponent {
       next: (res: any) => {
         this.isLoading = false;
 
-        if (!res?.success) {
-          alert('PAN verification failed');
+        const pan = res?.data?.kyc?.pan;
+
+        // ❌ PAN FAILED (even if success = true)
+        if (
+          !res?.success ||
+          res?.statusCode !== 200 ||
+          pan?.status !== 'SUCCESS' ||
+          pan?.verified !== true
+        ) {
+          this.toastr.error(res?.message || 'PAN verification failed');
+                  this.showModal = false;
+
           return;
         }
 
-        // ✅ PAN VERIFIED → NEXT STEP
+        // ✅ PAN VERIFIED
         this.showModal = false;
-        // 🚀 redirect to basic info
         this.router.navigate(['/dashboard/profile/basic-info']);
       },
       error: () => {
         this.isLoading = false;
-        alert('PAN verification error');
+        this.toastr.error('PAN verification error');
       },
     });
   }
 
   onPanInput(event: Event) {
-  const input = event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
 
-  // 🔥 Allow only A–Z and 0–9, force uppercase
-  input.value = input.value
-    .toUpperCase()
-    .replace(/[^A-Z0-9]/g, '');
+    // 🔥 Allow only A–Z and 0–9, force uppercase
+    input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
 
-  this.panNumber = input.value;
-}
-
+    this.panNumber = input.value;
+  }
 }
