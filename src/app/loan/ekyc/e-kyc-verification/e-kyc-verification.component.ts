@@ -52,7 +52,7 @@ export class EKYCVerificationComponent implements OnInit {
       requestId: this.requestId,
       applicationId: this.applicationId
     };
-debugger
+
     this.spinner.show();
 
     this.contentService.verifyEkyc(payload).subscribe({

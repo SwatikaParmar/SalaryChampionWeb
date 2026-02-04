@@ -147,9 +147,7 @@ debugger
         // ❌ PAN FAILED (even if success = true)
         if (
           !res?.success ||
-          res?.statusCode !== 200 ||
-          pan?.status !== 'SUCCESS' ||
-          pan?.verified !== true
+          res?.statusCode !== 200
         ) {
           this.toastr.error(res?.message || 'PAN verification failed');
                   this.showModal = false;

@@ -13,18 +13,18 @@ export class EmploymentComponent implements OnInit {
   employmentForm!: FormGroup;
   applicationId = '';
   submitted = false;
-maxJoiningDate!: string;
+  maxJoiningDate!: string;
 
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
     private router: Router,
-      private spinner: NgxSpinnerService 
+    private spinner: NgxSpinnerService,
   ) {}
 
   ngOnInit(): void {
-     const today = new Date();
-  this.maxJoiningDate = today.toISOString().split('T')[0];
+    const today = new Date();
+    this.maxJoiningDate = today.toISOString().split('T')[0];
     this.initForm();
     this.getBorrowerSnapshot();
   }
@@ -66,53 +66,52 @@ maxJoiningDate!: string;
   }
 
   // ================= SAVE =================
-save() {
-  this.submitted = true;
+  save() {
+    this.submitted = true;
 
-  // 🔥 Force validation
-  this.employmentForm.markAllAsTouched();
-  if (this.employmentForm.invalid) return;
+    // 🔥 Force validation
+    this.employmentForm.markAllAsTouched();
+    if (this.employmentForm.invalid) return;
 
-  const payload = {
-    applicationId: this.applicationId,
-    employmentType: 'SALARIED',
-    ...this.employmentForm.getRawValue(),
-  };
+    const payload = {
+      applicationId: this.applicationId,
+      employmentType: 'SALARIED',
+      ...this.employmentForm.getRawValue(),
+    };
 
-  // ✅ SHOW SPINNER
-  this.spinner.show();
+    // ✅ SHOW SPINNER
+    this.spinner.show();
 
-  this.contentService.postEmploymentDetail(payload).subscribe({
-    next: (res: any) => {
-      this.spinner.hide(); // ✅ HIDE SPINNER
+    this.contentService.postEmploymentDetail(payload).subscribe({
+      next: (res: any) => {
+        this.spinner.hide(); // ✅ HIDE SPINNER
 
-      if (res?.success) {
-        this.router.navigateByUrl('/dashboard/loan/ekyc');
-      }
-    },
-    error: () => {
-      this.spinner.hide(); // ✅ ALWAYS HIDE
-      console.error('Save failed');
-    },
-  });
-}
+        if (res?.success) {
+          this.router.navigateByUrl('/dashboard/loan/ekyc');
+        }
+      },
+      error: () => {
+        this.spinner.hide(); // ✅ ALWAYS HIDE
+        console.error('Save failed');
+      },
+    });
+  }
 
+  blockFutureTyping(event: KeyboardEvent) {
+    // allow navigation + backspace
+    const allowedKeys = [
+      'Backspace',
+      'Tab',
+      'ArrowLeft',
+      'ArrowRight',
+      'Delete',
+    ];
 
-blockFutureTyping(event: KeyboardEvent) {
-  // allow navigation + backspace
-  const allowedKeys = [
-    'Backspace',
-    'Tab',
-    'ArrowLeft',
-    'ArrowRight',
-    'Delete'
-  ];
+    if (allowedKeys.includes(event.key)) return;
 
-  if (allowedKeys.includes(event.key)) return;
-
-  // prevent manual typing
-  event.preventDefault();
-}
+    // prevent manual typing
+    event.preventDefault();
+  }
 
   // ================= HELPERS =================
   get f() {
