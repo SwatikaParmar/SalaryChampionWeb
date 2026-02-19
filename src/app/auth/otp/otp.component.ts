@@ -29,7 +29,7 @@ private intervalId: any;
     private spinner: NgxSpinnerService
   ) {}
 
- ngOnInit(): void {
+ngOnInit(): void {
   this.phone = localStorage.getItem('loginPhone') || '';
 
   if (!this.phone) {
@@ -46,28 +46,35 @@ private intervalId: any;
     d6: ['', Validators.required],
   });
 
-  // 🔥 READ TIMER VALUE
   const savedTimer = localStorage.getItem('otpTimer');
-  this.timer = savedTimer ? +savedTimer : 45;
+  this.timer = savedTimer ? +savedTimer : 60; // 🔥 Default 60 seconds
 
   this.startCountdown();
 }
 
+
 startCountdown() {
   this.showResend = false;
+
+  if (this.intervalId) {
+    clearInterval(this.intervalId);
+  }
+
   this.updateDisplayTime();
 
   this.intervalId = setInterval(() => {
-    this.timer--;
-
-    this.updateDisplayTime();
-
-    if (this.timer <= 0) {
+    if (this.timer > 0) {
+      this.timer--;
+      localStorage.setItem('otpTimer', this.timer.toString());
+      this.updateDisplayTime();
+    } else {
       clearInterval(this.intervalId);
+      localStorage.removeItem('otpTimer');
       this.showResend = true;
     }
   }, 1000);
 }
+
 
 updateDisplayTime() {
   const minutes = Math.floor(this.timer / 60);
@@ -77,6 +84,7 @@ updateDisplayTime() {
     `${minutes.toString().padStart(2, '0')}:` +
     `${seconds.toString().padStart(2, '0')}`;
 }
+
 
 
 
