@@ -1,1 +1,354 @@
-<p>contact-us works!</p>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <header class="main-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <!-- Replace with your logo image -->
+        <img src="assets/images/logo.png" alt="Loan112 Logo" class="brand-logo">
+      </a>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler border-0 shadow-none" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu + Button -->
+      <div class="collapse navbar-collapse" id="mainNavbar">
+
+        <!-- Center Menu -->
+        <ul class="navbar-nav mx-lg-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              About Us
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Company</a></li>
+              <li><a class="dropdown-item" href="#">Our Team</a></li>
+              <li><a class="dropdown-item" href="#">Why Choose Us</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              Repay Loan
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Pay Online</a></li>
+              <li><a class="dropdown-item" href="#">EMI Calculator</a></li>
+              <li><a class="dropdown-item" href="#">Payment Status</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" [routerLink]="['/contact-us']">Contact Us</a>
+          </li>
+        </ul>
+
+        <!-- Right Button -->
+        <div class="d-flex mt-3 mt-lg-0">
+          <a [routerLink]="['/pay-now']" class="btn btn-apply">Pay Now</a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+</header>
+
+  <!-- ================= HERO ================= -->
+  <section class="internal-banner" style="background: #0D4887;">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-7 text-left search-box">
+            <h3>We are here to help</h3>
+            <input type="text" class="form-control" placeholder="What are you looking for? ">
+        </div>
+      </div>      
+    </div>
+  </section>  
+
+  <section class="faq-section">
+    <div class="container">        
+        <div class="row justify-content-center">
+
+            <div class="col-md-8">
+                <h3 class="faq-title">Frequently asked questions</h3>
+            </div>
+
+            <div class="col-md-8 mt-3">
+                <div class="accordion custom-accordion" id="faqAccordion">
+
+                <!-- Item 1 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq1">
+                            Personal Loan
+                        </button>
+                    </h2>
+                    <div id="faq1"
+                        class="accordion-collapse collapse"
+                        data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Information related to Personal Loan goes here.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 2 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq2">
+                            Credit Tracker
+                        </button>
+                    </h2>
+                    <div id="faq2"
+                        class="accordion-collapse collapse"
+                        data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Details about Credit Tracker services.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 3 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq3">
+                            FD Select
+                        </button>
+                    </h2>
+                    <div id="faq3"
+                        class="accordion-collapse collapse"
+                        data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            FD Select related FAQs content.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item 4 -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed"
+                                type="button"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#faq4">
+                            Money Manager
+                        </button>
+                    </h2>
+                    <div id="faq4"
+                        class="accordion-collapse collapse"
+                        data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Money Manager FAQ details here.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+
+        </div>        
+    </div>
+</section>
+
+<!-- CONTACT SECTION -->
+<section class="contact-section text-center">
+    <div class="container">
+
+        <p class="contact-sub">Not what you need?</p>
+        <h3 class="contact-title">Get in touch with us</h3>
+
+        <div class="row justify-content-center g-4">
+            <div class="col-lg-4 col-md-8">
+                <div class="contact-card contact-green">
+                    <div>
+                        <small>Contact us</small>
+                        <div class="fs-6">+91 88009 44435</div>
+                    </div>
+                    <div class="contact-icon" style="background: linear-gradient(180deg, #2CA076 0%, #103A2B 100%);">
+                        <img src="assets/images/phone-line.svg" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-8">
+                <div class="contact-card contact-blue">
+                    <div>
+                        <small>Email us</small>
+                        <div class="fs-6">salarychampion.com</div>
+                    </div>
+                    <div class="contact-icon"><img src="assets/images/mail-icon.svg" class="img-fluid"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Info Box -->
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="info-box text-start">
+                    <h6>Always at your service!</h6>
+                    <p class="fw-semibold mb-1 fs-5">
+                        Monday to Saturday : 9 am to 6 pm
+                    </p>
+                    <p class="info-muted">(Excluding public holidays)</p>
+
+                    <hr>
+
+                    <p class="info-muted mb-0">
+                        We generally respond within 24–48 working hours.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+    <!-- Modal -->
+    <div class="modal fade custom-modal" id="panModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="text-center">
+
+                <!-- Icon -->
+                <div class="pan-icon">
+                    <!-- Bootstrap Icon SVG -->
+                    <img src="assets/images/enter_pan.svg" style="max-width: 32px;">
+                </div>
+
+                <h4 class="pan-title">Enter PAN</h4>
+                <p class="pan-subtext">
+                    Enter your PAN card number to view available loans
+                </p>
+
+            </div>
+
+            <!-- Form -->
+            <form>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">PAN Card Number *</label>
+                    <input type="text"
+                        class="form-control pan-input"
+                        placeholder="ABCDE1234F"
+                        maxlength="10"
+                        required>
+                    <div class="pan-helper mt-1">
+                        Enter your 10-character PAN number (Format: ABCDE1234F)
+                    </div>
+                </div>
+
+                <button type="submit" class="btn text-white w-100 pan-submit mb-3">
+                    Get Available Loans
+                </button>
+
+                <div class="text-center ssl-text">
+                    <img src="assets/images/shield.svg" style="max-width: 16px;"> Secured by SSL encryption
+                </div>
+            </form>
+
+            </div>
+        </div>
+    </div>
+  
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-3">
+          <img src="assets/images/logo.png" class="img-fluid" style="max-width: 200px; margin-bottom: 25px; filter: brightness(0) invert(1);">
+          <p>India's most trusted NBFC providing quick salary advances and personal loans with transparent terms and competitive rates.</p>
+
+          <ul class="social-icon">
+            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+            <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+            <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+
+        <div class="col-md-3 footer-links">
+          <h4>Quick Links</h4>
+          <ul class="link-ft">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Pay Now</a></li>
+            <li><a href="#">Loan Types</a></li>
+            <li><a href="#">Refund & Cancellation Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <h4>Contact Us</h4>
+          <div class="info">
+            <i class="fa-solid fa-location-dot"></i>
+            <p>B-52 2ND FLOOR, UNDER PASS, near KIRTI NAGAR, Block B, Naraina Industrial Area Phase 2, New Delhi, Delhi, 110028</p>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-phone"></i>
+            <a href="tel:+918800944435">+91 88009 44435</a>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-envelope"></i>
+            <p>grievancesalarychampion.com</p>
+          </div>
+
+          <div class="info" style="grid-template-columns: auto; grid-gap: 0;">
+            <small>Business Hours:</small>
+            <p>Monday - Friday: 10:30 AM - 6:30 PM</p>
+          </div>
+
+        </div>
+
+        <div class="col-md-3 updates">
+          <h4>Stay Updated</h4>
+          <p>Get the latest updates, offers and financial tips directly in your inbox.</p>
+
+          <input type="text" placeholder="Enter your email" class="form-control">
+          <input type="submit" value="Subscribe" class="form-control">
+
+          <span class="pp-tags mt-2">By subscribing, you agree to our <a href="#">Privacy Policy</a></span>
+        </div>      
+    
+      </div>
+
+      <div class="row">
+        <div class="col-md-12"><hr></div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
+        <div class="col-md-6">
+          <ul class="link-ft small-li">
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Interest Rate Policy</a></li>
+            <li><a href="#">Fair Practice Code</a></li>
+            <li><a href="#">Refund & Cancellation Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </footer>
