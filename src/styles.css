@@ -95,10 +95,27 @@ h3{
         display: inline-block;
         text-decoration: none;
     }
-
     .btn-apply:hover{      
       color: #fff;
       background: #3c3c3c;
+    }
+
+    .btn-light {
+        background: #3c3c3c;
+        border: none;
+        color: #fff;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 14px 30px;
+        border-radius: 6px;
+        transition: 0.25s;
+        display: inline-block;
+        text-decoration: none;
+    }
+    .btn-light:hover{      
+      color: #fff;
+      background: var(--brand-gradient);
     }
 
     /* Center Menu on Desktop */
