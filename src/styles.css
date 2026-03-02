@@ -1045,6 +1045,9 @@ background: var(--brand-light);
 .ssl-text {
     font-size: 13px;
     color: #6c757d;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid #ddd;
 }
 
 /* Responsive */
