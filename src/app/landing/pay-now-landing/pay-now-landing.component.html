@@ -1,1 +1,224 @@
-<p>pay-now-landing works!</p>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <header class="main-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <!-- Replace with your logo image -->
+        <img src="assets/images/logo.png" alt="Loan112 Logo" class="brand-logo">
+      </a>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler border-0 shadow-none" type="button"
+              data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu + Button -->
+      <div class="collapse navbar-collapse" id="mainNavbar">
+
+        <!-- Center Menu -->
+        <ul class="navbar-nav mx-lg-auto align-items-lg-center">
+          <li class="nav-item">
+            <a class="nav-link active" href="#">Home</a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              About Us
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Company</a></li>
+              <li><a class="dropdown-item" href="#">Our Team</a></li>
+              <li><a class="dropdown-item" href="#">Why Choose Us</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              Repay Loan
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Pay Online</a></li>
+              <li><a class="dropdown-item" href="#">EMI Calculator</a></li>
+              <li><a class="dropdown-item" href="#">Payment Status</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="#">Contact Us</a>
+          </li>
+        </ul>
+
+        <!-- Right Button -->
+        <div class="d-flex mt-3 mt-lg-0">
+          <a [routerLink]="['/pay-now']" class="btn btn-apply">Pay Now</a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+</header>
+
+  <!-- ================= HERO ================= -->
+  <section class="internal-banner" style="background: #0D4887;">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-7 text-center">
+            <h1>Pay Now</h1>
+            <p>Simple and secure payment options for your convenience</p>            
+        </div>
+      </div>      
+    </div>
+  </section>  
+
+  <section class="payment-wrapper tb-10">
+    <div class="container">
+      <div class="row justify-content-between">       
+
+            <!-- LEFT CARD -->
+            <div class="col-lg-6 col-md-12">
+                <div class="payment-card">
+                    <div class="card-title"><img src="assets/images/mobile_icon.svg" style="width: 18px;"> Scan & Pay</div>
+
+                    <div class="upi-box">
+                        <h3>UPI ID:</h3>
+                        <div class="upi-id">
+                            <span id="upiText">richmanfincapidfcbank</span>
+                            <div class="copy-btn" onclick="copyText('upiText')"></div>
+                        </div>
+                    </div>
+
+                    <div class="note-box">
+                        <strong>Note:</strong> Please mention your loan reference number or registered mobile number in the payment description for proper allocation.
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT CARD -->
+            <div class="col-lg-6 col-md-12 sm-mt-40">
+                <div class="payment-card">
+                    <div class="card-title">Bank Transfer Details</div>
+
+                    <div class="detail-box">
+                        <div>
+                            <div class="detail-label">Beneficiary Name</div>
+                            <div class="detail-value" id="nameText">Richman Fincap Limited</div>
+                        </div>
+                        <div class="copy-btn" onclick="copyText('nameText')"></div>
+                    </div>
+
+                    <div class="detail-box">
+                        <div>
+                            <div class="detail-label">Account Number</div>
+                            <div class="detail-value" id="accText">19711399676</div>
+                        </div>
+                        <div class="copy-btn" onclick="copyText('accText')"></div>
+                    </div>
+
+                    <div class="detail-box">
+                        <div>
+                            <div class="detail-label">IFSC Code</div>
+                            <div class="detail-value" id="ifscText">IDFB0020194</div>
+                        </div>
+                        <div class="copy-btn" onclick="copyText('ifscText')"></div>
+                    </div>
+
+                    <div class="warning-box">
+                        Always verify these payment details by calling our customer support before making large transactions. Never share these details with anyone claiming to be from our company.
+                    </div>
+
+                </div>
+            </div>          
+
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="footer">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-3">
+          <img src="assets/images/logo.png" class="img-fluid" style="max-width: 200px; margin-bottom: 25px; filter: brightness(0) invert(1);">
+          <p>India's most trusted NBFC providing quick salary advances and personal loans with transparent terms and competitive rates.</p>
+
+          <ul class="social-icon">
+            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+            <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+            <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+
+        <div class="col-md-3 footer-links">
+          <h4>Quick Links</h4>
+          <ul class="link-ft">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Pay Now</a></li>
+            <li><a href="#">Loan Types</a></li>
+            <li><a href="#">Refund & Cancellation Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-md-3">
+          <h4>Contact Us</h4>
+          <div class="info">
+            <i class="fa-solid fa-location-dot"></i>
+            <p>B-52 2ND FLOOR, UNDER PASS, near KIRTI NAGAR, Block B, Naraina Industrial Area Phase 2, New Delhi, Delhi, 110028</p>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-phone"></i>
+            <a href="tel:+918800944435">+91 88009 44435</a>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-envelope"></i>
+            <p>grievancesalarychampion.com</p>
+          </div>
+
+          <div class="info" style="grid-template-columns: auto; grid-gap: 0;">
+            <small>Business Hours:</small>
+            <p>Monday - Friday: 10:30 AM - 6:30 PM</p>
+          </div>
+
+        </div>
+
+        <div class="col-md-3 updates">
+          <h4>Stay Updated</h4>
+          <p>Get the latest updates, offers and financial tips directly in your inbox.</p>
+
+          <input type="text" placeholder="Enter your email" class="form-control">
+          <input type="submit" value="Subscribe" class="form-control">
+
+          <span class="pp-tags mt-2">By subscribing, you agree to our <a href="#">Privacy Policy</a></span>
+        </div>      
+    
+      </div>
+
+      <div class="row">
+        <div class="col-md-12"><hr></div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
+        <div class="col-md-6">
+          <ul class="link-ft small-li">
+            <li><a href="#">Terms & Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Interest Rate Policy</a></li>
+            <li><a href="#">Fair Practice Code</a></li>
+            <li><a href="#">Refund & Cancellation Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </footer>
