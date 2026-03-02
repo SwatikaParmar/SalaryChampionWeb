@@ -927,6 +927,71 @@ background: var(--brand-light);
     line-height:1.6;
 }
 
+/* Main Section */
+.secure-payment {
+    border-radius: 18px;
+    padding: 50px;
+    background: #ffffff;
+    border: 3px solid #efefef;
+    box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+}
+
+/* Header */
+.secure-title {
+    font-weight: 600;
+}
+
+/* Description */
+.secure-desc {
+    color: #6c757d;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Gradient Button */
+.secure-btn {
+    background: linear-gradient(90deg, #3fa9f5, #1f4e8c);
+    border: none;
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.secure-btn:hover {
+    opacity: 0.9;
+}
+
+/* Info Cards */
+.info-card {
+    background: #f2f4f7;
+    border-radius: 12px;
+    padding: 25px;
+}
+
+.info-card h5 {
+    font-weight: 600;
+}
+
+.info-card p {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 8px;
+}
+
+.info-card a {
+    text-decoration: none;
+    font-weight: 400;
+    color: #2DABEA;
+}
+
+/* Responsive */
+@media(max-width:768px){
+    .secure-payment{
+        padding:30px;
+    }
+}
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:768px){
     .payment-wrapper{
