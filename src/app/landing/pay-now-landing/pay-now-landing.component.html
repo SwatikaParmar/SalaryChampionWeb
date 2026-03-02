@@ -143,15 +143,12 @@
             <div class="col-md-12">
                 
                 <div class="secure-payment">
-                    
+
                     <!-- Header -->
                     <div class="d-flex align-items-center mb-3">
                         <div class="me-2 text-primary">
                             <!-- Bootstrap Icon (Shield) -->
-                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 3l7 4v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V7l7-4z"/>
-                            </svg>
+                            <img src="assets/images/shield.svg" style="max-width: 16px;">
                         </div>
                         <h4 class="secure-title mb-0">Secure Payments</h4>
                     </div>
@@ -164,7 +161,7 @@
 
                     <!-- Button -->
                     <div class="text-center mb-5">
-                        <button class="btn text-white secure-btn">
+                        <button class="btn text-white secure-btn" data-bs-toggle="modal" data-bs-target="#panModal">
                             Start Secure Payment Process
                         </button>
                     </div>
@@ -198,6 +195,52 @@
         </div>
     </div>
   </section>
+
+    <!-- Modal -->
+    <div class="modal fade custom-modal" id="panModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="text-center">
+
+                <!-- Icon -->
+                <div class="pan-icon">
+                    <!-- Bootstrap Icon SVG -->
+                    <img src="assets/images/enter_pan.svg" style="max-width: 32px;">
+                </div>
+
+                <h4 class="pan-title">Enter PAN</h4>
+                <p class="pan-subtext">
+                    Enter your PAN card number to view available loans
+                </p>
+
+            </div>
+
+            <!-- Form -->
+            <form>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">PAN Card Number *</label>
+                    <input type="text"
+                        class="form-control pan-input"
+                        placeholder="ABCDE1234F"
+                        maxlength="10"
+                        required>
+                    <div class="pan-helper mt-1">
+                        Enter your 10-character PAN number (Format: ABCDE1234F)
+                    </div>
+                </div>
+
+                <button type="submit" class="btn text-white w-100 pan-submit mb-3">
+                    Get Available Loans
+                </button>
+
+                <div class="text-center ssl-text">
+                    <img src="assets/images/shield.svg" style="max-width: 16px;"> Secured by SSL encryption
+                </div>
+            </form>
+
+            </div>
+        </div>
+    </div>
   
 
   <!-- ================= FOOTER ================= -->
