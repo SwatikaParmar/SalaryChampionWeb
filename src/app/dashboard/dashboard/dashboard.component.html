@@ -73,9 +73,10 @@
     <h3>Loan Application</h3>
 
     <!-- 🔁 TEXT CHANGE BASED ON PROGRESS -->
-    <p *ngIf="loanProgress < 100">
-      Only few steps left to complete your loan journey.
-    </p>
+<p *ngIf="loanProgress < 100">
+  Congratulations! 🎉  
+  You're now successfully eligible. Your gateway to seamless financial solutions is officially open.
+</p>
 
     <p *ngIf="loanProgress === 100" class="review-text">
       Your application is under review. Thanks for your patience.

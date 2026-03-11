@@ -35,8 +35,8 @@ export class AddressComponent implements OnInit {
       line2: [''],
       landmark: ['', Validators.required],
       pincode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
-     city: [{ value: '', disabled: true }, Validators.required],
-  state: [{ value: '', disabled: true }, Validators.required],
+      city: [{ value: '', disabled: true }, Validators.required],
+      state: [{ value: '', disabled: true }, Validators.required],
       residenceType: ['', Validators.required],
       residingSince: ['', Validators.required],
     });
@@ -80,64 +80,59 @@ export class AddressComponent implements OnInit {
       },
     });
   }
-onPincodeChange() {
-  const pincode = this.addressForm.get('pincode')?.value;
-  const cityCtrl = this.addressForm.get('city');
-  const stateCtrl = this.addressForm.get('state');
+  onPincodeChange() {
+    const pincode = this.addressForm.get('pincode')?.value;
+    const cityCtrl = this.addressForm.get('city');
+    const stateCtrl = this.addressForm.get('state');
 
-  // 🔒 Default → ALWAYS LOCKED
-  cityCtrl?.disable({ emitEvent: false });
-  stateCtrl?.disable({ emitEvent: false });
+    // 🔒 Default → ALWAYS LOCKED
+    cityCtrl?.disable({ emitEvent: false });
+    stateCtrl?.disable({ emitEvent: false });
 
-  // ❌ If pincode invalid → stop here
-  if (!pincode || pincode.length !== 6) {
-    cityCtrl?.reset();
-    stateCtrl?.reset();
-    return;
-  }
-
-  // ✅ Valid pincode → hit API
-  this.contentService.resolvePincode(pincode).subscribe({
-    next: (res: any) => {
-
+    // ❌ If pincode invalid → stop here
+    if (!pincode || pincode.length !== 6) {
       cityCtrl?.reset();
       stateCtrl?.reset();
+      return;
+    }
 
-      if (res?.success && res?.data) {
+    // ✅ Valid pincode → hit API
+    this.contentService.resolvePincode(pincode).subscribe({
+      next: (res: any) => {
+        cityCtrl?.reset();
+        stateCtrl?.reset();
 
-        // ✅ STATE
-        if (res.data.stateName) {
-          stateCtrl?.setValue(res.data.stateName);
-          stateCtrl?.disable({ emitEvent: false });
+        if (res?.success && res?.data) {
+          // ✅ STATE
+          if (res.data.stateName) {
+            stateCtrl?.setValue(res.data.stateName);
+            stateCtrl?.disable({ emitEvent: false });
+          } else {
+            // ❗ no state → allow edit
+            stateCtrl?.enable({ emitEvent: false });
+          }
+
+          // ✅ CITY
+          if (res.data.city) {
+            cityCtrl?.setValue(res.data.city);
+            cityCtrl?.disable({ emitEvent: false });
+          } else {
+            // ❗ no city → allow edit
+            cityCtrl?.enable({ emitEvent: false });
+          }
         } else {
-          // ❗ no state → allow edit
+          // API success false → allow manual
+          cityCtrl?.enable({ emitEvent: false });
           stateCtrl?.enable({ emitEvent: false });
         }
-
-        // ✅ CITY
-        if (res.data.city) {
-          cityCtrl?.setValue(res.data.city);
-          cityCtrl?.disable({ emitEvent: false });
-        } else {
-          // ❗ no city → allow edit
-          cityCtrl?.enable({ emitEvent: false });
-        }
-
-      } else {
-        // API success false → allow manual
+      },
+      error: () => {
+        // API failed → allow manual entry
         cityCtrl?.enable({ emitEvent: false });
         stateCtrl?.enable({ emitEvent: false });
-      }
-    },
-    error: () => {
-      // API failed → allow manual entry
-      cityCtrl?.enable({ emitEvent: false });
-      stateCtrl?.enable({ emitEvent: false });
-    },
-  });
-}
-
-
+      },
+    });
+  }
 
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({
@@ -158,30 +153,29 @@ onPincodeChange() {
     });
   }
 
- patchCurrentAddress(address: any) {
-  this.addressForm.patchValue({
-    line1: address.line1 || '',
-    line2: address.line2 || '',
-    landmark: address.landmark || '',
-    pincode: address.pincode || '',
-    residenceType: address.residenceTypeCode || '',
-    residingSince: address.residingSince || '',
-  });
+  patchCurrentAddress(address: any) {
+    this.addressForm.patchValue({
+      line1: address.line1 || '',
+      line2: address.line2 || '',
+      landmark: address.landmark || '',
+      pincode: address.pincode || '',
+      residenceType: address.residenceTypeCode || '',
+      residingSince: address.residingSince || '',
+    });
 
-  const cityCtrl = this.addressForm.get('city');
-  const stateCtrl = this.addressForm.get('state');
+    const cityCtrl = this.addressForm.get('city');
+    const stateCtrl = this.addressForm.get('state');
 
-  // 🔒 Default locked
-  cityCtrl?.disable({ emitEvent: false });
-  stateCtrl?.disable({ emitEvent: false });
+    // 🔒 Default locked
+    cityCtrl?.disable({ emitEvent: false });
+    stateCtrl?.disable({ emitEvent: false });
 
-  if (address.state) {
-    stateCtrl?.setValue(address.state);
+    if (address.state) {
+      stateCtrl?.setValue(address.state);
+    }
+
+    if (address.city) {
+      cityCtrl?.setValue(address.city);
+    }
   }
-
-  if (address.city) {
-    cityCtrl?.setValue(address.city);
-  }
-}
-
 }

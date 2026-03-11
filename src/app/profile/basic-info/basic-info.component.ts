@@ -22,15 +22,28 @@ export class BasicInfoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.basicForm = this.fb.group({
-      name: [{ value: '', disabled: false }, Validators.required],
-      dob: [{ value: '', disabled: false }, Validators.required],
-      gender: [{ value: '', disabled: false }, Validators.required],
-      maritalStatus: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      spouseName: [''],
-      spouseOccupation: [''],
-    });
+this.basicForm = this.fb.group({
+  employmentType: ['', Validators.required],
+  modeOfSalaryReceived: ['', Validators.required],
+  residenceType: ['', Validators.required],
+  dob: ['', Validators.required],
+  gender: ['', Validators.required],
+  pincode: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
+  personalEmail: [
+    '',
+    [
+      Validators.required,
+      Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)
+    ]
+  ],
+  officialEmail: [
+    '',
+    [
+      Validators.required,
+      Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)
+    ]
+  ]
+});
 
     this.getBorrowerSnapshot();
     this.watchMaritalStatus();
@@ -41,6 +54,7 @@ export class BasicInfoComponent implements OnInit {
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
         if (res?.success && res?.data?.user) {
+          this.patchBasicData(res.data.user);
           this.patchBorrowerData(res.data.user);
         }
       },
@@ -49,6 +63,24 @@ export class BasicInfoComponent implements OnInit {
       },
     });
   }
+
+  patchBasicData(data:any){
+
+const formattedDob = data?.dob?.split('T')[0];
+
+this.basicForm.patchValue({
+  employmentType: data.employmentType,
+  modeOfSalaryReceived: data.modeOfSalaryReceived,
+  residenceType: data.residenceType,
+  dob: formattedDob,
+  gender: data.gender,
+  pincode: data.pincode,
+  personalEmail: data.personalEmail,
+  officialEmail: data.officialEmail
+});
+
+}
+
 
   // 🔐 PATCH + LOCK PAN VERIFIED DATA
   patchBorrowerData(user: any) {
@@ -101,33 +133,105 @@ export class BasicInfoComponent implements OnInit {
     });
   }
 
-  submit() {
-    if (this.basicForm.invalid) {
-      this.basicForm.markAllAsTouched();
-      this.toastr.warning('Please fill all required fields');
-      return;
-    }
+submit() {
 
-    // ✅ Include disabled fields
-    const payload = this.basicForm.getRawValue();
+const f = this.basicForm.controls;
 
+if (!f['employmentType'].value) {
+  this.toastr.warning('Please select employment type');
+  return;
+}
+
+if (!f['modeOfSalaryReceived'].value) {
+  this.toastr.warning('Please select salary mode');
+  return;
+}
+
+if (!f['residenceType'].value) {
+  this.toastr.warning('Please select residence type');
+  return;
+}
+
+if (!f['dob'].value) {
+  this.toastr.warning('Please select date of birth');
+  return;
+}
+
+if (!f['gender'].value) {
+  this.toastr.warning('Please select gender');
+  return;
+}
+
+if (f['pincode'].invalid) {
+  this.toastr.warning('Enter valid 6 digit pincode');
+  return;
+}
+
+if (f['personalEmail'].invalid) {
+  this.toastr.warning('Enter valid personal email');
+  return;
+}
+
+if (f['officialEmail'].invalid) {
+  this.toastr.warning('Enter valid official email');
+  return;
+}
+
+const payload = this.basicForm.getRawValue();
+
+this.spinner.show();
+
+this.contentService.saveBasic(payload).subscribe({
+
+next:(res:any)=>{
+
+this.spinner.hide();
+
+if(res?.success){
+  this.checkEligibility();
+this.toastr.success('Basic details saved');
+}else{
+this.toastr.error(res?.message);
+}
+
+},
+
+error:()=>{
+this.spinner.hide();
+this.toastr.error('Something went wrong');
+}
+
+})
+
+}
+
+
+  checkEligibility() {
+    // ✅ START spinner
     this.spinner.show();
 
-    this.contentService.saveBasicDetail(payload).subscribe({
-      next: (res: any) => {
+    this.contentService.checkEligibility().subscribe({
+      next: (res) => {
+        // ✅ STOP spinner
         this.spinner.hide();
 
-        if (res?.success) {
-          this.toastr.success('Basic information saved successfully');
-          this.router.navigate(['/dashboard/profile/address']);
+        if (res?.success === true) {
+          this.router.navigate(['/dashboard/profile/success-eligibility']);
         } else {
-          this.toastr.error(res?.message || 'Failed to save basic details');
+          this.router.navigate(['/dashboard/profile/error-eligibility'], {
+            state: { message: res?.message || 'Not eligible' },
+          });
         }
       },
+
       error: () => {
+        // ✅ STOP spinner
         this.spinner.hide();
-        this.toastr.error('Failed to save basic details');
+        this.router.navigate(['/dashboard/profile/error-eligibility'], {
+          state: { message: 'Something went wrong' },
+        });
       },
     });
   }
+
 }

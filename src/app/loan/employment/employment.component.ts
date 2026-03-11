@@ -14,6 +14,7 @@ export class EmploymentComponent implements OnInit {
   applicationId = '';
   submitted = false;
   maxJoiningDate!: string;
+  today!: string;
 
   constructor(
     private fb: FormBuilder,
@@ -27,18 +28,24 @@ export class EmploymentComponent implements OnInit {
     this.maxJoiningDate = today.toISOString().split('T')[0];
     this.initForm();
     this.getBorrowerSnapshot();
+    const now = new Date();
+    this.today = now.toISOString().split('T')[0];
   }
 
   // ================= FORM INIT =================
   initForm() {
     this.employmentForm = this.fb.group({
       workingFromHome: [false, Validators.required],
-      workEmail: ['', [Validators.required, Validators.email]],
-      companyName: ['', Validators.required],
+
+      companyName: ['', [Validators.required, Validators.minLength(2)]],
       companyType: ['', Validators.required],
-      designation: ['', Validators.required],
+      designation: ['', [Validators.required, Validators.minLength(2)]],
+
+
       dateOfJoining: ['', Validators.required],
-      otherIncome: [''],
+      nextSalaryDate: ['', Validators.required],
+
+      monthlyIncome: ['', [Validators.required, Validators.min(1)]],
       address: this.fb.group({
         line1: ['', Validators.required],
         line2: [''],
@@ -68,7 +75,7 @@ export class EmploymentComponent implements OnInit {
   // ================= SAVE =================
   save() {
     this.submitted = true;
-
+    debugger;
     // 🔥 Force validation
     this.employmentForm.markAllAsTouched();
     if (this.employmentForm.invalid) return;
@@ -191,5 +198,13 @@ export class EmploymentComponent implements OnInit {
         console.error('Pincode resolve failed');
       },
     });
+  }
+
+  blockTyping(event: KeyboardEvent) {
+    const allowed = ['Backspace', 'Tab', 'ArrowLeft', 'ArrowRight', 'Delete'];
+
+    if (allowed.includes(event.key)) return;
+
+    event.preventDefault();
   }
 }

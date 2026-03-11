@@ -66,7 +66,7 @@ export class CalculatorComponent implements OnInit {
         this.maxTenure = eligibility.limits.maxTenureDays;
 
         // pricing
-        this.interestRateMonthly = eligibility.roiMonthlyPercent;
+        this.interestRateMonthly = eligibility.roiPerDay;
         this.processingFeePercent = eligibility.pricing.processingFeePercent;
         this.gstPercentOnPF = eligibility.pricing.gstPercentOnPF;
 
@@ -87,38 +87,45 @@ export class CalculatorComponent implements OnInit {
   }
 
   // ================= POST EMI QUOTE =================
-  recalculateQuote() {
-    if (!this.applicationId) return;
+recalculateQuote() {
 
-    this.isCalculating = true;
+if (!this.applicationId) return;
 
-    const payload = {
-      applicationId: this.applicationId,
-      principal: this.principal,
-      tenure: this.tenure,
-      repaymentType: 'BULLET',
-      rate: this.interestRateMonthly * 12, // API expects annual
-      processingFee: this.processingFeePercent,
-      loanPurpose: this.purpose,
-    };
+this.isCalculating = true;
 
-    this.contentService.emiLoanQuote(payload).subscribe({
-      next: (res: any) => {
-        this.isCalculating = false;
-debugger
-        if (res?.success && res?.data) {
-          this.emi = res.data.emi;
-          this.totalInterest = res.data.totalInterest;
-          this.grandTotalPayable = res.data.totalPayable;
-          this.netDisbursal = res.data.netDisbursal;
-        }
-      },
-      error: () => {
-        this.isCalculating = false;
-        console.error('EMI calculation failed');
-      },
-    });
+const payload = {
+  applicationId: this.applicationId,
+  principal: this.principal,
+  tenure: this.tenure,
+  repaymentType: 'BULLET',
+
+  // ✅ daily ROI → annual ROI
+  rate: this.interestRateMonthly * 365,
+
+  processingFee: this.processingFeePercent,
+  loanPurpose: this.purpose
+};
+
+this.contentService.emiLoanQuote(payload).subscribe({
+  next: (res: any) => {
+
+    this.isCalculating = false;
+
+    if (res?.success && res?.data) {
+      this.emi = res.data.emi;
+      this.totalInterest = res.data.totalInterest;
+      this.grandTotalPayable = res.data.totalPayable;
+      this.netDisbursal = res.data.netDisbursal;
+    }
+
+  },
+  error: () => {
+    this.isCalculating = false;
+    console.error('EMI calculation failed');
   }
+});
+
+}
 
   acceptLoan() {
     if (!this.applicationId) return;

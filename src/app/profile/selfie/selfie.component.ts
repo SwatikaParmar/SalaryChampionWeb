@@ -149,7 +149,7 @@ export class SelfieComponent implements OnDestroy {
       this.toastr.success('Selfie uploaded successfully');
 
       // 🚀 NEXT STEP
-      this.router.navigateByUrl('/dashboard/profile');
+      this.router.navigateByUrl('/dashboard');
     } catch (err: any) {
       this.spinner.hide();
       console.error(err);

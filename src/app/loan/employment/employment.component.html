@@ -37,19 +37,7 @@
             </div>
           </div>
 
-          <!-- OFFICE EMAIL -->
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Office Email *</label>
-              <input
-                type="email"
-                formControlName="workEmail"
-                placeholder="Enter Office Email" />
-              <small *ngIf="submitted && workEmailCtrl?.invalid">
-                Valid email required
-              </small>
-            </div>
-          </div>
+    
 
           <!-- COMPANY NAME -->
           <div class="col-md-6">
@@ -103,45 +91,61 @@
           </div>
 
           <!-- DOJ -->
-     <div class="col-md-6">
+<div class="col-md-6">
   <div class="form-group">
-    <label>Date Of Joining *</label>
+    <label>Previous Salary Date *</label>
 
     <input
       type="date"
       formControlName="dateOfJoining"
-      [max]="maxJoiningDate"
-      (keydown)="blockFutureTyping($event)"
+      [max]="today"
+      (keydown)="blockTyping($event)"
     />
 
-    <small
-      *ngIf="submitted && f['dateOfJoining']?.errors?.['required']"
-      class="text-danger"
-    >
-      Date of joining is required
+    <small *ngIf="submitted && f['dateOfJoining']?.errors?.['required']">
+      Previous salary date is required
     </small>
 
-    <small
-      *ngIf="submitted && f['dateOfJoining']?.errors?.['max']"
-      class="text-danger"
-    >
-      Future date not allowed
-    </small>
   </div>
 </div>
 
 
+<div class="col-md-6">
+  <div class="form-group">
+    <label>Net Monthly Income *</label>
+
+    <input
+      type="number"
+      formControlName="monthlyIncome"
+      placeholder="Enter monthly income"
+    />
+
+    <small *ngIf="submitted && f['monthlyIncome']?.errors?.['required']">
+      Monthly income is required
+    </small>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <div class="form-group">
+    <label>Next Salary Date *</label>
+
+    <input
+      type="date"
+      formControlName="nextSalaryDate"
+      [min]="today"
+      (keydown)="blockTyping($event)"
+    />
+
+    <small *ngIf="submitted && f['nextSalaryDate']?.errors?.['required']">
+      Next salary date is required
+    </small>
+
+  </div>
+</div>
+
        
-          <!-- OTHER INCOME -->
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Other Income</label>
-              <input
-                type="number"
-                formControlName="otherIncome"
-                placeholder="Enter Other Income" />
-            </div>
-          </div>
+  
 
           <!-- BUTTONS -->
           <div class="btn-row">

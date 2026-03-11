@@ -142,3 +142,38 @@
   margin-top: 4px;
   display: block;
 }
+
+
+.radio-row{
+display:flex;
+gap:40px;
+margin-top:10px;
+}
+
+.radio-row label{
+display:flex;
+align-items:center;
+gap:8px;
+font-size:16px;
+}
+
+.form-group{
+margin-bottom:20px;
+}
+
+input,select{
+width:100%;
+padding:12px;
+border-radius:10px;
+border:1px solid #ddd;
+}
+
+.btn-primary{
+width:100%;
+margin-top:20px;
+padding:14px;
+border-radius:10px;
+background:linear-gradient(90deg,#254b7c,#6ea7e1);
+color:#fff;
+border:none;
+}

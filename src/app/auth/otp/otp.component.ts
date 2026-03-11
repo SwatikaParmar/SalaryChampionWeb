@@ -1,7 +1,7 @@
+import { AuthServiceService } from './../../../service/auth-service.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthServiceService } from '../../../service/auth-service.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 
@@ -50,6 +50,9 @@ ngOnInit(): void {
   this.timer = savedTimer ? +savedTimer : 60; // 🔥 Default 60 seconds
 
   this.startCountdown();
+    this.getLocation();
+
+
 }
 
 
@@ -101,6 +104,12 @@ updateDisplayTime() {
       return;
     }
 
+    if(!this.lat || !this.long){
+  this.toastr.warning("Please allow location access");
+  this.getLocation();
+  return;
+}
+
     this.isLoading = true;
     this.spinner.show();
 
@@ -121,7 +130,6 @@ updateDisplayTime() {
           this.toastr.error(res?.message || 'Invalid OTP');
           return;
         }
-
         const data = res.data;
 
         // 🔐 Save tokens
@@ -130,6 +138,7 @@ updateDisplayTime() {
 
         // ✅ Set logged-in user
         this.auth.setCurrentUser(data.user);
+  this.deviceRegister();
 
         this.toastr.success('OTP verified successfully');
 
@@ -196,5 +205,54 @@ editNumber() {
     queryParams: { edit: true }
   });
 }
+
+
+deviceRegister() {
+
+  const payload = {
+    token: "web-token",
+    platform: "web",
+    deviceId: "WEB-" + Math.random().toString(36).substring(2),
+    appVersion: "1.0.0",
+    model: "Chrome Browser",
+    osVersion: navigator.userAgent,
+    language: "en",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    lat: this.lat,
+    long: this.long
+  };
+
+  this.auth.deviceRegister(payload).subscribe({
+    next: (res:any)=>{
+      console.log("Device Registered",res);
+    },
+    error:(err)=>{
+      console.log("Device Register Error",err);
+    }
+  })
+
+}
+
+
+lat: number | null = null;
+long: number | null = null;
+
+getLocation() {
+  if (!navigator.geolocation) {
+    this.toastr.error('Geolocation is not supported by this browser');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      this.lat = position.coords.latitude;
+      this.long = position.coords.longitude;
+    },
+    (error) => {
+      this.toastr.warning('Please allow location access to continue login');
+    }
+  );
+}
+
 
 }

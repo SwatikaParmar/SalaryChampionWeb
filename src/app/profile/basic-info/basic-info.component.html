@@ -10,121 +10,177 @@
       <p class="subtitle">A bit about yourself</p>
       <hr class="mt-3">
 
-      <form [formGroup]="basicForm" (ngSubmit)="submit()">
-        <div class="row mt-4">
+<form [formGroup]="basicForm" (ngSubmit)="submit()">
 
-        <!-- Name -->
-         <div class="col-md-6">
-          <div class="form-group">
-            <label>Your Name *</label>
-            <input type="text" formControlName="name"/>
-            <small class="error"
-    *ngIf="basicForm.get('name')?.invalid && basicForm.get('name')?.touched">
-    Name is required
-  </small>
-          </div>
-        </div>
+<!-- Employment -->
+<div class="form-group">
+<label>Select Employment Type *</label>
 
-        <!-- Gender -->
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Gender *</label>
-            <div class="gender-group gender-mf">
-              <label>
-                <input type="radio" value="MALE" formControlName="gender"  />
-                Male
-              </label>
-              <label>
-                <input type="radio" value="FEMALE" formControlName="gender"/>
-                Female
-              </label>
-            </div>
-             <small class="error"
-    *ngIf="basicForm.get('gender')?.invalid && basicForm.get('gender')?.touched">
-    Gender is required
-  </small>
-          </div>
-        </div>
+<div class="radio-row">
 
-        <!-- DOB -->
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Date of Birth *</label>
-            <input type="date" formControlName="dob"   />
-            
-  <small class="error"
-    *ngIf="basicForm.get('dob')?.invalid && basicForm.get('dob')?.touched">
-    Date of birth is required
-  </small>
-          </div>
-        </div>
+<label>
+<input type="radio" value="SALARIED" formControlName="employmentType">
+Salaried
+</label>
 
-        <!-- Marital Status -->
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Marital Status *</label>
-     <select formControlName="maritalStatus">
-  <option value="" disabled selected>
-    Select
-  </option>
-  <option value="SINGLE">Single</option>
-  <option value="MARRIED">Married</option>
-</select>
+<label>
+<input type="radio" value="SELF_EMPLOYED" formControlName="employmentType">
+Self Employed
+</label>
 
-             <small class="error"
-    *ngIf="basicForm.get('maritalStatus')?.invalid && basicForm.get('maritalStatus')?.touched">
-    Marital status is required
-  </small>
+</div>
 
-          </div>
-        </div>
+</div>
 
-        <!-- Spouse Fields -->
-        <div class="col-md-12">
-          <div *ngIf="isMarried">
-            <div class="form-group">
-              <label>Spouse Name *</label>
-              <input type="text" formControlName="spouseName" />
-                <small class="error"
-    *ngIf="basicForm.get('spouseName')?.invalid && basicForm.get('spouseName')?.touched">
-    Spouse name is required
-  </small>
-            </div>
+<!-- Salary Mode -->
 
-            <div class="form-group">
-              <label>Spouse Occupation *</label>
-              <input type="text" formControlName="spouseOccupation" />
-                <small class="error"
-    *ngIf="basicForm.get('spouseOccupation')?.invalid && basicForm.get('spouseOccupation')?.touched">
-    Spouse occupation is required
-  </small>
-            </div>
-          </div>
-        </div>
+<div class="form-group">
+<label>Mode Of Salary Received *</label>
 
-        <!-- Email -->
-        <div class="col-md-12">
-          <div class="form-group">
-            <label>Email *</label>
-            <input type="email" formControlName="email" />
-              <small class="error"
-    *ngIf="basicForm.get('email')?.touched && basicForm.get('email')?.errors?.['required']">
-    Email is required
-  </small>
+<div class="radio-row">
 
-  <small class="error"
-    *ngIf="basicForm.get('email')?.touched && basicForm.get('email')?.errors?.['email']">
-    Enter a valid email address
-  </small>
-          </div>
-        </div>
+<label>
+<input type="radio" value="BANK" formControlName="modeOfSalaryReceived">
+Bank
+</label>
 
-        <div class="col-md-4">
-          <button class="btn-primary theme-btn" type="submit">Continue</button>
-        </div>
+<label>
+<input type="radio" value="CASH" formControlName="modeOfSalaryReceived">
+Cash
+</label>
 
-        </div>
-      </form>
+</div>
+</div>
+
+<!-- Residence -->
+
+<div class="form-group">
+<label>Residence Type *</label>
+
+<div class="radio-row">
+
+<label>
+<input type="radio" value="OWNED" formControlName="residenceType">
+Owned
+</label>
+
+<label>
+<input type="radio" value="RENTED" formControlName="residenceType">
+Rented
+</label>
+
+</div>
+
+</div>
+
+<!-- DOB -->
+
+<div class="form-group">
+
+<label>Date Of Birth *</label>
+
+<input type="date" formControlName="dob">
+
+</div>
+
+<!-- Gender -->
+
+<div class="form-group">
+
+<label>Select Gender *</label>
+
+<div class="radio-row">
+
+<label>
+<input type="radio" value="MALE" formControlName="gender">
+Male
+</label>
+
+<label>
+<input type="radio" value="FEMALE" formControlName="gender">
+Female
+</label>
+
+</div>
+
+</div>
+
+<!-- Pincode -->
+
+<div class="form-group">
+
+<label>Pincode *</label>
+
+<input type="text"
+maxlength="6"
+formControlName="pincode"
+placeholder="Enter Pincode">
+
+<small class="error"
+*ngIf="basicForm.get('pincode')?.touched && basicForm.get('pincode')?.errors?.['required']">
+Pincode is required
+</small>
+
+<small class="error"
+*ngIf="basicForm.get('pincode')?.touched && basicForm.get('pincode')?.errors?.['pattern']">
+Enter valid 6 digit pincode
+</small>
+
+
+
+</div>
+
+
+<!-- Personal Email -->
+
+<div class="form-group">
+
+<label>Personal Mail Id *</label>
+
+<input type="email"
+formControlName="personalEmail"
+placeholder="Enter Personal Mail ID">
+
+<small class="error"
+*ngIf="basicForm.get('personalEmail')?.touched && basicForm.get('personalEmail')?.errors?.['required']">
+Personal email is required
+</small>
+
+<small class="error"
+*ngIf="basicForm.get('personalEmail')?.touched && basicForm.get('personalEmail')?.errors?.['pattern']">
+Enter valid email address
+</small>
+
+</div>
+
+<!-- Official Email -->
+
+<div class="form-group">
+
+<label>Official Mail Id *</label>
+
+<input type="email"
+formControlName="officialEmail"
+placeholder="Enter Official Mail ID">
+
+<small class="error"
+*ngIf="basicForm.get('officialEmail')?.touched && basicForm.get('officialEmail')?.errors?.['required']">
+Official email is required
+</small>
+
+<small class="error"
+*ngIf="basicForm.get('officialEmail')?.touched && basicForm.get('officialEmail')?.errors?.['pattern']">
+Enter valid official email
+</small>
+
+
+</div>
+
+<button class="btn-primary theme-btn">
+CHECK ELIGIBILITY
+</button>
+
+</form>
     </div>
 
     <div class="personal-info-illustration1" style="background: url(../assets/images/personal_information.jpg)no-repeat center; background-size: cover;">

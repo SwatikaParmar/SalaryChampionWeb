@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiEndPoint } from '../enums/api-end-point';
 import { environment } from '../environments/environment';
+import { register } from 'node:module';
 
 @Injectable({
   providedIn: 'root',
@@ -32,6 +33,10 @@ export class AuthServiceService {
     return this.http.post<any>(environment.apiUrl + ApiEndPoint.otp, data);
   }
 
+  deviceRegister(data:any){
+    return this.http.post<any>(environment.apiUrl + ApiEndPoint.deviceRegister,data)
+  }
+  
   verifyOtp(otp:any){
     debugger
     return this.http.post<any>(environment.apiUrl + ApiEndPoint.verifyOtp, otp);

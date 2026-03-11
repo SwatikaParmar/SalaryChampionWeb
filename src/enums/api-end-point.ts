@@ -1,5 +1,6 @@
 export enum ApiEndPoint {
   otp = 'auth/requestOtp',
+  deviceRegister = 'me/devices/register',
   verifyOtp = 'auth/verifyOtp',
   previewPan = 'kyc/pan/previewPan',
   verifyPan = 'kyc/pan/verifyPan',
@@ -23,5 +24,6 @@ export enum ApiEndPoint {
   saveReference = 'lead/saveReferences',
   verifyEkyc = 'kyc/aadhaar/fetch-and-save',
   pennyDrop = 'kyc/bank/pennydrop/verify',
-  verifyBank = 'kyc/aa/consents/{id}/sessions'
+  verifyBank = 'kyc/aa/consents/{id}/sessions',
+  saveBasic = "lead/saveEligibilityQuickDetails"
 }

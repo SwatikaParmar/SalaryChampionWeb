@@ -165,4 +165,8 @@ verifyBank(id: any) {
   return this.http.get<any>(environment.apiUrl + url);
 }
 
+
+saveBasic(data:any){
+return this.http.post<any>(environment.apiUrl + ApiEndPoint.saveBasic,data)
+}
 }

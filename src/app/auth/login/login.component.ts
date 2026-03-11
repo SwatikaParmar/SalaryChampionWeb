@@ -28,7 +28,6 @@ ngOnInit(): void {
     agree: [false, Validators.requiredTrue],
   });
 
-  // 🔥 PATCH NUMBER IF COMING FROM OTP
   const savedMobile = localStorage.getItem('loginMobile');
   if (savedMobile) {
     this.mobileForm.patchValue({
@@ -36,13 +35,21 @@ ngOnInit(): void {
       agree: true
     });
   }
-}
 
+  // 🔥 ask location when login page open
+  this.getLocation();
+}
   sendOtp() {
     if (this.mobileForm.invalid || this.isLoading) {
       this.toastr.warning('Please enter valid mobile & accept terms');
       return;
     }
+
+if(!this.lat || !this.long){
+  this.toastr.warning("Please allow location access");
+  this.getLocation();
+  return;
+}
 
     this.isLoading = true;
     this.spinner.show(); // ✅ SHOW SPINNER
@@ -58,6 +65,7 @@ ngOnInit(): void {
         this.spinner.hide(); // ✅ HIDE SPINNER
         debugger;
     if (res?.success) {
+
   localStorage.setItem('loginPhone', payload.phone); // +91xxxxxxxxxx
   localStorage.setItem('loginMobile', this.mobileForm.value.mobile); // 🔥 plain number
 
@@ -105,5 +113,28 @@ removeNonNumeric(event: Event) {
     emitEvent: false,
   });
 }
+
+lat: number | null = null;
+long: number | null = null;
+
+getLocation() {
+  if (!navigator.geolocation) {
+    this.toastr.error('Geolocation is not supported by this browser');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      this.lat = position.coords.latitude;
+      this.long = position.coords.longitude;
+    },
+    (error) => {
+      this.toastr.warning('Please allow location access to continue login');
+    }
+  );
+}
+
+
+
 
 }
