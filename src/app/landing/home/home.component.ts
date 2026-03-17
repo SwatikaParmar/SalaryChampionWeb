@@ -6,30 +6,39 @@ import { Component, OnInit } from '@angular/core';
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
-  loanAmount = 100000; // ₹10,000 – ₹5,00,000
-  tenure = 24; // months
-  interestRate = 16.5; // annual %
 
-  emi = 0;
-  totalInterest = 0;
+  loanAmount = 50000;
+  tenure = 15; // days
+
+  interestRate = 1; // 1% daily
+  processingFeeRate = 10; // %
+  gstRate = 18; // %
+
+  interest = 0;
+  processingFee = 0;
+  gst = 0;
   totalPayment = 0;
 
   ngOnInit(): void {
-    this.calculateEMI();
+    this.calculateLoan();
   }
 
-  calculateEMI() {
+  calculateLoan() {
+
     const P = this.loanAmount;
-    const R = this.interestRate / 12 / 100;
-    const N = this.tenure;
+    const days = this.tenure;
 
-    if (R === 0) {
-      this.emi = P / N;
-    } else {
-      this.emi = (P * R * Math.pow(1 + R, N)) / (Math.pow(1 + R, N) - 1);
-    }
+    // 🔥 Interest (daily)
+    this.interest = (P * this.interestRate / 100) * days;
 
-    this.totalPayment = this.emi * N;
-    this.totalInterest = this.totalPayment - P;
+    // 🔥 Processing Fee
+    this.processingFee = (P * this.processingFeeRate) / 100;
+
+    // 🔥 GST on PF
+    this.gst = (this.processingFee * this.gstRate) / 100;
+
+    // 🔥 Total
+    this.totalPayment = P + this.interest + this.processingFee + this.gst;
+
   }
 }
