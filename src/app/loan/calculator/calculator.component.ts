@@ -45,46 +45,39 @@ export class CalculatorComponent implements OnInit {
   }
 
   // ================= GET BORROWER SNAPSHOT =================
-  getBorrowerSnapshot() {
-    this.contentService.getBorrowerSnapshot().subscribe({
-      next: (res: any) => {
-        if (!res?.success) return;
+// ================= GET BORROWER SNAPSHOT =================
+getBorrowerSnapshot() {
+  this.contentService.getBorrowerSnapshot().subscribe({
+    next: (res: any) => {
+      if (!res?.success) return;
 
-        const eligibility = res.data.offer?.eligibility;
-        const quote = res.data.offer?.latestQuote;
-        const application = res.data.application;
+      const eligibility = res.data.offer?.eligibility;
+      const quote = res.data.offer?.latestQuote;
+      const application = res.data.application;
 
-        if (!eligibility || !application) return;
+      if (!eligibility || !application) return;
 
-        // applicationId
-        this.applicationId = application.id;
+      this.applicationId = application.id;
 
-        // limits
-        this.minPrincipal = eligibility.limits.minPrincipal;
-        this.maxPrincipal = eligibility.limits.maxPrincipal;
-        this.minTenure = eligibility.limits.minTenureDays;
-        this.maxTenure = eligibility.limits.maxTenureDays;
+      this.minPrincipal = eligibility.limits.minPrincipal;
+      this.maxPrincipal = eligibility.limits.maxPrincipal;
+      this.minTenure = eligibility.limits.minTenureDays;
+      this.maxTenure = eligibility.limits.maxTenureDays;
 
-        // pricing
-        this.interestRateMonthly = eligibility.roiPerDay;
-        this.processingFeePercent = eligibility.pricing.processingFeePercent;
-        this.gstPercentOnPF = eligibility.pricing.gstPercentOnPF;
+      this.interestRateMonthly = eligibility.roiPerDay;
+      this.processingFeePercent = eligibility.pricing.processingFeePercent;
+      this.gstPercentOnPF = eligibility.pricing.gstPercentOnPF;
 
-        // defaults
-        this.principal = quote?.principal || this.minPrincipal;
-        this.tenure = eligibility.tenureDays || this.minTenure;
+      this.principal = quote?.principal || this.minPrincipal;
+      this.tenure = eligibility.tenureDays || this.minTenure;
 
-        // initial values (if quote exists)
-        if (quote) {
-          this.emi = quote.emi;
-          this.totalInterest = quote.totalInterest;
-          this.grandTotalPayable = quote.grandTotalPayable;
-          this.netDisbursal = quote.netDisbursal;
-        }
-      },
-      error: () => console.error('Failed to fetch borrower snapshot'),
-    });
-  }
+      // 🔥 IMPORTANT FIX
+      this.recalculateQuote();  // 👈 ADD THIS LINE
+
+    },
+    error: () => console.error('Failed to fetch borrower snapshot'),
+  });
+}
 
   // ================= POST EMI QUOTE =================
 recalculateQuote() {

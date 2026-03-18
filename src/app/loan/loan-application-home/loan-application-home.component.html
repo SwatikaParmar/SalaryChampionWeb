@@ -50,21 +50,32 @@
       </div>
 
              <!-- Fetch Bank Statement -->
-      <div
-        class="loan-step"
-        [ngClass]="{
-          'completed': isCompleted('fetchBankStatement'),
-          'active': isActive('fetchBankStatement'),
-          'locked': isLocked('fetchBankStatement')
-        }"
-        (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
-      >
-        <div class="loan-step-icon">🏦</div>
-        <div class="loan-step-text">
-          <h5>Fetch Bank Statement</h5>
-          <p>Share your bank statements through consent.</p>
-        </div>
-      </div>
+<div
+  class="loan-step"
+  [ngClass]="{
+    'completed': isCompleted('fetchBankStatement'),
+    'active': isActive('fetchBankStatement'),
+    'locked': isLocked('fetchBankStatement')
+  }"
+  (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
+>
+
+  <!-- SKIP BUTTON -->
+  <button
+    *ngIf="isActive('fetchBankStatement') && !isCompleted('fetchBankStatement')"
+    class="skip-btn"
+    (click)="skipProcess()">
+    Skip
+  </button>
+
+  <div class="loan-step-icon">🏦</div>
+
+  <div class="loan-step-text">
+    <h5>Fetch Bank Statement</h5>
+    <p>Share your bank statements through consent.</p>
+  </div>
+
+</div>
 
 
 

@@ -50,36 +50,88 @@ export class BankComponent implements OnInit {
   }
 
   // ================= FETCH BANK STATEMENT =================
-  fetchBankStatement() {
-    if (!this.applicationId) {
-      this.toastr.warning('Application ID missing');
-      return;
+fetchBankStatement() {
+
+  if (!this.applicationId) {
+    this.toastr.warning('Application ID missing');
+    return;
+  }
+
+  const payload = {
+    applicationId: this.applicationId,
+    redirectUrl: 'http://localhost:64556/dashboard/loan/bank-verification',
+  };
+
+  this.spinner.show();
+
+  this.contentService.fetchBankStatement(payload).subscribe({
+
+    next: (res: any) => {
+
+      this.spinner.hide();
+
+      // 🔥 HANDLE STRING RESPONSE
+      if (typeof res === 'string') {
+        try {
+          res = JSON.parse(res);
+        } catch (e) {
+          console.error('Invalid JSON response:', res);
+          this.toastr.error('Server response invalid');
+          return;
+        }
+      }
+
+      // ✅ NORMAL FLOW
+      if (res?.success && res?.data?.url) {
+
+        this.toastr.success('Redirecting to bank statement');
+
+        // 🔥 BEST REDIRECT
+        window.open(res.data.url, '_self');
+
+      } else {
+        this.toastr.error(res?.message || 'Failed to generate bank statement link');
+      }
+
+    },
+
+    error: (err) => {
+      this.spinner.hide();
+      console.error(err);
+      this.toastr.error('Failed to fetch bank statement');
     }
 
-    const payload = {
-      applicationId: this.applicationId,
-      redirectUrl: 'http://localhost:55669/dashboard/loan/bank-verification',
-    };
+  });
+}
 
-    this.spinner.show();
 
-    this.contentService.fetchBankStatement(payload).subscribe({
-      next: (res: any) => {
-        this.spinner.hide();
+    /* ================= SKIP ================= */
+skipProcess() {
 
-        if (res?.success && res?.data?.url) {
-          this.toastr.success('Redirecting to bank statement');
-
-          // ✅ SAME TAB redirect
-          window.location.href = res.data.url;
-        } else {
-          this.toastr.error('Failed to generate bank statement link');
-        }
-      },
-      error: () => {
-        this.spinner.hide();
-        this.toastr.error('Failed to fetch bank statement');
-      },
-    });
+  if (!this.applicationId) {
+    this.toastr.error('Application ID missing');
+    return;
   }
+
+  this.spinner.show();
+
+  this.contentService.skipFetchBankStatement(this.applicationId).subscribe({
+    next: () => {
+
+      this.spinner.hide();
+
+      this.toastr.success('Step skipped successfully');
+
+      // ✅ CORRECT REDIRECT
+      this.router.navigate(['/dashboard/loan'], {
+        queryParams: { refresh: true }
+      });
+
+    },
+    error: () => {
+      this.spinner.hide();
+      this.toastr.error('Skip failed');
+    }
+  });
+}
 }

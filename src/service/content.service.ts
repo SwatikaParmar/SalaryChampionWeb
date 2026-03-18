@@ -119,8 +119,14 @@ export class ContentService {
 }
 
 
-fetchBankStatement(data:any){
-  return this.http.post<any>(environment.apiUrl + ApiEndPoint.fetchBankStatement,data)
+fetchBankStatement(data: any) {
+  return this.http.post(
+    environment.apiUrl + ApiEndPoint.fetchBankStatement,
+    data,
+    {
+      responseType: 'text' as 'json' // 🔥 IMPORTANT FIX
+    }
+  );
 }
 
 documentCheckList(applicationId :any){
@@ -169,4 +175,96 @@ verifyBank(id: any) {
 saveBasic(data:any){
 return this.http.post<any>(environment.apiUrl + ApiEndPoint.saveBasic,data)
 }
+
+
+
+ createConsent(payload: any) {
+    return this.http.post<any>(
+      `${environment.apiUrl}kyc/aa/consents`,
+      payload,
+    );
+  }
+
+  // ================= 2. GET CONSENT STATUS =================
+  getConsentStatus(consentId: string | null) {
+    return this.http.get<any>(
+      `${environment.apiUrl}kyc/aa/consents/${consentId}`,
+    );
+  }
+
+  // ================= 3. CREATE SESSION =================
+  createSession(payload: any) {
+    return this.http.post<any>(
+      `${environment.apiUrl}kyc/aa/sessions`,
+      payload,
+    );
+  }
+
+  // ================= 4. GET SESSION STATUS =================
+  getSessionStatus(sessionId: string, applicationId: string) {
+    return this.http.get<any>(
+      `${environment.apiUrl}kyc/aa/sessions/${sessionId}?applicationId=${applicationId}`,
+    );
+  }
+
+  // ================= 5. APPLICATION SNAPSHOT =================
+  getApplicationSnapshot(applicationId: string) {
+    return this.http.get<any>(
+      `${environment.apiUrl}loan/applicationSnapshot?applicationId=${applicationId}`,
+    );
+  }
+
+  // ================= 6. REVOKE CONSENT (FALLBACK) =================
+  revokeConsent(consentId: string) {
+    return this.http.post<any>(
+      `${environment.apiUrl}kyc/aa/consents/${consentId}/revoke`,
+      {},
+    );
+  }
+
+
+  skipFetchBankStatement(applicationId: string) {
+  return this.http.post<any>(
+    `${environment.apiUrl}loan/borrower/fetch-bank-statement/skip`,
+    {
+      applicationId: applicationId,
+      skip: true
+    },
+  );
+}
+
+
+// 1. REQUEST OTP
+requestPanOtp(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/public/repay/pan/request-otp',
+    data
+  );
+}
+
+// 2. VERIFY OTP
+verifyPanOtp(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/public/repay/pan/verify-otp',
+    data
+  );
+}
+
+// 3. CREATE ORDER
+createRepaymentOrder(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/public/repay/pan/cashfree/order',
+    data
+  );
+}
+
+// 4. REFRESH STATUS
+refreshPayment(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/public/repay/pan/cashfree/refresh',
+    data
+  );
+}
+
+
 }

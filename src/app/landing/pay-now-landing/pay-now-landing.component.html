@@ -76,68 +76,98 @@
     </div>
   </section>  
 
-  <section class="payment-wrapper tb-10">
-    <div class="container">
-      <div class="row justify-content-between">       
+<section class="payment-wrapper tb-10">
+  <div class="container">
+    <div class="row justify-content-between">
 
-            <!-- LEFT CARD -->
-            <div class="col-lg-6 col-md-12">
-                <div class="payment-card">
-                    <div class="card-title"><img src="assets/images/mobile_icon.svg" style="width: 18px;"> Scan & Pay</div>
+      <!-- LEFT CARD -->
+      <div class="col-lg-6 col-md-12">
+        <div class="payment-card">
 
-                    <div class="upi-box">
-                        <h3>UPI ID:</h3>
-                        <div class="upi-id">
-                            <span id="upiText">richmanfincapidfcbank</span>
-                            <div class="copy-btn" onclick="copyText('upiText')"></div>
-                        </div>
-                    </div>
+          <div class="card-title">
+            👤 Borrower Details
+          </div>
 
-                    <div class="note-box">
-                        <strong>Note:</strong> Please mention your loan reference number or registered mobile number in the payment description for proper allocation.
-                    </div>
-                </div>
+          <div class="detail-box">
+            <div>
+              <div class="detail-label">Name</div>
+              <div class="detail-value">
+                {{ borrower?.name }}
+              </div>
             </div>
+          </div>
 
-            <!-- RIGHT CARD -->
-            <div class="col-lg-6 col-md-12 sm-mt-40">
-                <div class="payment-card">
-                    <div class="card-title">Bank Transfer Details</div>
+          <div class="detail-box">
+            <div>
+              <div class="detail-label">Application No</div>
+              <div class="detail-value">
+                {{ application?.applicationNumber }}
+              </div>
+            </div>
+          </div>
 
-                    <div class="detail-box">
-                        <div>
-                            <div class="detail-label">Beneficiary Name</div>
-                            <div class="detail-value" id="nameText">Richman Fincap Limited</div>
-                        </div>
-                        <div class="copy-btn" onclick="copyText('nameText')"></div>
-                    </div>
+          <div class="detail-box">
+            <div>
+              <div class="detail-label">Mobile</div>
+              <div class="detail-value">
+                {{ borrower?.mobile }}
+              </div>
+            </div>
+          </div>
 
-                    <div class="detail-box">
-                        <div>
-                            <div class="detail-label">Account Number</div>
-                            <div class="detail-value" id="accText">19711399676</div>
-                        </div>
-                        <div class="copy-btn" onclick="copyText('accText')"></div>
-                    </div>
+          <div class="detail-box">
+            <div>
+              <div class="detail-label">PAN</div>
+              <div class="detail-value">
+                {{ borrower?.panMasked }}
+              </div>
+            </div>
+          </div>
 
-                    <div class="detail-box">
-                        <div>
-                            <div class="detail-label">IFSC Code</div>
-                            <div class="detail-value" id="ifscText">IDFB0020194</div>
-                        </div>
-                        <div class="copy-btn" onclick="copyText('ifscText')"></div>
-                    </div>
-
-                    <div class="warning-box">
-                        Always verify these payment details by calling our customer support before making large transactions. Never share these details with anyone claiming to be from our company.
-                    </div>
-
-                </div>
-            </div>          
-
+        </div>
       </div>
+
+      <!-- RIGHT CARD -->
+      <div class="col-lg-6 col-md-12 sm-mt-40">
+        <div class="payment-card">
+
+          <div class="card-title">
+            💰 Loan Summary
+          </div>
+
+          <div class="detail-box">
+            <div>
+              <div class="detail-label">Loan Amount</div>
+              <div class="detail-value">
+                ₹ {{ loan?.principal }}
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-box">
+            <div>
+              <div class="detail-label">Outstanding</div>
+              <div class="detail-value">
+                ₹ {{ summary?.outstanding }}
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-box highlight">
+            <div>
+              <div class="detail-label">Total Payable</div>
+              <div class="detail-value text-success fw-bold">
+                ₹ {{ dues?.payableAmount }}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
-  </section>
+  </div>
+</section>
 
   <section class="payment-wrapper tb-10 pt-0">
     <div class="container">
@@ -163,9 +193,12 @@
 
                     <!-- Button -->
                     <div class="text-center mb-5">
-                        <button class="btn text-white secure-btn" data-bs-toggle="modal" data-bs-target="#panModal">
-                            Start Secure Payment Process
-                        </button>
+                        <button 
+          *ngIf="!showPaymentSection"
+          class="btn text-white secure-btn"
+          (click)="startPayment()">
+          Start Secure Payment Process
+        </button>
                     </div>
 
                     <!-- Bottom Cards -->
@@ -198,51 +231,278 @@
     </div>
   </section>
 
-    <!-- Modal -->
-    <div class="modal fade custom-modal" id="panModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="text-center">
+<!-- ================= PAYMENT MODE ================= -->
+<div class="container" *ngIf="showPaymentSection">
 
-                <!-- Icon -->
-                <div class="pan-icon">
-                    <!-- Bootstrap Icon SVG -->
-                    <img src="assets/images/enter_pan.svg" style="max-width: 32px;">
-                </div>
+  <div class="payment-box shadow-sm">
 
-                <h4 class="pan-title">Enter PAN</h4>
-                <p class="pan-subtext">
-                    Enter your PAN card number to view available loans
-                </p>
+    <h4 class="text-center mb-4 fw-semibold">
+      💳 Select Payment Type
+    </h4>
 
-            </div>
+    <!-- FULL PAYMENT -->
+    <div 
+      class="payment-option"
+      [class.active]="paymentType === 'FULL'"
+      (click)="paymentType = 'FULL'">
 
-            <!-- Form -->
-            <form>
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">PAN Card Number *</label>
-                    <input type="text"
-                        class="form-control pan-input"
-                        placeholder="ABCDE1234F"
-                        maxlength="10"
-                        required>
-                    <div class="pan-helper mt-1">
-                        Enter your 10-character PAN number (Format: ABCDE1234F)
-                    </div>
-                </div>
-
-                <button type="submit" class="btn text-white w-100 pan-submit mb-3">
-                    Get Available Loans
-                </button>
-
-                <div class="text-center ssl-text">
-                    <img src="assets/images/shield.svg" style="max-width: 16px;"> Secured by SSL encryption
-                </div>
-            </form>
-
-            </div>
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="mb-1">Full Payment</h6>
+          <small class="text-muted">Pay total outstanding amount</small>
         </div>
+
+        <div class="text-end">
+          <h5 class="mb-0 text-success">
+            ₹ {{ dues?.payableAmount }}
+          </h5>
+        </div>
+      </div>
+
+      <input type="radio" [(ngModel)]="paymentType" value="FULL" hidden>
     </div>
+
+    <!-- PARTIAL PAYMENT -->
+    <div 
+      class="payment-option mt-3"
+      [class.active]="paymentType === 'PARTIAL'"
+      (click)="paymentType = 'PARTIAL'">
+
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="mb-1">Partial Payment</h6>
+          <small class="text-muted">Enter custom amount</small>
+        </div>
+
+        <i class="fa fa-edit text-primary"></i>
+      </div>
+
+      <input type="radio" [(ngModel)]="paymentType" value="PARTIAL" hidden>
+
+      <!-- INPUT -->
+      <div *ngIf="paymentType === 'PARTIAL'" class="mt-3">
+
+        <input
+          type="number"
+          class="form-control custom-input"
+          placeholder="Enter amount"
+          [(ngModel)]="amount"
+        />
+
+        <small class="text-muted">
+          Max: ₹ {{ dues?.payableAmount }}
+        </small>
+
+      </div>
+    </div>
+
+    <!-- BUTTON -->
+    <div class="text-center mt-4">
+      <button 
+        class="btn btn-pay w-100"
+        (click)="createPayment()">
+        🚀 Pay Now
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+
+    <!-- Modal -->
+   <!-- PAN MODAL -->
+<div class="modal fade custom-modal" id="panModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+
+      <!-- HEADER / ICON -->
+      <div class="text-center">
+
+        <div class="pan-icon mb-3">
+          <img src="assets/images/enter_pan.svg" style="max-width: 40px;">
+        </div>
+
+        <h4 class="pan-title">Enter PAN</h4>
+
+        <p class="pan-subtext">
+          Enter your PAN card number to view available loans
+        </p>
+
+      </div>
+
+      <!-- FORM -->
+      <form (ngSubmit)="submitPan()" #panForm="ngForm">
+
+        <!-- PAN INPUT -->
+        <div class="mb-3">
+
+          <label class="form-label fw-semibold">
+            PAN Card Number *
+          </label>
+
+          <input
+            type="text"
+            class="form-control pan-input"
+            name="pan"
+            [(ngModel)]="panValue"
+            placeholder="ABCDE1234F"
+            maxlength="10"
+            required
+            (input)="panValue = panValue.toUpperCase()"
+          />
+
+          <div class="pan-helper mt-1">
+            Format: ABCDE1234F
+          </div>
+
+        </div>
+
+        <!-- ERROR MESSAGE -->
+        <div *ngIf="panValue && panValue.length === 10 && !isValidPan()"
+             class="text-danger small mb-2">
+          Invalid PAN format
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button
+          type="submit"
+          class="btn text-white w-100 pan-submit mb-3"
+          [disabled]="!panValue || panValue.length !== 10 || !isValidPan()"
+        >
+          Get Available Loans
+        </button>
+
+        <!-- SECURITY TEXT -->
+        <div class="text-center ssl-text">
+          <img src="assets/images/shield.svg" style="max-width: 16px;">
+          Secured by SSL encryption
+        </div>
+
+      </form>
+
+      <!-- OTP SCREEN -->
+<div *ngIf="showOtpScreen" class="mt-3">
+
+  <p class="text-center">
+    OTP sent to {{ destinationMobile }}
+  </p>
+
+  <input
+    type="text"
+    class="form-control text-center"
+    maxlength="6"
+    placeholder="Enter OTP"
+    [(ngModel)]="otpCode"
+  />
+
+  <button
+    class="btn btn-primary w-100 mt-3"
+    (click)="verifyOtp()">
+    Verify OTP
+  </button>
+
+</div>
+
+
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT RESULT MODAL -->
+<div class="modal fade" id="resultModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+
+      <!-- LOADING -->
+      <div *ngIf="!paymentStatus" class="text-center">
+        <h5>Checking payment status...</h5>
+        <div class="spinner-border mt-3"></div>
+      </div>
+      <!-- SUCCESS -->
+      <div *ngIf="paymentStatus?.paidAt">
+
+        <div class="text-center mb-3">
+          <div class="success-icon">✅</div>
+          <br>
+
+          <h4 class="text-success">Payment Successful</h4>
+        </div>
+
+        <div class="receipt-box">
+
+          <div class="row mb-2">
+            <div class="col-6 text-muted">Amount</div>
+            <div class="col-6 text-end fw-bold">
+              ₹ {{ paymentDetails?.amount }}
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-6 text-muted">Txn ID</div>
+            <div class="col-6 text-end">
+              {{ paymentDetails?.txnRef }}
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-6 text-muted">Payment Mode</div>
+            <div class="col-6 text-end">
+              {{ paymentDetails?.mode }}
+            </div>
+          </div>
+
+          <hr>
+
+          <div class="row mb-2">
+            <div class="col-6 text-muted">Name</div>
+            <div class="col-6 text-end">
+              {{ repaymentInfo?.borrower?.name }}
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-6 text-muted">Application</div>
+            <div class="col-6 text-end">
+              {{ repaymentInfo?.application?.applicationNumber }}
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-6 text-muted">Repayment Due</div>
+            <div class="col-6 text-end">
+              ₹ {{ repaymentInfo?.dues?.payableAmount }}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- FAILED -->
+      <div *ngIf="paymentStatus?.paymentStatus === 'FAILED'" class="text-center">
+        <div class="fail-icon">❌</div>
+        <h4 class="text-danger">Payment Failed</h4>
+        <p>Please try again</p>
+      </div>
+
+      <!-- PENDING -->
+      <div *ngIf="paymentStatus && !paymentStatus?.paidAt && paymentStatus?.paymentStatus !== 'FAILED'" class="text-center">
+        <h5>Processing Payment...</h5>
+        <div class="spinner-border mt-3"></div>
+      </div>
+
+      <!-- BUTTON -->
+      <div class="mt-4 text-center">
+        <button class="btn btn-primary" (click)="goHome()">
+          Go Home
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
   
 
   <!-- ================= FOOTER ================= -->
@@ -329,3 +589,5 @@
 
     </div>
   </footer>
+
+  

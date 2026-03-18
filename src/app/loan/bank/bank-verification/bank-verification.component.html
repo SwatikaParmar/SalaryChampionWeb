@@ -1,37 +1,57 @@
 <div class="bank-verify-wrapper">
-  <div class="row">
+  <div class="row align-items-center">
 
+    <!-- LEFT -->
     <div class="col-md-6">
       <div class="bank-verify-card">
 
         <!-- Illustration -->
-        <div class="illustration">
-          <img src="assets/images/bank-verification.svg" alt="Bank Verification" class="img-fluid"/>
+        <div class="illustration text-center mb-3">
+          <img src="assets/images/bank-verification.svg" class="img-fluid"/>
         </div>
 
-        <!-- Message -->
-        <p class="verify-text">
-          Please click here to confirm the status of your provided consent.
+        <!-- Dynamic Message -->
+        <p class="verify-text text-center">
+
+          <ng-container *ngIf="!consentId">
+            Securely fetch your bank statement using Account Aggregator.
+          </ng-container>
+
+          <ng-container *ngIf="consentId">
+            We are verifying your consent. Please wait...
+          </ng-container>
+
         </p>
 
-        <!-- Primary CTA -->
-        <button class="primary-btn" (click)="verifyBankConsent()">
-          Verify Now
+        <!-- PRIMARY BUTTON -->
+        <button
+          *ngIf="!consentId"
+          class="primary-btn w-100"
+          (click)="startBankFlow()">
+
+          Fetch Bank Statement
         </button>
 
-        <!-- Secondary Actions -->
-        <div class="secondary-actions">
-          <a (click)="skipProcess()">Skip this process</a>
+        <!-- LOADING STATE -->
+        <div *ngIf="consentId" class="text-center mt-3">
+          <div class="spinner-border text-primary"></div>
+          <p class="mt-2">Processing...</p>
+        </div>
+
+        <!-- SECONDARY ACTIONS -->
+        <div class="secondary-actions text-center mt-3">
+          <a (click)="skipProcess()">Skip</a>
           <span>|</span>
-          <a (click)="reInitiate()">Re-initiate this process</a>
+          <a (click)="reInitiate()">Retry</a>
         </div>
 
       </div>
     </div>
 
+    <!-- RIGHT -->
     <div class="col-md-6">
-      <div class="right-htfigure">
-        <img src="assets/images/bank_verification_vector.webp" alt="Bank Verification" class="img-fluid"/>
+      <div class="right-htfigure text-center">
+        <img src="assets/images/bank_verification_vector.webp" class="img-fluid"/>
       </div>
     </div>
 

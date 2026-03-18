@@ -1,13 +1,25 @@
 <div class="bank-container">
 
-    <div class="action-arr mb-3">
-    <a [routerLink]="['/dashboard/loan']" class="back-lk"><i class="fa-solid fa-arrow-left"></i></a>
-    <h2 class="page-title">Fetch Bank Statement</h2>
+  <!-- HEADER -->
+  <div class="action-arr mb-3">
+
+    <!-- LEFT -->
+    <div class="d-flex align-items-center gap-2">
+      <a [routerLink]="['/dashboard/loan']" class="back-lk">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a>
+      <h2 class="page-title m-0">Fetch Bank Statement</h2>
+    </div>
+
+    <!-- RIGHT SKIP -->
+    <button class="skip-btn-header" (click)="skipProcess()">
+      Skip
+    </button>
+
   </div>
 
-  <div class="bank-card"> 
-    
-
+  <!-- CARD -->
+  <div class="bank-card">
 
     <p class="subtitle">
       Securely share your bank statement using OneMoney consent flow.
@@ -42,4 +54,8 @@
     </button>
 
     <p class="secure-text">
-      🔒 Powered by OneMoney • RBI appro
+      🔒 Powered by OneMoney • RBI approved
+    </p>
+
+  </div>
+</div>

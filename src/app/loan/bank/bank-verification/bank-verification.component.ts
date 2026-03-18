@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
@@ -9,9 +9,12 @@ import { ContentService } from '../../../../service/content.service';
   templateUrl: './bank-verification.component.html',
   styleUrls: ['./bank-verification.component.css'],
 })
-export class BankVerificationComponent implements OnInit {
+export class BankVerificationComponent implements OnInit, OnDestroy {
 
   consentId: string | null = null;
+  applicationId: string = ''; // 🔥 set from route/localStorage
+  sessionId: string = '';
+  pollInterval: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,64 +26,211 @@ export class BankVerificationComponent implements OnInit {
 
   ngOnInit(): void {
 
+    // 🔥 TODO: get applicationId properly
+this.getBorrowerSnapshot();
     this.route.queryParams.subscribe(params => {
+
       const success = params['success'];
       const errorMsg = params['errormsg'];
       const errorCode = params['errorcode'];
-      this.consentId = params['id']; // 🔥 GET ID HERE
 
-      // 🔥 Redirect on failure
+      this.consentId = params['id'];
+
+      // ❌ FAIL CASE
       if (success === 'false') {
-        this.router.navigate(
-          ['/dashboard/loan/error-verification'],
-          {
-            queryParams: {
-              errorcode: errorCode,
-              errormsg: errorMsg
-            }
-          }
-        );
+        this.router.navigate(['/dashboard/loan/error-verification'], {
+          queryParams: { errorcode: errorCode, errormsg: errorMsg }
+        });
+        return;
+      }
+
+      // ✅ AFTER REDIRECT START FLOW
+      if (this.consentId) {
+        this.checkConsentAndProceed();
       }
     });
   }
 
-  // ================= VERIFY BANK =================
-  verifyBankConsent() {
 
-    if (!this.consentId) {
-      this.toastr.error('Consent ID not found');
-      return;
-    }
-
+    // ================= GET APPLICATION ID =================
+  getBorrowerSnapshot() {
     this.spinner.show();
 
-    this.contentService.verifyBank(this.consentId).subscribe({
+    this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
         this.spinner.hide();
 
-        if (res?.success) {
-          this.toastr.success(res.messages || 'Bank verification successful');
+        if (!res?.success) {
+          this.toastr.error('Failed to load borrower details');
+          return;
+        }
 
-          // ✅ Go to next step
-          this.router.navigate(['/dashboard/loan/reference']);
-        } else {
-          this.toastr.error(res?.messages || 'Verification failed');
+        this.applicationId = res.data?.application?.id;
+
+        if (!this.applicationId) {
+          this.toastr.warning('Application not found');
         }
       },
       error: () => {
         this.spinner.hide();
-        this.toastr.error('Unable to verify bank consent');
+        this.toastr.error('Failed to fetch borrower snapshot');
+      },
+    });
+  }
+
+  // ================= START FLOW =================
+  startBankFlow() {
+
+    const payload = {
+      applicationId: this.applicationId,
+      redirectUrl: window.location.origin + '/aa/return'
+    };
+
+    this.spinner.show();
+
+    this.contentService.createConsent(payload).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (!res?.success) {
+          this.toastr.error('Failed to create consent');
+          return;
+        }
+
+        const consentId = res.data.id;
+
+        // 🔥 OPEN SETU PAGE
+        window.location.href = `https://fiu-uat.setu.co/v2/consents/webview/${consentId}`;
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Consent API failed');
       }
     });
   }
 
-  // ================= SKIP =================
-  skipProcess() {
-    this.router.navigate(['/dashboard/loan']);
+  // ================= CHECK CONSENT =================
+  checkConsentAndProceed() {
+
+    this.spinner.show();
+
+    this.pollInterval = setInterval(() => {
+
+      this.contentService.getConsentStatus(this.consentId).subscribe((res: any) => {
+
+        const status = res?.data?.status;
+
+        if (status === 'ACTIVE') {
+
+          clearInterval(this.pollInterval);
+          this.createSession();
+
+        } else if (status === 'REVOKED' || status === 'EXPIRED') {
+
+          clearInterval(this.pollInterval);
+          this.spinner.hide();
+          this.toastr.error('Consent expired, please retry');
+
+        }
+
+      });
+
+    }, 5000);
   }
 
-  // ================= RE-INITIATE =================
+  // ================= CREATE SESSION =================
+  createSession() {
+
+    const payload = {
+      consentId: this.consentId,
+      applicationId: this.applicationId
+    };
+
+    this.contentService.createSession(payload).subscribe((res: any) => {
+
+      if (!res?.success) {
+        this.spinner.hide();
+        this.toastr.error('Session creation failed');
+        return;
+      }
+
+      this.sessionId = res.data.id;
+      this.pollSession();
+    });
+  }
+
+  // ================= POLL SESSION =================
+  pollSession() {
+
+    this.pollInterval = setInterval(() => {
+
+      this.contentService
+        .getSessionStatus(this.sessionId, this.applicationId)
+        .subscribe((res: any) => {
+
+          const status = res?.data?.status;
+
+          if (status === 'COMPLETED') {
+
+            clearInterval(this.pollInterval);
+            this.spinner.hide();
+
+            this.toastr.success('Bank statement fetched');
+            this.router.navigate(['/dashboard/loan/reference']);
+
+          } else if (status === 'FAILED') {
+
+            clearInterval(this.pollInterval);
+            this.spinner.hide();
+
+            this.toastr.error('Bank fetch failed');
+          }
+
+        });
+
+    }, 8000);
+  }
+
+  // ================= CLEANUP =================
+  ngOnDestroy(): void {
+    if (this.pollInterval) {
+      clearInterval(this.pollInterval);
+    }
+  }
+
+  // ================= OPTIONAL =================
+skipProcess() {
+
+  if (!this.applicationId) {
+    this.toastr.error('Application ID missing');
+    return;
+  }
+
+  this.spinner.show();
+
+  this.contentService.skipFetchBankStatement(this.applicationId).subscribe({
+    next: (res: any) => {
+      this.spinner.hide();
+
+      if (res?.success) {
+
+        this.toastr.success('Step skipped successfully');
+
+        // 🔥 move to next step
+        this.router.navigate(['/dashboard/loan']);
+
+      } else {
+        this.toastr.error(res?.message || 'Skip failed');
+      }
+    },
+    error: () => {
+      this.spinner.hide();
+      this.toastr.error('Skip API failed');
+    }
+  });
+}
+
   reInitiate() {
-    this.router.navigate(['/dashboard/loan/bank']);
+    this.startBankFlow(); // 🔥 better UX
   }
 }

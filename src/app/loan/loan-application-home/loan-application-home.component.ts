@@ -1,36 +1,58 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-loan-application-home',
   templateUrl: './loan-application-home.component.html',
   styleUrls: ['./loan-application-home.component.css'],
 })
-export class LoanApplicationHomeComponent implements OnInit {
+export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
+
   flowSteps: any = {};
   flowPercent = 0;
+
+  applicationId: string = '';
+  routeSub!: Subscription;
 
   constructor(
     private contentService: ContentService,
     private router: Router,
-    private spinner: NgxSpinnerService, // ✅ ADD
+    private spinner: NgxSpinnerService,
+    private route: ActivatedRoute // ✅ FIX
   ) {}
 
   ngOnInit(): void {
-    this.getBorrowerSnapshot();
+
+    // 🔥 get applicationId
+
+    // 🔥 listen refresh
+    this.routeSub = this.route.queryParams.subscribe(() => {
+      this.getBorrowerSnapshot(); // always call once
+    });
   }
+
+  ngOnDestroy(): void {
+    if (this.routeSub) {
+      this.routeSub.unsubscribe(); // ✅ FIX memory leak
+    }
+  }
+
+
 
   /* ================= SNAPSHOT ================= */
   getBorrowerSnapshot() {
-    this.spinner.show(); // 🔥 START LOADER
+
+    this.spinner.show();
 
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
-        this.spinner.hide(); // ✅ STOP LOADER
+        this.spinner.hide();
 
         if (!res?.success) return;
+        this.applicationId = res.data?.application?.id;
 
         const appFlow = res.data.applicationFlow;
 
@@ -38,7 +60,7 @@ export class LoanApplicationHomeComponent implements OnInit {
         this.flowPercent = appFlow?.percent || 0;
       },
       error: () => {
-        this.spinner.hide(); // ✅ STOP EVEN ON ERROR
+        this.spinner.hide();
         console.error('Failed to load application flow');
       },
     });
@@ -46,12 +68,10 @@ export class LoanApplicationHomeComponent implements OnInit {
 
   /* ================= HELPERS ================= */
 
-  // completed but NOT editable
   isCompleted(step: string): boolean {
     return this.flowSteps?.[step] === true;
   }
 
-  // first false step = active
   isActive(step: string): boolean {
     for (const key of Object.keys(this.flowSteps)) {
       if (!this.flowSteps[key]) {
@@ -61,28 +81,21 @@ export class LoanApplicationHomeComponent implements OnInit {
     return false;
   }
 
-  // ❌ locked if:
-  // - completed
-  // - OR comes after active step
   isLocked(step: string): boolean {
-    // 🔥 Disbursal always editable
-    // if (step === 'disbursalBankDetails') return false;
 
     let foundActive = false;
 
     for (const key of Object.keys(this.flowSteps)) {
-      // completed → locked
+
       if (this.flowSteps[key] === true && key === step) {
         return true;
       }
 
-      // detect active
       if (this.flowSteps[key] === false && !foundActive) {
         foundActive = true;
         return key !== step;
       }
 
-      // after active → locked
       if (foundActive && key === step) {
         return true;
       }
@@ -91,20 +104,46 @@ export class LoanApplicationHomeComponent implements OnInit {
     return true;
   }
 
-  // navigation allowed only if NOT locked
   navigate(step: string, route: string) {
     if (this.isLocked(step)) return;
     this.router.navigate([route]);
   }
 
   submitApplication() {
-  // Optional: safety check
-  if (this.flowPercent !== 100) return;
+    if (this.flowPercent !== 100) return;
+    this.router.navigate(['/dashboard/loan/summary']);
+  }
 
-  // 🔥 Submit / move to next stage
-  this.router.navigate(['/dashboard/loan/summary']);
-  // ya
-  // this.router.navigate(['/dashboard/loan/status']);
-}
+  /* ================= SKIP ================= */
+  skipProcess() {
+
+    if (!this.applicationId) {
+      console.error('Application ID missing');
+      return;
+    }
+
+    this.spinner.show();
+
+    this.contentService.skipFetchBankStatement(this.applicationId).subscribe({
+      next: () => {
+
+        this.spinner.hide();
+
+        // 🔥 instant UI update
+        this.flowSteps['fetchBankStatement'] = true;
+
+        // 🔥 reload snapshot
+        this.router.navigate([], {
+          queryParams: { refresh: true },
+          queryParamsHandling: 'merge'
+        });
+
+      },
+      error: () => {
+        this.spinner.hide();
+        console.error('Skip failed');
+      }
+    });
+  }
 
 }
