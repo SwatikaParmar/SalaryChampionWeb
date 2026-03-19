@@ -266,5 +266,66 @@ refreshPayment(data: any) {
   );
 }
 
+applicationStatus(applicationId: any) {
+  return this.http.get<any>(
+    environment.apiUrl + ApiEndPoint.applicationStatus + '?applicationId=' + applicationId
+  );
+}
+
+startVideoKyc(payload: any) {
+  return this.http.post<any>(
+    environment.apiUrl + ApiEndPoint.videoKycInitiate,
+    payload
+  );
+}
+
+videoRefresh(applicationId:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.videoRefresh,applicationId)
+}
+
+
+// content.service.ts
+
+sanctionEsignLink(applicationId : any) {
+  return this.http.get<any>(
+    environment.apiUrl + ApiEndPoint.sanctionEsignLink + '?applicationId=' + applicationId
+    
+  );
+}
+
+acceptSanction(payload: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/borrower/sanction/accept',
+    payload
+  );
+}
+
+
+esignLink(applicationId: string) {
+  return this.http.get<any>(
+    environment.apiUrl + ApiEndPoint.esignLink + '?applicationId=' + applicationId
+  );
+}
+
+
+
+createMandate(payload: any) {
+  return this.http.post<any>(
+    environment.apiUrl + ApiEndPoint.createMandate,
+    payload
+  );
+}
+
+mendateRefresh(data:any){
+  return this.http.post<any>(environment.apiUrl + ApiEndPoint.mendateRefresh,data)
+
+}
+
+disbursement(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + ApiEndPoint.disbursement,
+    data
+  );
+}
 
 }

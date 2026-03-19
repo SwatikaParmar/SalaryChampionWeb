@@ -25,5 +25,18 @@ export enum ApiEndPoint {
   verifyEkyc = 'kyc/aadhaar/fetch-and-save',
   pennyDrop = 'kyc/bank/pennydrop/verify',
   verifyBank = 'kyc/aa/consents/{id}/sessions',
-  saveBasic = "lead/saveEligibilityQuickDetails"
+  saveBasic = "lead/saveEligibilityQuickDetails",
+  applicationStatus  = "loan/borrower/application-status",
+    videoKycInitiate = 'loan/video-kyc/initiate',
+    videoRefresh = "loan/video-kyc/refresh-status",
+      sanctionEsignLink = 'loan/borrower/esign-link',
+        esignLink = 'loan/borrower/agreement-esign-link',
+          createMandate = 'loan/mandate/create',
+          mendateRefresh = "loan/mandate/refresh-status",
+          disbursement ='loan/disbursement/initiate'  
+
+
+
+
+
 }

@@ -24,6 +24,7 @@
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/face_detection": "^0.4.1646425229",
     "express": "^4.18.2",
+    "ng2-pdf-viewer": "^10.4.0",
     "ngx-spinner": "^19.0.0",
     "ngx-toastr": "^19.0.0",
     "rxjs": "~7.8.0",

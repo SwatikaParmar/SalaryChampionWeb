@@ -64,7 +64,7 @@
 
 
     <!-- ❌ NOT ELIGIBLE CARD -->
-<div class="col-md-12" *ngIf="!isEligible">
+<div class="col-md-12"    *ngIf="profileProgress === 100 && !isEligible">
 
   <div class="not-eligible-card">
 
@@ -114,7 +114,7 @@
     <!-- SHOW ONLY WHEN PROFILE IS COMPLETE -->
 <div
   class="loan-dashboard-card col-md-12"
-*ngIf="profileProgress === 100 && isEligible && loanProgress < 100">
+   *ngIf="showLoanCard">
   <!-- LEFT -->
   <div class="loan-left">
     <h3>Loan Application</h3>
@@ -125,11 +125,7 @@
   You're now successfully eligible. Your gateway to seamless financial solutions is officially open.
 </p>
 
-    <p *ngIf="loanProgress === 100" class="review-text">
-      Your application is under review. Thanks for your patience.
-      <br />
-      Check status for details.
-    </p>
+
 
     <!-- LOAN PROGRESS -->
     <div class="progress-wrapper"
@@ -163,14 +159,7 @@
   Continue
 </button>
 
-<!-- loanProgress === 100 -->
-<button
-  *ngIf="loanProgress === 100"
-  class="btn-start btn-status"
-  [routerLink]="['/dashboard/loan/summary']"
->
-  Check Status
-</button>
+
   </div>
 
   <!-- RIGHT -->
@@ -187,49 +176,333 @@
 
 
 <!-- ✅ STATUS TRACKER -->
-<div class="tracker-card">
+<div class="tracker-card"
+     *ngIf="showTracker">
 
+<!-- 🔥 HEADER -->
+<div class="tracker-header">
   <h2>Application Status Tracker</h2>
-  <p class="tracker-msg">
-    {{ currentMessage }}
-  </p>
+</div>
+
+<!-- 🔥 STATUS MESSAGE BOX -->
+<div class="tracker-status-alert" *ngIf="currentMessage">
+
+  <div class="alert-icon">
+    <i class="fa-solid fa-circle-info"></i>
+  </div>
+
+  <div class="alert-content">
+    <div class="alert-title">{{ currentTitle }}</div>
+    <div class="alert-message">{{ currentMessage }}</div>
+  </div>
+
+</div>
 
 <div class="row mt-5">
   <!-- ROW 1 -->
   <div class="col-lg-12">
-    <div class="tracker-row">
+   <div class="tracker-row">
 
-      <div class="step done">
-        <div class="circle green"><i class="fa-solid fa-check"></i></div>
-        <p>Submitted</p>
+  <!-- Submitted -->
+  <div [ngClass]="'step ' + getStepClass(trackingSteps?.applicationSubmitted)">
+    <div class="circle"
+         [class.green]="trackingSteps?.applicationSubmitted === 'DONE'">
+      <i class="fa-solid"
+         [ngClass]="getStepIcon('applicationSubmitted', trackingSteps?.applicationSubmitted)">
+      </i>
+    </div>
+    <p>Submitted</p>
+  </div>
+
+  <!-- In Review -->
+  <div [ngClass]="'step ' + getStepClass(trackingSteps?.applicationInReview)">
+    <div class="circle"
+         [class.green]="trackingSteps?.applicationInReview === 'DONE'">
+      <i class="fa-solid"
+         [ngClass]="getStepIcon('applicationInReview', trackingSteps?.applicationInReview)">
+      </i>
+    </div>
+    <p>In Review</p>
+  </div>
+
+  <!-- Video KYC -->
+<!-- Video KYC -->
+<div 
+  [ngClass]="'step ' + getStepClass(trackingSteps?.videoKyc)"
+  (click)="trackingSteps?.videoKyc === 'PENDING' && onVideoKycClick()"
+  [style.cursor]="trackingSteps?.videoKyc === 'PENDING' ? 'pointer' : 'not-allowed'"
+>
+  <div class="circle"
+       [class.green]="trackingSteps?.videoKyc === 'DONE'"
+       [class.locked-circle]="trackingSteps?.videoKyc === 'LOCKED'">
+
+    <i class="fa-solid"
+       [ngClass]="getStepIcon('videoKyc', trackingSteps?.videoKyc)">
+    </i>
+
+  </div>
+  <p>Video KYC</p>
+</div>
+
+<!-- VIDEO KYC MODAL -->
+<!-- 🔥 VIDEO KYC MODAL -->
+<div class="kyc-overlay" *ngIf="showKycModal">
+
+  <div class="kyc-modal">
+
+    <!-- HEADER -->
+    <div class="kyc-header">
+      <div class="title">
+        <i class="fa-solid fa-video"></i>
+        <span>Video KYC Verification</span>
       </div>
 
-      <div class="step done">
-        <div class="circle green"><i class="fa-solid fa-check"></i></div>
-        <p>In Review</p>
+      <button class="close-btn" (click)="closeKycModal()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="kyc-body">
+
+      <iframe
+        *ngIf="kycUrl"
+        [src]="kycUrlSafe"
+        frameborder="0">
+      </iframe>
+
+      <!-- FALLBACK -->
+      <div *ngIf="!kycUrl" class="fallback">
+        <p>Unable to load KYC. Please try again.</p>
       </div>
 
-      <div class="step done">
-        <div class="circle green"><i class="fa-solid fa-check"></i></div>
-        <p>Video KYC</p>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="kyc-footer">
+      <button class="btn-secondary" (click)="closeKycModal()">
+        Cancel
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+
+  <!-- Sanction -->
+<!-- Sanction -->
+<div 
+  [ngClass]="'step ' + getStepClass(trackingSteps?.sanction)"
+  (click)="trackingSteps?.sanction === 'PENDING' && openSanctionLetter()"
+  [style.cursor]="trackingSteps?.sanction === 'PENDING' ? 'pointer' : 'not-allowed'"
+>
+
+  <div class="circle"
+       [class.green]="trackingSteps?.sanction === 'DONE'"
+       [class.locked-circle]="trackingSteps?.sanction === 'LOCKED'">
+
+    <i class="fa-solid"
+       [ngClass]="getStepIcon('sanction', trackingSteps?.sanction)">
+    </i>
+
+  </div>
+
+  <p>Sanction</p>
+</div>
+
+<!-- 🔥 SANCTION MODAL -->
+<div class="kyc-overlay" *ngIf="showSanctionModal">
+
+  <div class="kyc-modal full-screen">
+
+    <!-- HEADER -->
+    <div class="kyc-header">
+      <span>Sanction Letter</span>
+
+      <button class="close-btn" (click)="showSanctionModal=false">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="kyc-body">
+      <iframe
+        *ngIf="sanctionUrlSafe"
+        [src]="sanctionUrlSafe">
+      </iframe>
+
+      <!-- fallback -->
+      <div *ngIf="!sanctionUrlSafe" class="fallback">
+        Unable to load document
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="kyc-footer">
+
+      <div class="otp-section">
+
+        <div class="otp-info" *ngIf="otpData">
+          OTP sent to {{ otpData?.destinationMobile }}
+        </div>
+
+        <input
+          type="text"
+          placeholder="Enter OTP"
+          [(ngModel)]="enteredOtp"
+          class="otp-input"
+        />
+
+        <button class="btn-primary" (click)="acceptSanction(enteredOtp)">
+          Accept & Continue
+        </button>
+
       </div>
 
-      <div class="step locked">
-        <div class="circle"><i class="fa-solid fa-landmark"></i></div>
-        <p>Sanction</p>
+    </div>
+
+  </div>
+
+</div>
+
+
+  <!-- E-Sign -->
+<!-- E-Sign -->
+<div 
+  [ngClass]="'step ' + getStepClass(trackingSteps?.esign)"
+  (click)="trackingSteps?.esign === 'PENDING' && openEsign()"
+  [style.cursor]="trackingSteps?.esign === 'PENDING' ? 'pointer' : 'not-allowed'"
+>
+
+  <div class="circle"
+       [class.green]="trackingSteps?.esign === 'DONE'"
+       [class.locked-circle]="trackingSteps?.esign === 'LOCKED'">
+
+    <i class="fa-solid"
+       [ngClass]="getStepIcon('esign', trackingSteps?.esign)">
+    </i>
+
+  </div>
+
+  <p>E-Sign</p>
+</div>
+
+
+
+<!-- 🔥 ESIGN MODAL -->
+<div class="kyc-overlay" *ngIf="showEsignModal">
+
+  <div class="kyc-modal full-screen">
+
+    <!-- HEADER -->
+    <div class="kyc-header">
+      <span>E-Sign Agreement</span>
+      <button class="close-btn" (click)="closeEsignModal()">✖</button>
+    </div>
+
+    <!-- BODY -->
+    <div class="kyc-body">
+
+      <!-- ⚠️ iframe may fail -->
+      <iframe
+        *ngIf="esignUrlSafe"
+        [src]="esignUrlSafe">
+      </iframe>
+
+      <!-- fallback -->
+      <div class="fallback">
+        <p>If not loading, open in new tab</p>
+        <button class="btn-primary" (click)="openEsignInNewTab()">
+          Open eSign
+        </button>
       </div>
 
-      <div class="step active">
-        <div class="circle"><i class="fa-solid fa-file-pen"></i></div>
-        <p>E-Sign</p>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- ENACH -->
+<div 
+  [ngClass]="'step ' + getStepClass(trackingSteps?.enach)"
+  (click)="trackingSteps?.enach === 'PENDING' && openEnach()"
+  [style.cursor]="trackingSteps?.enach === 'PENDING' ? 'pointer' : 'not-allowed'"
+>
+
+  <div class="circle"
+       [class.green]="trackingSteps?.enach === 'DONE'"
+       [class.locked-circle]="trackingSteps?.enach === 'LOCKED'">
+
+    <i class="fa-solid"
+       [ngClass]="getStepIcon('enach', trackingSteps?.enach)">
+    </i>
+
+  </div>
+
+  <p>eNACH</p>
+</div>
+
+<!-- 🔥 ENACH MODAL -->
+<div class="kyc-overlay" *ngIf="showEnachModal">
+
+  <div class="kyc-modal full-screen">
+
+    <!-- HEADER -->
+    <div class="kyc-header">
+      <span>eMandate Authorization</span>
+
+  
+    </div>
+
+    <!-- BODY -->
+    <div class="kyc-body">
+
+      <!-- ⚠️ iframe (may block) -->
+      <iframe
+        *ngIf="enachUrlSafe"
+        [src]="enachUrlSafe">
+      </iframe>
+
+      <!-- 🔥 FALLBACK -->
+      <div class="fallback">
+        <p>Bank page not loading?</p>
+
+        <button class="btn-primary" (click)="openEnachInNewTab()">
+          Open in New Tab
+        </button>
       </div>
 
-      <div class="step locked">
-        <div class="circle"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-        <p>Disbursement</p>
-      </div>
+    </div>
 
-    </div>    
+    <!-- FOOTER -->
+    <div class="kyc-footer">
+
+
+      <button class="btn-primary" (click)="verifyEnach()">
+        Verify & Continue
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+  <!-- Disbursement -->
+  <div [ngClass]="'step ' + getStepClass(trackingSteps?.disbursement)">
+    <div class="circle"
+         [class.green]="trackingSteps?.disbursement === 'DONE'">
+      <i class="fa-solid"
+         [ngClass]="getStepIcon('disbursement', trackingSteps?.disbursement)">
+      </i>
+    </div>
+    <p>Disbursement</p>
+  </div>
+
+</div>
     
   </div>
 </div>
@@ -239,29 +512,7 @@
 
 </div>
 
-    <!-- ================= END LOAN CARD ================= -->
-
-
-    <!-- ================= OPTIONAL OVERALL PROGRESS ================= -->
-    <!-- <div class="col-md-12 mt-3" *ngIf="overallProgress">
-      <div class="overall-progress-card">
-        <p class="mb-1 fw-semibold">
-          Overall Completion
-        </p>
-
-        <div class="progress-bar">
-          <div
-            class="progress-fill"
-            [style.width.%]="overallProgress"
-          ></div>
-        </div>
-
-        <small class="text-muted">
-          {{ overallProgress }}% Completed
-        </small>
-      </div>
-    </div> -->
-
+   
 
     
 
