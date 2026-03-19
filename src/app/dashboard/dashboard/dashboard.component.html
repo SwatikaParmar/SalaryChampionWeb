@@ -194,48 +194,54 @@
     {{ currentMessage }}
   </p>
 
+<div class="row mt-5">
   <!-- ROW 1 -->
-  <div class="tracker-row">
+  <div class="col-lg-6">
+    <div class="tracker-row">
 
-    <div class="step done">
-      <div class="circle">✔</div>
-      <p>Submitted</p>
+      <div class="step done">
+        <div class="circle green"><i class="fa-solid fa-check"></i></div>
+        <p>Submitted</p>
+      </div>
+
+      <div class="step done">
+        <div class="circle green"><i class="fa-solid fa-check"></i></div>
+        <p>In Review</p>
+      </div>
+
+      <div class="step done">
+        <div class="circle green"><i class="fa-solid fa-check"></i></div>
+        <p>Video KYC</p>
+      </div>
+
     </div>
-
-    <div class="step done">
-      <div class="circle">✔</div>
-      <p>In Review</p>
-    </div>
-
-    <div class="step done">
-      <div class="circle">✔</div>
-      <p>Video KYC</p>
-    </div>
-
   </div>
+
+  <div class="col-lg-6">
+    <!-- ROW 2 -->
+    <div class="tracker-row">
+
+      <div class="step locked">
+        <div class="circle"><i class="fa-solid fa-landmark"></i></div>
+        <p>Sanction</p>
+      </div>
+
+      <div class="step active">
+        <div class="circle"><i class="fa-solid fa-file-pen"></i></div>
+        <p>E-Sign</p>
+      </div>
+
+      <div class="step locked">
+        <div class="circle"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+        <p>Disbursement</p>
+      </div>
+
+    </div>
+  </div>
+</div>
 
   <!-- LINE -->
-  <div class="tracker-line"></div>
-
-  <!-- ROW 2 -->
-  <div class="tracker-row">
-
-    <div class="step locked">
-      <div class="circle">🏦</div>
-      <p>Sanction</p>
-    </div>
-
-    <div class="step active">
-      <div class="circle">✍️</div>
-      <p>E-Sign</p>
-    </div>
-
-    <div class="step locked">
-      <div class="circle">₹</div>
-      <p>Disbursement</p>
-    </div>
-
-  </div>
+  <div class="tracker-line"></div>  
 
 </div>
 
