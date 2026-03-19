@@ -161,3 +161,14 @@
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
   cursor: pointer;
 }
+
+.range-info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.range-info small {
+  color: #6c757d;
+  font-size: 12px;
+}

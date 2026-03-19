@@ -4,6 +4,8 @@ import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Subscription } from 'rxjs';
 
+
+
 @Component({
   selector: 'app-loan-application-home',
   templateUrl: './loan-application-home.component.html',
@@ -16,7 +18,15 @@ export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
 
   applicationId: string = '';
   routeSub!: Subscription;
-
+  stepNumbers: any = {
+  loanCalculator: 1,
+  employmentDetails: 2,
+  aadhaarEKyc: 3,
+  fetchBankStatement: 4,
+  references: 5,
+  documents: 6,
+  disbursalBankDetails: 7
+};
   constructor(
     private contentService: ContentService,
     private router: Router,
@@ -33,6 +43,13 @@ export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
       this.getBorrowerSnapshot(); // always call once
     });
   }
+
+
+
+
+getStepNumber(step: string): number {
+  return this.stepNumbers[step];
+}
 
   ngOnDestroy(): void {
     if (this.routeSub) {

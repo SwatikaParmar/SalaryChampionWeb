@@ -17,6 +17,14 @@ export class DashboardComponent implements OnInit {
   loanProgress = 0;
   overallProgress = 0;
 
+
+  isEligible: boolean = true;
+ineligibleReason: string = '';
+retryDate: string = '';
+
+trackingSteps: any = {};
+currentTitle: string = '';
+currentMessage: string = '';
   constructor(
     private contentService: ContentService,
     private spinner: NgxSpinnerService   // ✅ spinner inject
@@ -36,6 +44,23 @@ export class DashboardComponent implements OnInit {
         if (!res?.success) return;
 
         const data = res.data;
+
+
+        const eligibility = data.eligibility;
+
+this.isEligible = eligibility?.isEligible ?? true;
+
+if (!this.isEligible) {
+  this.ineligibleReason = eligibility?.reasons?.[0] || '';
+  this.retryDate = eligibility?.nextEligibilityAllowedOn || '';
+}
+
+const tracking = data.loanTracking;
+
+this.trackingSteps = tracking?.steps || {};
+this.currentTitle = tracking?.currentTitle || '';
+this.currentMessage = tracking?.currentMessage || '';
+
 
         // ✅ Progress values
         this.profileProgress = data.basicFlow?.percent || 0;

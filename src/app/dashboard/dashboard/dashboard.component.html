@@ -62,12 +62,59 @@
     <!-- ================= END PROFILE CARD ================= -->
 
 
+
+    <!-- ❌ NOT ELIGIBLE CARD -->
+<div class="col-md-12" *ngIf="!isEligible">
+
+  <div class="not-eligible-card">
+
+    <!-- STATUS BADGE -->
+    <div class="status-badge">
+      ● Status: Not eligible
+    </div>
+
+    <div class="not-eligible-content">
+
+      <!-- LEFT -->
+      <div class="text-section">
+        <h2>Not Eligible Right Now</h2>
+
+        <p>
+          You don't meet the loan criteria at this moment.
+          Review your details and try again later.
+        </p>
+
+        <!-- REASON -->
+        <p class="reason" *ngIf="ineligibleReason">
+          Reason: {{ ineligibleReason }}
+        </p>
+
+        <!-- RETRY -->
+        <p class="retry" *ngIf="retryDate">
+          Try again after: {{ retryDate | date:'mediumDate' }}
+        </p>
+
+        <p class="tip">
+          Tip: update income/KYC to <b>improve your chances</b>.
+        </p>
+      </div>
+
+      <!-- RIGHT IMAGE -->
+      <div class="image-section">
+        <img src="assets/images/not-eligible.png" alt="Not Eligible" />
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
     <!-- ================= LOAN CARD ================= -->
     <!-- SHOW ONLY WHEN PROFILE IS COMPLETE -->
 <div
   class="loan-dashboard-card col-md-12"
-  *ngIf="profileProgress === 100"
->
+*ngIf="profileProgress === 100 && isEligible && loanProgress < 100">
   <!-- LEFT -->
   <div class="loan-left">
     <h3>Loan Application</h3>
@@ -136,6 +183,60 @@
       <span>Loan</span> Journey
     </h4>
   </div>
+</div>
+
+
+<!-- ✅ STATUS TRACKER -->
+<div class="tracker-card">
+
+  <h2>Application Status Tracker</h2>
+  <p class="tracker-msg">
+    {{ currentMessage }}
+  </p>
+
+  <!-- ROW 1 -->
+  <div class="tracker-row">
+
+    <div class="step done">
+      <div class="circle">✔</div>
+      <p>Submitted</p>
+    </div>
+
+    <div class="step done">
+      <div class="circle">✔</div>
+      <p>In Review</p>
+    </div>
+
+    <div class="step done">
+      <div class="circle">✔</div>
+      <p>Video KYC</p>
+    </div>
+
+  </div>
+
+  <!-- LINE -->
+  <div class="tracker-line"></div>
+
+  <!-- ROW 2 -->
+  <div class="tracker-row">
+
+    <div class="step locked">
+      <div class="circle">🏦</div>
+      <p>Sanction</p>
+    </div>
+
+    <div class="step active">
+      <div class="circle">✍️</div>
+      <p>E-Sign</p>
+    </div>
+
+    <div class="step locked">
+      <div class="circle">₹</div>
+      <p>Disbursement</p>
+    </div>
+
+  </div>
+
 </div>
 
     <!-- ================= END LOAN CARD ================= -->

@@ -32,24 +32,91 @@
 
       </div>
 
-      <!-- Employment Details -->
+          <!-- Loan Calculator -->
       <div
         class="loan-step"
         [ngClass]="{
-          'completed': isCompleted('employmentDetails'),
-          'active': isActive('employmentDetails'),
-          'locked': isLocked('employmentDetails')
+          'completed': isCompleted('loanCalculator'),
+          'active': isActive('loanCalculator'),
+          'locked': isLocked('loanCalculator')
         }"
-        (click)="navigate('employmentDetails','/dashboard/loan/employment')"
+        (click)="navigate('loanCalculator','/dashboard/loan/calculator')"
       >
-        <div class="loan-step-icon">📊</div>
+
+      <div class="step-number">
+  {{ getStepNumber('loanCalculator') }}.
+</div>
+
+        <div class="loan-step-icon highlight">🧮</div>
         <div class="loan-step-text">
-          <h5>Employment Details</h5>
-          <p>Share about your work status.</p>
+          <h5>Get Loan Offer</h5>
+          <p>Choose the loan amount and tenure as per your requirements.</p>
+        </div>
+        <div class="loan-step-arrow">›</div>
+      </div>
+
+
+
+      <!-- Employment Details -->
+  <div
+  class="loan-step"
+  [ngClass]="{
+    'completed': isCompleted('employmentDetails'),
+    'active': isActive('employmentDetails'),
+    'locked': isLocked('employmentDetails')
+  }"
+  (click)="navigate('employmentDetails','/dashboard/loan/employment')"
+>
+  <!-- 🔥 STEP NUMBER (RIGHT CORNER) -->
+  <div class="step-number">
+    {{ getStepNumber('employmentDetails') }}.
+  </div>
+
+  <div class="loan-step-icon">📊</div>
+  <div class="loan-step-text">
+    <h5>Employment Details</h5>
+    <p>Share about your work status.</p>
+  </div>
+</div>
+
+   <!-- Aadhaar eKYC -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('aadhaarEKyc'),
+          'active': isActive('aadhaarEKyc'),
+          'locked': isLocked('aadhaarEKyc')
+        }"
+        (click)="navigate('aadhaarEKyc','/dashboard/loan/ekyc')"
+      >
+
+           <div class="step-number">
+  {{ getStepNumber('aadhaarEKyc') }}.
+</div>
+
+
+        <div class="loan-step-icon">🪪</div>
+        <div class="loan-step-text">
+          <h5>eKYC Verification</h5>
+          <p>Authenticate yourself using eKYC.</p>
         </div>
       </div>
 
-             <!-- Fetch Bank Statement -->
+
+    
+
+
+
+
+ 
+
+    </div>
+
+    <!-- ================= RIGHT COLUMN ================= -->
+    <div class="loan-right">
+
+  
+         <!-- Fetch Bank Statement -->
 <div
   class="loan-step"
   [ngClass]="{
@@ -59,6 +126,10 @@
   }"
   (click)="navigate('fetchBankStatement','/dashboard/loan/bank')"
 >
+
+<div class="step-number">
+  {{ getStepNumber('fetchBankStatement') }}.
+</div>
 
   <!-- SKIP BUTTON -->
   <button
@@ -78,6 +149,27 @@
 </div>
 
 
+  <!-- References -->
+      <div
+        class="loan-step"
+        [ngClass]="{
+          'completed': isCompleted('references'),
+          'active': isActive('references'),
+          'locked': isLocked('references')
+        }"
+        (click)="navigate('references','/dashboard/loan/reference')"
+      >
+                 <div class="step-number">
+  {{ getStepNumber('references') }}.
+</div>
+        <div class="loan-step-icon">🧾</div>
+        <div class="loan-step-text">
+          <h5>Add Reference</h5>
+          <p>Add a reference person for verification.</p>
+        </div>
+      </div>
+
+
 
          <!-- Documentation -->
       <div
@@ -89,72 +181,20 @@
         }"
         (click)="navigate('documents','/dashboard/loan/bank-statement')"
       >
+
+         <div class="step-number">
+  {{ getStepNumber('documents') }}.
+</div>
+
         <div class="loan-step-icon">📄</div>
         <div class="loan-step-text">
           <h5>Documentation Verification</h5>
           <p>Upload required documents.</p>
         </div>
       </div>
+   
 
- 
-
-    </div>
-
-    <!-- ================= RIGHT COLUMN ================= -->
-    <div class="loan-right">
-
-      <!-- Loan Calculator -->
-      <div
-        class="loan-step"
-        [ngClass]="{
-          'completed': isCompleted('loanCalculator'),
-          'active': isActive('loanCalculator'),
-          'locked': isLocked('loanCalculator')
-        }"
-        (click)="navigate('loanCalculator','/dashboard/loan/calculator')"
-      >
-        <div class="loan-step-icon highlight">🧮</div>
-        <div class="loan-step-text">
-          <h5>Get Loan Offer</h5>
-          <p>Choose the loan amount and tenure as per your requirements.</p>
-        </div>
-        <div class="loan-step-arrow">›</div>
-      </div>
-
-      <!-- Aadhaar eKYC -->
-      <div
-        class="loan-step"
-        [ngClass]="{
-          'completed': isCompleted('aadhaarEKyc'),
-          'active': isActive('aadhaarEKyc'),
-          'locked': isLocked('aadhaarEKyc')
-        }"
-        (click)="navigate('aadhaarEKyc','/dashboard/loan/ekyc')"
-      >
-        <div class="loan-step-icon">🪪</div>
-        <div class="loan-step-text">
-          <h5>eKYC Verification</h5>
-          <p>Authenticate yourself using eKYC.</p>
-        </div>
-      </div>
-
-       <!-- References -->
-      <div
-        class="loan-step"
-        [ngClass]="{
-          'completed': isCompleted('references'),
-          'active': isActive('references'),
-          'locked': isLocked('references')
-        }"
-        (click)="navigate('references','/dashboard/loan/reference')"
-      >
-        <div class="loan-step-icon">🧾</div>
-        <div class="loan-step-text">
-          <h5>Add Reference</h5>
-          <p>Add a reference person for verification.</p>
-        </div>
-      </div>
-
+     
       <!-- 🔥 Disbursal Bank Details (ALWAYS OPEN) -->
       <div
         class="loan-step"
@@ -167,6 +207,11 @@
         }"
         (click)="navigate('disbursalBankDetails','/dashboard/loan/disbursal')"
       >
+
+                <div class="step-number">
+  {{ getStepNumber('disbursalBankDetails') }}.
+</div>
+
         <div class="loan-step-icon">💳</div>
         <div class="loan-step-text">
           <h5>Disbursal Bank Details</h5>
