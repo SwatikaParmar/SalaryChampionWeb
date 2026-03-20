@@ -512,8 +512,64 @@
 
 </div>
 
-   
+<div class="credit-wrapper"
+     *ngIf="loanProgress === 100 && creditManager">
 
+  <!-- TITLE -->
+  <h2 class="section-title">
+    {{ creditManager.role || 'Credit Manager' }}
+  </h2>
+
+  <!-- CARD -->
+  <div class="credit-card">
+
+    <!-- ROW -->
+    <div class="credit-row">
+      <div class="icon-box">
+        <i class="fa-solid fa-user"></i>
+      </div>
+
+      <div class="info">
+        <span class="label">NAME</span>
+        <div class="value">{{ creditManager.name }}</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ROW -->
+    <div class="credit-row">
+      <div class="icon-box">
+        <i class="fa-solid fa-phone"></i>
+      </div>
+
+      <div class="info">
+        <span class="label">CONTACT NO.</span>
+        <div class="value">
+          <a [href]="'tel:' + creditManager.mobile">
+            {{ creditManager.mobile }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- ROW -->
+    <div class="credit-row">
+      <div class="icon-box">
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+
+      <div class="info">
+        <span class="label">MAIL ID.</span>
+        <div class="value">{{ creditManager.email }}</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
     
 
   </div>

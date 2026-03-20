@@ -37,6 +37,8 @@ showTracker: boolean = false;
 showKycModal: boolean = false;
 kycUrl: string = '';
 kycUrlSafe!: SafeResourceUrl;
+  creditManager: any;
+
   constructor(
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
@@ -58,13 +60,32 @@ getBorrowerSnapshot() {
       if (!res?.success) return;
 
       const data = res.data;
-
+debugger
       // ✅ IDs
       this.applicationId = data?.application?.id;
 
       // ✅ Progress
       this.profileProgress = data.basicFlow?.percent || 0;
       this.loanProgress = data.applicationFlow?.percent || 0;
+
+      
+      // ===============================
+      // 🔥 CREDIT MANAGER FROM assignedRoleDetails[0]
+      // ===============================
+      const roles = data?.loanTracking?.assignedRoleDetails;
+
+      if (roles && roles.length > 0) {
+        const cm = roles[0]; // 👈 FIRST ITEM
+
+        this.creditManager = {
+          name: cm?.name,
+          mobile: cm?.phone || cm?.contact,
+          email: cm?.email,
+          role: cm?.roleName
+        };
+      } else {
+        this.creditManager = null;
+      }
 
       // ✅ UI Control
       this.showLoanCard =

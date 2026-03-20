@@ -24,13 +24,13 @@
         </p>
 
         <!-- PRIMARY BUTTON -->
-        <button
+        <!-- <button
           *ngIf="!consentId"
           class="primary-btn w-100"
           (click)="startBankFlow()">
 
           Fetch Bank Statement
-        </button>
+        </button> -->
 
         <!-- LOADING STATE -->
         <div *ngIf="consentId" class="text-center mt-3">
@@ -39,11 +39,11 @@
         </div>
 
         <!-- SECONDARY ACTIONS -->
-        <div class="secondary-actions text-center mt-3">
+        <!-- <div class="secondary-actions text-center mt-3">
           <a (click)="skipProcess()">Skip</a>
           <span>|</span>
           <a (click)="reInitiate()">Retry</a>
-        </div>
+        </div> -->
 
       </div>
     </div>
