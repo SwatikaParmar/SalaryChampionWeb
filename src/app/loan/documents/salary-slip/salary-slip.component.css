@@ -175,3 +175,28 @@
   background: #2e7d32;
   color: #fff;
 }
+
+
+.skip-btn {
+  background: #fff;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+/* 🔥 hover */
+.skip-btn:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* 🔥 disabled */
+.skip-btn:disabled {
+  border-color: #ccc;
+  color: #ccc;
+  cursor: not-allowed;
+}

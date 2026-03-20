@@ -128,7 +128,7 @@ getStepNumber(step: string): number {
 
   submitApplication() {
     if (this.flowPercent !== 100) return;
-    this.router.navigate(['/dashboard/loan/summary']);
+    this.router.navigate(['/dashboard']);
   }
 
   /* ================= SKIP ================= */

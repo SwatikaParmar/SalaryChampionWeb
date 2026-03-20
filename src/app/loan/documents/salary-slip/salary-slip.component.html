@@ -1,11 +1,20 @@
 <div class="personal-info-container">
 
-  <div class="action-arr">
+ <div class="action-arr d-flex justify-content-between align-items-center">
+
+  <div class="d-flex align-items-center gap-2">
     <a class="back-lk" routerLink="/dashboard/loan">
       <i class="fa-solid fa-arrow-left"></i>
     </a>
-    <h2 class="page-title">Upload Salary Slips</h2>
+    <h2 class="page-title m-0">Upload Salary Slips</h2>
   </div>
+
+  <!-- 🔥 SKIP BUTTON -->
+  <button class="skip-btn" (click)="skipSalarySlipProcess()">
+    Skip
+  </button>
+
+</div>
 
   <div class="wrapper mt-3">
 

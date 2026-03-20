@@ -178,34 +178,8 @@ return this.http.post<any>(environment.apiUrl + ApiEndPoint.saveBasic,data)
 
 
 
- createConsent(payload: any) {
-    return this.http.post<any>(
-      `${environment.apiUrl}kyc/aa/consents`,
-      payload,
-    );
-  }
 
-  // ================= 2. GET CONSENT STATUS =================
-  getConsentStatus(consentId: string | null) {
-    return this.http.get<any>(
-      `${environment.apiUrl}kyc/aa/consents/${consentId}`,
-    );
-  }
 
-  // ================= 3. CREATE SESSION =================
-  createSession(payload: any) {
-    return this.http.post<any>(
-      `${environment.apiUrl}kyc/aa/sessions`,
-      payload,
-    );
-  }
-
-  // ================= 4. GET SESSION STATUS =================
-  getSessionStatus(sessionId: string, applicationId: string) {
-    return this.http.get<any>(
-      `${environment.apiUrl}kyc/aa/sessions/${sessionId}?applicationId=${applicationId}`,
-    );
-  }
 
   // ================= 5. APPLICATION SNAPSHOT =================
   getApplicationSnapshot(applicationId: string) {
@@ -325,6 +299,67 @@ disbursement(data: any) {
   return this.http.post<any>(
     environment.apiUrl + ApiEndPoint.disbursement,
     data
+  );
+}
+
+
+
+
+
+
+skipSalarySlip(applicationId: string) {
+  return this.http.post<any>(
+    environment.apiUrl + ApiEndPoint.skipSalarySlip,
+    {
+      applicationId: applicationId,
+      skip: true
+    }
+  );
+}
+
+
+
+buildUrl(url: string): string {
+  const base = environment.apiUrl.replace(/\/+$/, '');
+  const clean = url.replace(/^\/+/, '');
+  return `${base}/${clean}`;
+}
+
+// ================= CONSENT =================
+createConsent(payload: any) {
+  return this.http.post(this.buildUrl('kyc/aa/consents'), payload);
+}
+
+getConsentStatus(consentId: string) {
+  return this.http.get(
+    this.buildUrl(`kyc/aa/consents/${consentId}`)
+  );
+}
+
+// ================= FETCH =================
+getFetchStatus(consentId: string) {
+  return this.http.get(
+    this.buildUrl(`kyc/aa/consents/${consentId}/fetch-status`)
+  );
+}
+
+// ================= SESSIONS =================
+getSessions(consentId: string) {
+  return this.http.get(
+    this.buildUrl(`kyc/aa/consents/${consentId}/sessions`)
+  );
+}
+
+createSession(payload: any) {
+  return this.http.post(
+    this.buildUrl('kyc/aa/sessions'),
+    payload
+  );
+}
+
+getSessionStatus(sessionId: string, applicationId: string) {
+  return this.http.get(
+    this.buildUrl(`kyc/aa/sessions/${sessionId}?applicationId=${applicationId}`)
   );
 }
 

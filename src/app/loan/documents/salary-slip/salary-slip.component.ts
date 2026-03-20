@@ -167,4 +167,39 @@ export class SalarySlipComponent implements OnInit {
       this.isUploading = false;
     }
   }
+
+
+  skipSalarySlipProcess() {
+  if (!this.applicationId) {
+    this.toastr.error('Application ID missing');
+    return;
+  }
+
+  // 🔥 optional confirm
+
+  this.spinner.show();
+
+  this.contentService.skipSalarySlip(this.applicationId).subscribe({
+    next: (res: any) => {
+      this.spinner.hide();
+
+      if (!res?.success) {
+        this.toastr.error(res?.message || 'Skip failed');
+        return;
+      }
+
+      this.toastr.success('Skipped successfully');
+
+      // 🔥 redirect next step
+      this.router.navigate(['/dashboard/loan/documents'], {
+        queryParams: { refresh: true }
+      });
+    },
+    error: () => {
+      this.spinner.hide();
+      this.toastr.error('Skip failed');
+    }
+  });
+}
+
 }

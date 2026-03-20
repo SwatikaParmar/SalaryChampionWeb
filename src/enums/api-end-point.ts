@@ -33,7 +33,9 @@ export enum ApiEndPoint {
         esignLink = 'loan/borrower/agreement-esign-link',
           createMandate = 'loan/mandate/create',
           mendateRefresh = "loan/mandate/refresh-status",
-          disbursement ='loan/disbursement/initiate'  
+          disbursement ='loan/disbursement/initiate',
+            skipSalarySlip = 'loan/borrower/salary-slip/skip'
+
 
 
 
