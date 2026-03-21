@@ -265,11 +265,12 @@
     <!-- BODY -->
     <div class="kyc-body">
 
-      <iframe
-        *ngIf="kycUrl"
-        [src]="kycUrlSafe"
-        frameborder="0">
-      </iframe>
+<iframe
+  *ngIf="kycUrl"
+  [src]="kycUrlSafe"
+  frameborder="0"
+  allow="geolocation; camera; microphone"
+></iframe>
 
       <!-- FALLBACK -->
       <div *ngIf="!kycUrl" class="fallback">

@@ -3,56 +3,65 @@
 
     <!-- LEFT -->
     <div class="col-md-6">
-      <div class="bank-verify-card">
+      <div class="bank-verify-card shadow-sm p-4 rounded-3">
 
-        <!-- Illustration -->
-        <div class="illustration text-center mb-3">
-          <img src="assets/images/bank-verification.svg" class="img-fluid"/>
+        <!-- ICON -->
+        <div class="text-center mb-3">
+          <img src="assets/images/bank-verification.svg" width="120" />
         </div>
 
-        <!-- Dynamic Message -->
-        <p class="verify-text text-center">
+        <!-- ================= MESSAGE ================= -->
+        <p class="text-center fw-semibold">
 
-          <ng-container *ngIf="!consentId">
+          <!-- BEFORE START -->
+          <ng-container *ngIf="!consentId && !aaLoading">
             Securely fetch your bank statement using Account Aggregator.
           </ng-container>
 
+          <!-- LOADING BEFORE CONSENT -->
+          <ng-container *ngIf="!consentId && aaLoading">
+            Creating consent...
+          </ng-container>
+
+          <!-- AFTER CONSENT -->
           <ng-container *ngIf="consentId">
-            We are verifying your consent. Please wait...
+            {{ journeyMessage || 'Processing your bank data...' }}
           </ng-container>
 
         </p>
 
-        <!-- PRIMARY BUTTON -->
-        <!-- <button
+        <!-- ================= BUTTON ================= -->
+        <button
           *ngIf="!consentId"
-          class="primary-btn w-100"
-          (click)="startBankFlow()">
+          class="btn btn-primary w-100 mt-3"
+          (click)="startAAFlow()"
+          [disabled]="aaLoading">
 
-          Fetch Bank Statement
-        </button> -->
+          <span *ngIf="!aaLoading">Fetch Bank Statement</span>
+          <span *ngIf="aaLoading">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Processing...
+          </span>
 
-        <!-- LOADING STATE -->
-        <div *ngIf="consentId" class="text-center mt-3">
+        </button>
+
+        <!-- ================= LOADER ================= -->
+        <div *ngIf="consentId" class="text-center mt-4">
+
           <div class="spinner-border text-primary"></div>
-          <p class="mt-2">Processing...</p>
-        </div>
 
-        <!-- SECONDARY ACTIONS -->
-        <!-- <div class="secondary-actions text-center mt-3">
-          <a (click)="skipProcess()">Skip</a>
-          <span>|</span>
-          <a (click)="reInitiate()">Retry</a>
-        </div> -->
+          <p class="mt-2 small text-muted">
+            Please don’t refresh or close this page
+          </p>
+
+        </div>
 
       </div>
     </div>
 
     <!-- RIGHT -->
-    <div class="col-md-6">
-      <div class="right-htfigure text-center">
-        <img src="assets/images/bank_verification_vector.webp" class="img-fluid"/>
-      </div>
+    <div class="col-md-6 text-center">
+      <img src="assets/images/bank_verification_vector.webp" class="img-fluid"/>
     </div>
 
   </div>

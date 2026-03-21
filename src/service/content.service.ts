@@ -344,9 +344,9 @@ getFetchStatus(consentId: string) {
 }
 
 // ================= SESSIONS =================
-getSessions(consentId: string) {
-  return this.http.get(
-    this.buildUrl(`kyc/aa/consents/${consentId}/sessions`)
+getSessions(consentId: string, applicationId: string) {
+  return this.http.get(environment.apiUrl + 
+    `kyc/aa/consents/${consentId}/sessions?applicationId=${applicationId}`
   );
 }
 

@@ -37,7 +37,7 @@ import { SummaryComponent } from './summary/summary.component';
     BankStatementComponent,
     EKycErrorComponent,
     ErrorVerificationComponent,
-    SummaryComponent
+    SummaryComponent,
   ],
   imports: [CommonModule, LoanRoutingModule, FormsModule,ReactiveFormsModule],
 })

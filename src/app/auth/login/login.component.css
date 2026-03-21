@@ -71,8 +71,7 @@
   display: flex;
   align-items: center; /* vertical center */
   justify-content: center; /* horizontal center */
-  background: linear-gradient(90deg, #7c4fe0, #4528dc);
-  padding: 16px;
+    background: linear-gradient( 90deg, #0a3a6c, #29a9e9);
 }
 
 /* CARD */

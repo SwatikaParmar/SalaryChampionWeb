@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -38,11 +38,13 @@ showKycModal: boolean = false;
 kycUrl: string = '';
 kycUrlSafe!: SafeResourceUrl;
   creditManager: any;
+  to: any;
 
   constructor(
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
-      private sanitizer: DomSanitizer
+      private sanitizer: DomSanitizer,
+      private toastr : ToastrService
 
   ) {}
 
@@ -175,16 +177,18 @@ applicationStatusApi() {
     }
   });
 }
-startVideoKyc() {
+async startVideoKyc() {
   if (!this.applicationId) return;
 
-  const payload = {
-    applicationId: this.applicationId
-  };
+  // ✅ पहले permission लो
+  const allowed = await this.ensureLocationAccess();
+  if (!allowed) return;
 
   this.spinner.show();
 
-  this.contentService.startVideoKyc(payload).subscribe({
+  this.contentService.startVideoKyc({
+    applicationId: this.applicationId
+  }).subscribe({
     next: (res: any) => {
       this.spinner.hide();
 
@@ -193,17 +197,32 @@ startVideoKyc() {
       if (res?.success && url) {
 
         this.kycUrl = url;
-        this.kycUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(url);
+        this.kycUrlSafe =
+          this.sanitizer.bypassSecurityTrustResourceUrl(url);
 
         this.showKycModal = true;
 
       } else {
-        console.error('Customer URL not found');
+        this.toastr.error('KYC URL not found');
       }
     },
     error: () => {
       this.spinner.hide();
+      this.toastr.error('Video KYC failed');
     }
+  });
+}
+
+
+async ensureLocationAccess(): Promise<boolean> {
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      () => resolve(true),
+      () => {
+        this.toastr.error('Please allow location to continue KYC');
+        resolve(false);
+      }
+    );
   });
 }
 
@@ -221,6 +240,29 @@ decodeURI
   }
 }
 
+requestLocationPermission(): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      this.toastr.error('Location not supported');
+      resolve(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        console.log('Location allowed:', pos.coords);
+        resolve(true);
+      },
+      (err) => {
+        console.error('Location denied', err);
+
+        this.to.error('Please allow location for Video KYC');
+
+        resolve(false);
+      }
+    );
+  });
+}
 
 closeKycModal() {
   this.showKycModal = false;

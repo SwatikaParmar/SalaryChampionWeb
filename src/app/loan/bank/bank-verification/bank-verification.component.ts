@@ -14,7 +14,11 @@ export class BankVerificationComponent implements OnInit, OnDestroy {
   consentId: string | null = null;
   applicationId: string = '';
   sessionId: string = '';
+
   pollInterval: any;
+
+  journeyMessage = '';
+  aaLoading = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,7 +28,9 @@ export class BankVerificationComponent implements OnInit, OnDestroy {
     private toastr: ToastrService
   ) {}
 
-   ngOnInit(): void {
+  // ================= INIT =================
+  ngOnInit(): void {
+
     this.getBorrowerSnapshot(() => {
 
       this.route.queryParams.subscribe(params => {
@@ -37,46 +43,71 @@ export class BankVerificationComponent implements OnInit, OnDestroy {
           return;
         }
 
-        if (this.consentId) {
-          this.pollConsent();
-        }
+if (this.consentId) {
+  this.journeyMessage = 'Resuming bank verification...';
+  this.aaLoading = true;
+
+  // 🔥 ALWAYS START FROM CONSENT STATUS API
+  this.resumeFlow();
+}
 
       });
 
     });
   }
 
+  resumeFlow() {
 
-  getBorrowerSnapshot(callback?: () => void) {
-  this.spinner.show();
+  this.contentService.getConsentStatus(this.consentId!).subscribe((res: any) => {
 
-  this.contentService.getBorrowerSnapshot().subscribe({
-    next: (res: any) => {
-      this.spinner.hide();
+    if (!res?.success) {
+      this.toastr.error('Failed to resume AA flow');
+      this.aaLoading = false;
+      return;
+    }
 
-      if (!res?.success) {
-        this.toastr.error('Failed to load borrower details');
-        return;
-      }
+    const data = res.data;
 
-      this.applicationId = res.data?.application?.id;
+    console.log('🔁 RESUME FLOW:', data);
 
-      if (!this.applicationId) {
-        this.toastr.error('Application not found');
-        return;
-      }
+    this.handleNextStep(data); // 🔥 DIRECT ENGINE CALL
 
-      // ✅ callback execute
-      if (callback) callback();
-    },
-    error: () => {
-      this.spinner.hide();
-      this.toastr.error('Failed to fetch borrower snapshot');
-    },
+  }, () => {
+    this.aaLoading = false;
   });
+
 }
 
-  // ================= START =================
+  // ================= SNAPSHOT =================
+  getBorrowerSnapshot(callback?: () => void) {
+    this.spinner.show();
+
+    this.contentService.getBorrowerSnapshot().subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (!res?.success) {
+          this.toastr.error('Failed to load borrower');
+          return;
+        }
+
+        this.applicationId = res.data?.application?.id;
+
+        if (!this.applicationId) {
+          this.toastr.error('Application missing');
+          return;
+        }
+
+        callback?.();
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Snapshot failed');
+      }
+    });
+  }
+
+  // ================= START FLOW =================
   startAAFlow() {
 
     const payload = {
@@ -84,165 +115,224 @@ export class BankVerificationComponent implements OnInit, OnDestroy {
       redirectUrl: window.location.origin + '/dashboard/loan/bank-verification'
     };
 
-    this.spinner.show();
+    this.aaLoading = true;
+    this.journeyMessage = 'Creating consent...';
 
     this.contentService.createConsent(payload).subscribe({
       next: (res: any) => {
-        this.spinner.hide();
 
-        if (!res?.success) return;
-
-        this.consentId = res.data?.consentId;
-
-        const shouldOpen = res.data?.shouldOpenWebview;
-        const url = res.data?.url;
-
-        if (shouldOpen && url) {
-          window.location.href = url;
-        } else {
-          this.pollConsent();
+        if (!res?.success) {
+          this.aaLoading = false;
+          return;
         }
+
+        const data = res.data;
+
+        this.consentId = data?.consentId;
+
+        this.handleNextStep(data); // 🔥 CENTRAL ENGINE
+      },
+      error: () => {
+        this.aaLoading = false;
       }
     });
   }
 
-  // ================= CONSENT =================
-pollConsent() {
+  isProcessingStep = false;
 
-  this.clearPolling();
+  // ================= CENTRAL ENGINE =================
+handleNextStep(data: any) {
 
-  this.pollInterval = setInterval(() => {
+  const step = data?.nextStep;
 
-    this.contentService.getConsentStatus(this.consentId!).subscribe((res: any) => {
+  console.log('NEXT STEP:', step);
 
-      const step = res?.data?.nextStep;
+  switch (step) {
 
-      console.log('CONSENT STEP:', step);
+    case 'OPEN_WEBVIEW':
+      this.journeyMessage = 'Redirecting to bank...';
+      if (data?.url) window.location.href = data.url;
+      break;
 
-      if (step === 'POLL_CONSENT') return;
+    case 'POLL_CONSENT':
+      this.pollConsent();
+      break;
 
-      this.clearPolling();
+    case 'CHECK_FETCH_STATUS':
+      this.checkFetchStatus();
+      break;
 
-      if (step === 'CHECK_FETCH_STATUS') {
-        this.checkFetchStatus(); // ✅ correct
-      }
-
-      if (step === 'RECREATE_CONSENT') {
-        this.startAAFlow();
-      }
-
-    });
-
-  }, 3000);
-}
-
-  // ================= FETCH =================
-checkFetchStatus() {
-
-  this.contentService.getFetchStatus(this.consentId!).subscribe((res: any) => {
-
-    const step = res?.data?.nextStep;
-
-    console.log('FETCH STEP:', step);
-
-    // ✅ go to sessions
-    if (step === 'CHECK_SESSIONS') {
+    case 'CHECK_SESSIONS':
       this.getSessions();
-    }
+      break;
 
-    // 🔥 IMPORTANT FIX
-    if (step === 'CREATE_SESSION') {
-      this.createSession();
-    }
+    case 'CREATE_SESSION':
+      if (data?.shouldCreateSession) {
+        this.createSession();
+      } else {
+        this.onDone();
+      }
+      break;
 
-    // optional safe fallback
-    if (step === 'DONE') {
-      this.onDone();
-    }
-
-  });
-}
-
-  // ================= SESSIONS =================
-getSessions() {
-
-  this.contentService.getSessions(this.consentId!).subscribe((res: any) => {
-
-    const step = res?.data?.nextStep;
-
-    console.log('SESSION LIST STEP:', step);
-
-    if (step === 'DONE') {
-      this.onDone();
-    }
-
-    if (step === 'CREATE_SESSION') {
-      this.createSession();
-    }
-
-    if (step === 'POLL_SESSION') {
-      this.sessionId = res?.data?.latestSessionId;
+    case 'POLL_SESSION':
+      this.sessionId = data?.sessionId || data?.latestSessionId;
       this.pollSession();
-    }
+      break;
 
-  });
-}
+    case 'DONE':
+      this.onDone();
+      break;
 
-  // ================= CREATE SESSION =================
-  createSession() {
-
-    this.contentService.createSession({
-      consentId: this.consentId
-    }).subscribe((res: any) => {
-
-      if (!res?.success) return;
-
-      this.sessionId = res.data?.sessionId;
-
-      this.pollSession();
-    });
+    default:
+      console.warn('Unknown step:', step);
   }
+}
 
-  // ================= SESSION POLLING =================
-  pollSession() {
+  // ================= CONSENT POLL =================
+  pollConsent() {
 
     this.clearPolling();
 
+    this.journeyMessage = 'Waiting for approval...';
+
     this.pollInterval = setInterval(() => {
 
-      this.contentService
-        .getSessionStatus(this.sessionId, this.applicationId)
-        .subscribe((res: any) => {
+      this.contentService.getConsentStatus(this.consentId!).subscribe((res: any) => {
 
-          const step = res?.data?.nextStep;
+        if (!res?.success) return;
 
-          if (step === 'POLL_SESSION') return;
+        const data = res.data;
 
-          this.clearPolling();
+if (data?.shouldPollConsent) return;
+        this.clearPolling();
+        this.handleNextStep(data);
 
-          if (step === 'DONE') {
-            this.onDone();
-          }
-
-          if (step === 'CREATE_SESSION') {
-            this.createSession(); // retry
-          }
-
-        });
+      });
 
     }, 3000);
   }
 
+  // ================= FETCH =================
+checkFetchStatus() {
+
+  this.journeyMessage = 'Fetching bank data...';
+
+  setTimeout(() => {
+
+    this.contentService.getFetchStatus(this.consentId!).subscribe((res: any) => {
+
+      this.isProcessingStep = false;
+
+      if (!res?.success) return;
+
+      this.handleNextStep(res.data);
+
+    });
+
+  }, 4000); // ✅ simple delay
+}
+  // ================= SESSIONS =================
+getSessions() {
+
+  this.journeyMessage = 'Checking sessions...';
+
+  setTimeout(() => {
+
+    this.contentService
+      .getSessions(this.consentId!, this.applicationId)
+      .subscribe((res: any) => {
+
+        this.isProcessingStep = false;
+
+        if (!res?.success) return;
+
+        const data = res.data;
+
+        console.log('SESSION RESPONSE:', data);
+
+        // 🔥 MAIN FIX
+        if (data?.hasCompletedSession) {
+          this.clearPolling(); // 🔥 STOP EVERYTHING
+          this.onDone();       // 🔥 DIRECT DONE
+          return;
+        }
+
+        if (data?.shouldRecreateConsent) {
+          this.startAAFlow();
+          return;
+        }
+
+        this.handleNextStep(data);
+
+      });
+
+  }, 4000);
+}
+  // ================= CREATE SESSION =================
+async createSession() {
+
+  this.journeyMessage = 'Creating session...';
+
+  await this.delay(2000);
+
+  this.contentService.createSession({
+    consentId: this.consentId,
+    applicationId: this.applicationId
+  }).subscribe((res: any) => {
+
+    this.isProcessingStep = false;
+
+    if (!res?.success) return;
+
+    this.handleNextStep(res.data);
+
+  });
+}
+  // ================= SESSION POLL =================
+pollSession() {
+
+  this.clearPolling();
+
+  this.journeyMessage = 'Processing bank data...';
+
+  this.pollInterval = setInterval(() => {
+
+    this.contentService
+      .getSessionStatus(this.sessionId, this.applicationId)
+      .subscribe((res: any) => {
+
+        if (!res?.success) return;
+
+        const data = res.data;
+
+        if (data?.shouldPollSession) return;
+
+        this.clearPolling();
+        this.handleNextStep(data);
+
+      });
+
+  }, 4000); // ✅ only interval, NO delay inside
+}
+
   // ================= DONE =================
   onDone() {
-    this.toastr.success('Bank statement fetched ✅');
 
-    this.router.navigate(['/dashboard/loan'], {
-      queryParams: { refresh: true }
-    });
+    this.clearPolling();
+    this.aaLoading = false;
+
+    this.journeyMessage = 'Completed ✅';
+
+    this.toastr.success('Bank statement fetched successfully');
+
+    setTimeout(() => {
+      this.router.navigate(['/dashboard/loan'], {
+        queryParams: { refresh: true }
+      });
+    }, 1000);
   }
 
-  // ================= COMMON =================
+  // ================= CLEANUP =================
   clearPolling() {
     if (this.pollInterval) {
       clearInterval(this.pollInterval);
@@ -253,4 +343,9 @@ getSessions() {
   ngOnDestroy(): void {
     this.clearPolling();
   }
+
+
+  delay(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 }

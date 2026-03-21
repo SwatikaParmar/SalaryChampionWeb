@@ -9,6 +9,7 @@ import { PreviewComponent } from './preview/preview.component';
 import { ProfileHomeComponent } from './profile-home/profile-home.component';
 import { CheckEligibilityErrorComponent } from './check-eligibility-error/check-eligibility-error.component';
 import { CheckEligibilitySuccessComponent } from './check-eligibility-success/check-eligibility-success.component';
+import { LoanHistoryComponent } from './loan-history/loan-history.component';
 
 // profile-routing.module.ts
 const routes: Routes = [
@@ -20,7 +21,8 @@ const routes: Routes = [
   { path: 'selfie', component: SelfieComponent },
   { path: 'preview', component: PreviewComponent },
   { path: 'success-eligibility', component:CheckEligibilitySuccessComponent},
-  { path: 'error-eligibility', component:CheckEligibilityErrorComponent}
+  { path: 'error-eligibility', component:CheckEligibilityErrorComponent},
+  { path: 'loan-history', component:LoanHistoryComponent}
 ];
 
 @NgModule({

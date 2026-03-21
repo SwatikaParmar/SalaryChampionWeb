@@ -12,6 +12,7 @@ import { ProfileRoutingModule } from './profile-routing.module';
 import { SelfieComponent } from './selfie/selfie.component';
 import { CheckEligibilityErrorComponent } from './check-eligibility-error/check-eligibility-error.component';
 import { CheckEligibilitySuccessComponent } from './check-eligibility-success/check-eligibility-success.component';
+import { LoanHistoryComponent } from './loan-history/loan-history.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import { CheckEligibilitySuccessComponent } from './check-eligibility-success/ch
     ProfileHomeComponent,
     CheckEligibilityErrorComponent,
     CheckEligibilitySuccessComponent,
+    LoanHistoryComponent,
   ],
   imports: [
     CommonModule,
