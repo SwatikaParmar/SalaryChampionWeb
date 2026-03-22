@@ -1,0 +1,167 @@
+.loan-history-page {
+  padding: 14px;
+  background: #f6f8fc;
+}
+
+/* HEADER */
+.history-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* 🔥 TABS */
+.history-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.history-tabs button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: #e5e7eb;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.history-tabs button.active {
+  background: #6366f1;
+  color: white;
+}
+
+/* COUNT */
+.count {
+  background: white;
+  color: #111;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.history-tabs button.active .count {
+  background: rgba(255,255,255,0.2);
+  color: white;
+}
+
+/* EMPTY */
+.empty-state {
+  text-align: center;
+  font-size: 13px;
+  color: #888;
+  margin-top: 20px;
+}
+
+/* 🔥 LIST */
+.loan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* CARD */
+.loan-card {
+  background: white;
+  padding: 12px 14px;
+  border-radius: 10px;
+  transition: 0.2s;
+  border: 1px solid #f1f1f1;
+}
+
+.loan-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* TOP */
+.loan-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.loan-top h4 {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* BADGE */
+.badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  margin-left: 6px;
+}
+
+.badge.ACTIVE {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.badge.CLOSED {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badge.IN_PROGRESS {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+/* AMOUNT */
+.amount {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+}
+
+/* MID */
+.loan-mid {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.loan-mid label {
+  font-size: 10px;
+  color: #888;
+}
+
+.loan-mid p {
+  font-size: 12px;
+  margin: 2px 0 0;
+}
+
+/* ACTION */
+.loan-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 6px;
+}
+
+.loan-actions button {
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+/* PRIMARY */
+.loan-actions button:first-child {
+  background: #6366f1;
+  color: white;
+}
+
+/* SECONDARY */
+.loan-actions button:last-child {
+  background: #e5e7eb;
+  color: #333;
+}

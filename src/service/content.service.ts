@@ -363,4 +363,25 @@ getSessionStatus(sessionId: string, applicationId: string) {
   );
 }
 
+
+reloanConsume(payload: any) {
+  return this.http.post(environment.apiUrl + 'loan/borrower/reloan/consume', payload);
+}
+
+
+getLoanHistory(params: any) {
+  return this.http.get(environment.apiUrl + 'loan/borrower/history', { params });
+}
+
+
+  getLoanDetail(applicationId: string) {
+
+      return this.http.get<any>(
+    environment.apiUrl + 'loan/borrower/loan-detail' + '?applicationId=' + applicationId
+  );
+
+
+  }
+
+
 }

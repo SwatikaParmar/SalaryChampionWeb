@@ -13,6 +13,7 @@ import { SelfieComponent } from './selfie/selfie.component';
 import { CheckEligibilityErrorComponent } from './check-eligibility-error/check-eligibility-error.component';
 import { CheckEligibilitySuccessComponent } from './check-eligibility-success/check-eligibility-success.component';
 import { LoanHistoryComponent } from './loan-history/loan-history.component';
+import { LoanDetailComponent } from './loan-detail/loan-detail.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { LoanHistoryComponent } from './loan-history/loan-history.component';
     CheckEligibilityErrorComponent,
     CheckEligibilitySuccessComponent,
     LoanHistoryComponent,
+    LoanDetailComponent,
   ],
   imports: [
     CommonModule,

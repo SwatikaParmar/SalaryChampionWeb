@@ -40,6 +40,14 @@ kycUrlSafe!: SafeResourceUrl;
   creditManager: any;
   to: any;
 
+
+    isReloanJourney = false;
+  steps: any = {};
+  currentLoanRequest: any;
+
+  loanTracking: any;
+  applicationId: string = '';
+
   constructor(
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
@@ -103,12 +111,111 @@ debugger
       if (this.showTracker) {
         this.applicationStatusApi();
       }
+
+          // 🔥 RELOAN FLAG
+    this.isReloanJourney = data?.isReloanJourney;
+
+    // 🔥 REQUEST
+    this.currentLoanRequest = data?.currentLoanRequest;
+
+    // 🔥 STEPS
+this.isReloanJourney = data?.isReloanJourney;
+
+// 🔥 IMPORTANT
+this.steps = data?.applicationFlow?.steps || {};
+
+// fallback safe
+if (this.isReloanJourney) {
+  this.showLoanCard = false;
+  this.showTracker = false;
+}    
+
+  // 🔥 TRACKING
+        this.loanTracking = data?.loanTracking;
+
+        // 🔥 RELOAN FLAGS
+        this.isReloanJourney = data?.isReloanJourney;
+        this.steps = data?.applicationFlow?.steps || {};
+        this.currentLoanRequest = data?.currentLoanRequest;
+
+        // NORMAL UI CONTROL
+        this.showLoanCard =
+          this.profileProgress === 100 && this.loanProgress < 100;
+
+        this.showTracker = this.loanProgress === 100;
+
     },
     error: () => {
       this.spinner.hide();
     }
   });
 }
+
+
+
+
+  // ================= RELOAN CLICK =================
+  applyReloan() {
+    const url = this.loanTracking?.nextAction?.url;
+
+    if (!url) {
+      this.toastr.error('Reloan link missing');
+      return;
+    }
+
+    // 🔥 TOKEN EXTRACT
+    const token = this.getQueryParam(url, 'token');
+    const applicationId = this.getQueryParam(url, 'applicationId');
+
+    if (!token || !applicationId) {
+      this.toastr.error('Invalid reloan URL');
+      return;
+    }
+
+    this.consumeReloan(applicationId, token);
+  }
+
+  // ================= CONSUME API =================
+  consumeReloan(applicationId: string, token: string) {
+    this.spinner.show();
+
+    const payload = {
+      applicationId,
+      reloanToken: token
+    };
+
+    this.contentService.reloanConsume(payload).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
+
+        if (res?.success) {
+          this.toastr.success('Reloan started 🚀');
+
+          // 🔥 REFRESH SNAPSHOT
+          this.getBorrowerSnapshot();
+        }
+      },
+      error: () => {
+        this.spinner.hide();
+        this.toastr.error('Reloan failed');
+      }
+    });
+  }
+
+  // ================= HELPERS =================
+  getQueryParam(url: string, key: string): string | null {
+    const params = new URL(url).searchParams;
+    return params.get(key);
+  }
+
+  // ================= RELOAN STEPS =================
+  openBankStatement() {
+    this.toastr.info('Start Bank Statement');
+  }
+
+  openBankForm() {
+    this.toastr.info('Open Bank Details');
+  }
 
 
 getStepIcon(step: string, status: string) {
@@ -144,7 +251,6 @@ getStepClass(status: string) {
 }
 
 
-applicationId: string = '';
 videoKycData: any = null;
 
 applicationStatusApi() {
@@ -299,31 +405,46 @@ sanctionUrlSafe!: SafeResourceUrl;
 
 otpData: any = null;
 enteredOtp: any;
+
 openSanctionLetter() {
+
   if (!this.applicationId) return;
 
   this.spinner.show();
 
   this.contentService.sanctionEsignLink(this.applicationId).subscribe({
-    next: (res: any) => {
-      this.spinner.hide();
+    next: async (res: any) => {
 
       const url = res?.data?.sanctionLetterUrl;
 
-      if (res?.success && url) {
+      if (!url) {
+        this.spinner.hide();
+        return;
+      }
 
-        // 🔥 DIRECT SAFE URL (NO FETCH)
+      try {
+        // 🔥 FETCH FILE
+        const response = await fetch(url);
+
+        const blob = await response.blob();
+
+        const blobUrl = URL.createObjectURL(blob);
+
+        // 🔥 SAFE URL FOR IFRAME
         this.sanctionUrlSafe =
-          this.sanitizer.bypassSecurityTrustResourceUrl(url);
+          this.sanitizer.bypassSecurityTrustResourceUrl(blobUrl);
 
         this.showSanctionModal = true;
 
         this.otpData = res?.data?.otp;
 
-      } else {
-        console.error('Sanction URL not found');
+      } catch (e) {
+        console.error(e);
       }
+
+      this.spinner.hide();
     },
+
     error: () => {
       this.spinner.hide();
     }
@@ -495,5 +616,8 @@ openEnachInNewTab() {
     window.open(this.enachUrl, '_blank');
   }
 }
+
+
+
 
 }

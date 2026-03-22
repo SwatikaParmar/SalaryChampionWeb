@@ -136,7 +136,7 @@ this.contentService.emiLoanQuote(payload).subscribe({
       next: (res: any) => {
         if (res?.success) {
           // ✅ SUCCESS → NEXT STEP
-          this.router.navigate(['dashboard/loan/employment']);
+          this.router.navigate(['dashboard/loan']);
         }
       },
       error: () => {

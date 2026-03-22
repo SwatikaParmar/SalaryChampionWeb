@@ -1,1 +1,98 @@
-<p>loan-history works!</p>
+<div class="loan-history-page">
+
+  <!-- HEADER -->
+  <div class="history-header">
+    <h2>Loan History</h2>
+  </div>
+
+  <!-- 🔥 TABS WITH COUNTS -->
+  <div class="history-tabs">
+
+    <button [class.active]="tab==='ALL'" (click)="changeTab('ALL')">
+      All
+      <span class="count">
+        {{ summary?.totalApplications || 0 }}
+      </span>
+    </button>
+
+    <button [class.active]="tab==='ACTIVE'" (click)="changeTab('ACTIVE')">
+      Active
+      <span class="count">
+        {{ summary?.countsByBucket?.active || 0 }}
+      </span>
+    </button>
+
+    <button [class.active]="tab==='CLOSED'" (click)="changeTab('CLOSED')">
+      Closed
+      <span class="count">
+        {{ summary?.countsByBucket?.closed || 0 }}
+      </span>
+    </button>
+
+    <button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
+      In Progress
+      <span class="count">
+        {{ summary?.countsByBucket?.inProgress || 0 }}
+      </span>
+    </button>
+
+  </div>
+
+  <!-- EMPTY -->
+  <div *ngIf="loanList.length === 0" class="empty-state">
+    No loan history found
+  </div>
+
+  <!-- LIST -->
+  <div class="loan-list">
+
+    <div class="loan-card" *ngFor="let item of loanList">
+
+      <div class="loan-top">
+        <div>
+          <h4>{{ item.applicationNumber }}</h4>
+          <span class="badge" [ngClass]="item.historyBucket">
+            {{ item.historyBucket }}
+          </span>
+        </div>
+
+        <div class="amount">
+          ₹ {{ item.approvedAmount || item.requestedAmount || 0 }}
+        </div>
+      </div>
+
+      <div class="loan-mid">
+
+        <div>
+          <label>Status</label>
+          <p>{{ item.loan?.status || item.applicationStatus }}</p>
+        </div>
+
+        <div>
+          <label>Outstanding</label>
+          <p>₹ {{ item.loanTracking?.outstandingAmount || 0 }}</p>
+        </div>
+
+        <div>
+          <label>Next Due</label>
+          <p>{{ item.loanTracking?.nextDueDateDisplay || '-' }}</p>
+        </div>
+
+      </div>
+
+      <div class="loan-actions">
+        <button (click)="openDetail(item.applicationId)">
+          View Details
+        </button>
+
+        <button *ngIf="item.closure?.nocUrl"
+                (click)="openNoc(item.closure.nocUrl)">
+          View NOC
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

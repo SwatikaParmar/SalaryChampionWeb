@@ -1,0 +1,128 @@
+<div class="loan-detail-page" *ngIf="summary">
+
+  <!-- 🔥 HEADER -->
+  <div class="header-card">
+
+    <!-- LEFT -->
+    <div class="left">
+      <button class="back-btn" (click)="goBack()">
+        ← Back
+      </button>
+
+      <div class="title">
+        <h2>{{ summary.applicationNumber }}</h2>
+        <p class="sub">
+          {{ summary.historyBucket }} • {{ summary.applicationStatus }}
+        </p>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="amount">
+      ₹ {{ summary.requestedAmount }}
+    </div>
+
+  </div>
+
+  <!-- BORROWER -->
+  <div class="card compact">
+
+    <h3>Borrower</h3>
+
+    <div class="grid">
+      <div>
+        <label>Name</label>
+        <p>{{ borrower?.firstName }} {{ borrower?.lastName }}</p>
+      </div>
+
+      <div>
+        <label>Mobile</label>
+        <p>{{ borrower?.mobile }}</p>
+      </div>
+
+      <div>
+        <label>Email</label>
+        <p>{{ borrower?.email }}</p>
+      </div>
+
+      <div>
+        <label>DOB</label>
+        <p>{{ borrower?.dateOfBirth }}</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- LOAN -->
+  <div class="card compact">
+
+    <h3>Loan</h3>
+
+    <div class="grid">
+      <div>
+        <label>Amount</label>
+        <p>₹ {{ borrower?.requestedAmount }}</p>
+      </div>
+
+      <div>
+        <label>Tenure</label>
+        <p>{{ borrower?.tenureMonths }} Months</p>
+      </div>
+
+      <div>
+        <label>Repayment</label>
+        <p>{{ borrower?.repaymentMode }}</p>
+      </div>
+
+      <div>
+        <label>Status</label>
+        <p class="status">{{ summary?.applicationStatus }}</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JOURNEY -->
+  <div class="card compact">
+
+    <h3>Journey</h3>
+
+    <div class="grid">
+      <div>
+        <label>Current</label>
+        <p>{{ journey?.currentStep }}</p>
+      </div>
+
+      <div>
+        <label>Next</label>
+        <p>{{ journey?.nextStep }}</p>
+      </div>
+
+      <div>
+        <label>Stage</label>
+        <p>{{ journey?.workflowStage }}</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STATEMENT -->
+  <div class="card compact">
+
+    <h3>Bank Statement</h3>
+
+    <div class="grid">
+      <div>
+        <label>AA</label>
+        <p>{{ statement?.aa?.status }}</p>
+      </div>
+
+      <div>
+        <label>BSA</label>
+        <p>{{ statement?.bsa?.status || 'N/A' }}</p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

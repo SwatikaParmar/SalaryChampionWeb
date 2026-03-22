@@ -1,0 +1,93 @@
+.loan-detail-page {
+  padding: 16px;
+  background: #f6f8fc;
+}
+
+/* HEADER */
+.header-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.header-card .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title h2 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.sub {
+  font-size: 12px;
+  color: #777;
+}
+
+/* BACK BUTTON */
+.back-btn {
+  border: none;
+  background: #e5e7eb;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.back-btn:hover {
+  background: #d1d5db;
+}
+
+/* AMOUNT */
+.amount {
+  font-size: 16px;
+  font-weight: 600;
+  color: #6366f1;
+}
+
+/* CARD */
+.card {
+  background: white;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.card.compact {
+  padding: 12px 14px;
+}
+
+.card h3 {
+  font-size: 14px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+label {
+  font-size: 11px;
+  color: #888;
+}
+
+p {
+  font-size: 13px;
+  font-weight: 500;
+  margin: 2px 0 0;
+}
+
+/* STATUS */
+.status {
+  color: #22c55e;
+  font-weight: 600;
+}

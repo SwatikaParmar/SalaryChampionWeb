@@ -833,3 +833,227 @@
   color: #111;
   line-height: 1.2;
 }
+
+
+.reloan-dashboard {
+  padding: 20px;
+  background: #f6f8fc;
+}
+
+/* HEADER */
+.reloan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reloan-header h2 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.reloan-header p {
+  color: #666;
+  font-size: 14px;
+}
+
+.badge-box {
+  display: flex;
+  gap: 10px;
+}
+
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.badge.existing {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+
+.badge.reloan {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+/* SUMMARY */
+.reloan-summary h3 {
+  margin-bottom: 15px;
+}
+
+.summary-grid {
+  display: flex;
+  justify-content: space-between;
+}
+
+.summary-grid label {
+  font-size: 12px;
+  color: #777;
+}
+
+.summary-grid h4 {
+  margin: 4px 0;
+}
+
+/* STEPS */
+.steps-container {
+  display: flex;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+.step-card {
+  flex: 1;
+  background: #fff;
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.step-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.step-card.done {
+  border-color: #22c55e;
+}
+
+.step-card .icon {
+  font-size: 20px;
+  color: #6c5ce7;
+}
+
+.step-card .content h4 {
+  margin: 0;
+}
+
+.step-card .content p {
+  font-size: 12px;
+  color: #777;
+}
+
+.status {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+
+/* ================= RELOAN DASHBOARD ================= */
+.reloan-dashboard {
+  padding: 20px;
+  background: #f6f8fc;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ================= CARD ================= */
+.card-clean {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+  transition: 0.3s ease;
+}
+
+.card-clean:hover {
+  transform: translateY(-2px);
+}
+
+/* ================= HEADER ================= */
+.card-clean h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.card-clean p {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ================= SUMMARY ================= */
+.card-clean h3 {
+  margin-bottom: 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-clean p strong {
+  color: #111827;
+}
+
+/* ================= STEPS ================= */
+.step-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: #fafafa;
+}
+
+/* hover */
+.step-card:hover {
+  border-color: #6366f1;
+  background: #f5f7ff;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.08);
+}
+
+/* DONE STATE */
+.step-card.done {
+  border-color: #22c55e;
+  background: #ecfdf5;
+}
+
+/* LEFT TEXT */
+.step-card h4 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* STATUS TAG */
+.step-card::after {
+  content: "Start";
+  font-size: 12px;
+  font-weight: 600;
+  color: #6366f1;
+}
+
+/* DONE TEXT */
+.step-card.done::after {
+  content: "Completed ✔";
+  color: #16a34a;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 768px) {
+  .reloan-dashboard {
+    padding: 12px;
+  }
+
+  .card-clean {
+    padding: 14px;
+  }
+
+  .step-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
