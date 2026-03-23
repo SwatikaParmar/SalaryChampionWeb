@@ -8,33 +8,33 @@
   <!-- 🔥 TABS WITH COUNTS -->
   <div class="history-tabs">
 
-    <button [class.active]="tab==='ALL'" (click)="changeTab('ALL')">
-      All
-      <span class="count">
-        {{ summary?.totalApplications || 0 }}
-      </span>
-    </button>
+  <button [class.active]="tab==='ALL'" (click)="changeTab('ALL')">
+  All
+  <span class="count">
+    {{ allSummary?.totalApplications }}
+  </span>
+</button>
 
-    <button [class.active]="tab==='ACTIVE'" (click)="changeTab('ACTIVE')">
-      Active
-      <span class="count">
-        {{ summary?.countsByBucket?.active || 0 }}
-      </span>
-    </button>
+<button [class.active]="tab==='ACTIVE'" (click)="changeTab('ACTIVE')">
+  Active
+  <span class="count">
+    {{ allSummary?.countsByBucket?.active }}
+  </span>
+</button>
 
-    <button [class.active]="tab==='CLOSED'" (click)="changeTab('CLOSED')">
-      Closed
-      <span class="count">
-        {{ summary?.countsByBucket?.closed || 0 }}
-      </span>
-    </button>
+<button [class.active]="tab==='CLOSED'" (click)="changeTab('CLOSED')">
+  Closed
+  <span class="count">
+    {{ allSummary?.countsByBucket?.closed }}
+  </span>
+</button>
 
-    <button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
-      In Progress
-      <span class="count">
-        {{ summary?.countsByBucket?.inProgress || 0 }}
-      </span>
-    </button>
+<button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
+  In Progress
+  <span class="count">
+    {{ allSummary?.countsByBucket?.inProgress }}
+  </span>
+</button>
 
   </div>
 

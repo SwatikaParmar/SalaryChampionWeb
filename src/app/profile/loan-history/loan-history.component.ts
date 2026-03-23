@@ -36,7 +36,13 @@ export class LoanHistoryComponent implements OnInit {
   }
 
   // ================= API CALL =================
+isLoading: boolean = false;
+
+allSummary: any = {};   // 🔥 ADD
+
 getLoanHistory() {
+
+  this.isLoading = true;
   this.spinner.show();
 
   const params = {
@@ -50,13 +56,21 @@ getLoanHistory() {
 
   this.contentService.getLoanHistory(params).subscribe({
     next: (res: any) => {
+
       this.spinner.hide();
+      this.isLoading = false;
 
       const data = res?.data;
-
       if (!data) return;
 
       this.loanList = data.items || [];
+
+      // 🔥 ONLY UPDATE ALL SUMMARY ON FIRST LOAD OR ALL TAB
+      if (this.tab === 'ALL') {
+        this.allSummary = data.summary || {};
+      }
+
+      // 🔥 CURRENT TAB SUMMARY (optional)
       this.summary = data.summary || {};
 
       this.total = data.total || 0;
@@ -64,6 +78,7 @@ getLoanHistory() {
     },
     error: () => {
       this.spinner.hide();
+      this.isLoading = false;
       this.toastr.error('Failed to load loan history');
     }
   });
