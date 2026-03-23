@@ -23,8 +23,8 @@
     justify-items: center;
     font-size: 14px;
     text-decoration: none;
-    border: 2px solid #8541da;
-    color: #8541da;
+    border: 2px solid #3da3d5;
+    color: #3da3d5;
     border-radius: 50px;
 }
 .page-title{
@@ -73,7 +73,7 @@
 
 /* BUTTONS */
 .primary-btn {
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    background: linear-gradient(270deg, #2c5aa0, #3da3d5);
     font-family: "Poppins", sans-serif;
     border: none;
     padding: 10px 30px;
@@ -103,7 +103,7 @@
 }
 
 .dot.active {
-  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+  background: linear-gradient(270deg, #2c5aa0, #3da3d5);
 }
 
 /* NAV */
@@ -122,8 +122,8 @@
     cursor: pointer;
 }
 .nav-buttons button:hover{
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
-    border-color: #7c4fe0;
+    background: linear-gradient(270deg, #2c5aa0, #3da3d5);
+    border-color: #3da3d5;
     color: #fff;
 }
 
@@ -176,7 +176,7 @@
 .upload-box {
     display: block;
     padding: 20px;
-    border: 3px dashed #8340da;
+    border: 3px dashed #3da3d5;
     border-radius: 12px;
     margin: 16px 0;
     cursor: pointer;

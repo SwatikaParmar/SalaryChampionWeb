@@ -90,7 +90,7 @@
 }
 .profile-card p strong {
     font-weight: 500;
-    color: #5b00d7;
+    color: #31a5e5;
 }
 
 .details-card {
@@ -117,9 +117,9 @@
 }
 
 .tab.active {
-  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+  background: linear-gradient(90deg, #1c4685, #31a5e5);
   color: #fff;
-  border-color: #7c4fe0;
+  border-color: #ffffff;
 }
 
 .edit-icon {

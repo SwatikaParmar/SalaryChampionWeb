@@ -47,12 +47,12 @@
     color: #444;
     cursor: pointer;
     font-size: 15px;
-    border: 1px solid #f1e1fd;
+    border: 1px solid #3e9ddd;
 }
 
 .toggle-btns button.active {
-  background: #efe2ff;
-  color: #3c3c3c;
+  background: #3e9ddd;
+  color: #fff;
   font-weight: 500;
 }
 
@@ -124,7 +124,7 @@
 }
 
 .btn-save {
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    background: linear-gradient(90deg, #3fa9f5, #1f4e8c);
     font-family: "Poppins", sans-serif;
     border: none;
     padding: 10px 30px;
@@ -185,7 +185,7 @@
     font-size: 12px;
     text-decoration: none;
     border: 1px solid #eee0ff;
-    color: #8541da;
+    color: #31a5e5;
 }
 
 /* ================= RESPONSIVE ================= */
@@ -224,7 +224,7 @@ select:focus.ng-invalid {
     justify-items: center;
     font-size: 14px;
     text-decoration: none;
-    border: 2px solid #8541da;
-    color: #8541da;
+    border: 2px solid #31a5e5;
+    color: #31a5e5;
     border-radius: 50px;
 }

@@ -43,9 +43,9 @@
   color: #3c3c3c;
 }
 .checkbox a{
-  color: #7c4fe0;
+  color: #31a5e5;
+  text-decoration: none;
 }
-
 .error {
   color: #e53935;
   font-size: 12px;

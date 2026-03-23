@@ -20,35 +20,39 @@
 }
 
 .history-tabs button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  padding: 5px 12px;
-  border-radius: 20px;
-  background: #e5e7eb;
-  font-size: 12px;
-  cursor: pointer;
-  white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 50px;
+    background: #e5e7eb;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-size: 14px;
+    font-family: "Poppins", sans-serif;
 }
 
 .history-tabs button.active {
-  background: #6366f1;
+  background: #1f4e8c;
   color: white;
 }
 
 /* COUNT */
 .count {
-  background: white;
-  color: #111;
-  padding: 2px 6px;
-  border-radius: 10px;
-  font-size: 10px;
-  font-weight: 600;
+    border-radius: 10px;
+    font-size: 10px;
+    width: 18px;
+    height: 18px;
+    display: grid;
+    align-content: center;
+    justify-content: center;
+    background: #fff;
 }
 
 .history-tabs button.active .count {
-  background: rgba(255,255,255,0.2);
+  background: #31a5e5;
   color: white;
 }
 
@@ -102,7 +106,7 @@
 
 .badge.ACTIVE {
   background: #dbeafe;
-  color: #2563eb;
+  color: #1f4e8c;
 }
 
 .badge.CLOSED {
@@ -156,12 +160,18 @@
 
 /* PRIMARY */
 .loan-actions button:first-child {
-  background: #6366f1;
+  background: #1f4e8c;
   color: white;
 }
 
 /* SECONDARY */
 .loan-actions button:last-child {
-  background: #e5e7eb;
-  color: #333;
+    background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
+    font-family: "Poppins", sans-serif;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 7px;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
 }
