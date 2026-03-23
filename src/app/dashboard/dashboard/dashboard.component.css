@@ -846,6 +846,72 @@
   line-height: 1.2;
 }
 
+.reloan-eligibility-card {
+  margin-top: 20px;
+  padding: 24px 28px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(49, 165, 229, 0.20), transparent 32%),
+    linear-gradient(135deg, #0f2f57, #1c5b97 55%, #33a6e5);
+  color: #fff;
+  box-shadow: 0 16px 36px rgba(21, 68, 115, 0.22);
+}
+
+.reloan-eligibility-copy {
+  max-width: 640px;
+}
+
+.reloan-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.reloan-eligibility-copy h3 {
+  margin: 14px 0 8px;
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.reloan-eligibility-copy p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.reloan-eligibility-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reloan-eligibility-action .btn-start {
+  min-width: 180px;
+  padding: 12px 24px;
+  background: #fff !important;
+  color: #154a7d;
+  font-weight: 600;
+  box-shadow: 0 10px 24px rgba(10, 28, 48, 0.18);
+}
+
+.reloan-eligibility-action .btn-start:hover {
+  transform: translateY(-1px);
+}
+
 
 .reloan-dashboard {
   padding: 20px;
@@ -1055,6 +1121,24 @@
 
 /* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
+  .reloan-eligibility-card {
+    padding: 20px 18px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .reloan-eligibility-copy h3 {
+    font-size: 22px;
+  }
+
+  .reloan-eligibility-action {
+    width: 100%;
+  }
+
+  .reloan-eligibility-action .btn-start {
+    width: 100%;
+  }
+
   .reloan-dashboard {
     padding: 12px;
   }

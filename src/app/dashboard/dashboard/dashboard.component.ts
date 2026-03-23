@@ -48,6 +48,15 @@ kycUrlSafe!: SafeResourceUrl;
   loanTracking: any;
   applicationId: string = '';
 
+  get showReloanActionButton(): boolean {
+    return (
+      !this.isReloanJourney &&
+      this.loanTracking?.showReloanCard === true &&
+      this.trackingSteps?.disbursement === 'DONE' &&
+      !!this.loanTracking?.nextAction?.url
+    );
+  }
+
   constructor(
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
@@ -70,7 +79,6 @@ getBorrowerSnapshot() {
       if (!res?.success) return;
 
       const data = res.data;
-debugger
       // ✅ IDs
       this.applicationId = data?.application?.id;
 
@@ -617,7 +625,15 @@ openEnachInNewTab() {
   }
 }
 
+isLoanCompleted: boolean = false;
 
+setDashboardFlags(data: any) {
+
+  this.isLoanCompleted =
+    this.loanProgress === 100 &&
+    data?.loanTracking?.showActiveLoanCard === true;
+
+}
 
 
 }

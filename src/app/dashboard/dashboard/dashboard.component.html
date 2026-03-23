@@ -177,7 +177,7 @@
 
 <!-- ✅ STATUS TRACKER -->
 <div class="tracker-card"
-     *ngIf="showTracker">
+     *ngIf="showTracker && !showReloanActionButton" >
 
 <!-- 🔥 HEADER -->
 <div class="tracker-header">
@@ -514,7 +514,7 @@
 </div>
 
 <div class="credit-wrapper"
-     *ngIf="loanProgress === 100 && creditManager">
+     *ngIf="loanProgress === 100 && creditManager && !showReloanActionButton">
 
   <!-- TITLE -->
   <h2 class="section-title">
@@ -577,19 +577,33 @@
   <div *ngIf="!isReloanJourney">
 
     <!-- APPLY RELOAN BUTTON -->
-    <div *ngIf="loanTracking?.nextAction?.label">
-      <button class="btn-start" (click)="applyReloan()">
-        {{ loanTracking.nextAction.label }}
-      </button>
+    <div *ngIf="showReloanActionButton" class="reloan-eligibility-card">
+      <div class="reloan-eligibility-copy">
+        <span class="reloan-badge">Reloan Offer</span>
+        <h3>You are eligible for reloan</h3>
+        <p>
+          Your previous loan journey is complete. You can now continue with a new
+          reloan application.
+        </p>
+      </div>
+
+      <div class="reloan-eligibility-action">
+        <button class="btn-start" (click)="applyReloan()">
+          Apply For Reloan
+        </button>
+      </div>
     </div>
+
+      <button class="support-btn">
+    Support
+  </button>
 
   </div>
 
 
   <!-- 🔥 RELOAN DASHBOARD -->
-  <div class="reloan-dashboard" *ngIf="isReloanJourney">
+  <!-- <div class="reloan-dashboard" *ngIf="isReloanJourney">
 
-    <!-- HEADER -->
     <div class="card-clean">
       <h2>Welcome Back 👋</h2>
       <p>
@@ -598,24 +612,13 @@
       </p>
     </div>
 
-    <!-- SUMMARY -->
-    <div class="card-clean" *ngIf="currentLoanRequest">
-      <h3>Loan Request</h3>
 
-      <p>Amount: ₹ {{ currentLoanRequest?.requestedAmount }}</p>
-      <p>Tenure: {{ currentLoanRequest?.tenureValue }}</p>
-      <p>Mode: {{ currentLoanRequest?.repaymentMode }}</p>
-    </div>
+
+
+  </div> -->
 
 
   </div>
 
-
-  </div>
-
-  <!-- SUPPORT BUTTON -->
-  <button class="support-btn">
-    Support
-  </button>
 
 </div>

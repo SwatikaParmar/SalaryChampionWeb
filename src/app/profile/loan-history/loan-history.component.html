@@ -5,36 +5,25 @@
     <h2>Loan History</h2>
   </div>
 
-  <!-- 🔥 TABS WITH COUNTS -->
+
+  <!-- TABS -->
   <div class="history-tabs">
 
-  <button [class.active]="tab==='ALL'" (click)="changeTab('ALL')">
-  All
-  <span class="count">
-    {{ allSummary?.totalApplications }}
-  </span>
-</button>
+    <button [class.active]="tab==='ALL'" (click)="changeTab('ALL')">
+      All ({{ allSummary?.totalApplications || 0 }})
+    </button>
 
-<button [class.active]="tab==='ACTIVE'" (click)="changeTab('ACTIVE')">
-  Active
-  <span class="count">
-    {{ allSummary?.countsByBucket?.active }}
-  </span>
-</button>
+    <button [class.active]="tab==='ACTIVE'" (click)="changeTab('ACTIVE')">
+      Active ({{ allSummary?.countsByBucket?.active || 0 }})
+    </button>
 
-<button [class.active]="tab==='CLOSED'" (click)="changeTab('CLOSED')">
-  Closed
-  <span class="count">
-    {{ allSummary?.countsByBucket?.closed }}
-  </span>
-</button>
+    <button [class.active]="tab==='CLOSED'" (click)="changeTab('CLOSED')">
+      Closed ({{ allSummary?.countsByBucket?.closed || 0 }})
+    </button>
 
-<button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
-  In Progress
-  <span class="count">
-    {{ allSummary?.countsByBucket?.inProgress }}
-  </span>
-</button>
+    <button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
+      In Progress ({{ allSummary?.countsByBucket?.inProgress || 0 }})
+    </button>
 
   </div>
 
@@ -51,13 +40,13 @@
       <div class="loan-top">
         <div>
           <h4>{{ item.applicationNumber }}</h4>
-          <span class="badge" [ngClass]="item.historyBucket">
-            {{ item.historyBucket }}
+          <span class="badge">
+            {{ item.overview?.historyBucket }}
           </span>
         </div>
 
         <div class="amount">
-          ₹ {{ item.approvedAmount || item.requestedAmount || 0 }}
+          ₹ {{ item.overview?.approvedAmount || item.overview?.requestedAmount || 0 }}
         </div>
       </div>
 
@@ -65,23 +54,25 @@
 
         <div>
           <label>Status</label>
-          <p>{{ item.loan?.status || item.applicationStatus }}</p>
+          <p>{{ item.status?.loanStatus || item.status?.applicationStatus }}</p>
         </div>
 
         <div>
           <label>Outstanding</label>
-          <p>₹ {{ item.loanTracking?.outstandingAmount || 0 }}</p>
+          <p>₹ {{ item.overview?.outstandingAmount || 0 }}</p>
         </div>
 
         <div>
           <label>Next Due</label>
-          <p>{{ item.loanTracking?.nextDueDateDisplay || '-' }}</p>
+          <p>{{ item.overview?.nextDueDateDisplay || '-' }}</p>
         </div>
 
       </div>
 
       <div class="loan-actions">
-        <button class="btn-start" (click)="openDetail(item.applicationId)">
+
+        <button class="btn-start"
+                (click)="openDetail(item.applicationId)">
           View Details
         </button>
 
@@ -89,6 +80,7 @@
                 (click)="openNoc(item.closure.nocUrl)">
           View NOC
         </button>
+
       </div>
 
     </div>
