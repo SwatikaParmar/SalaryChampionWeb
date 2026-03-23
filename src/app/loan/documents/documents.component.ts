@@ -157,13 +157,38 @@ onFileSelect(event: any) {
   const file = event.target.files[0];
   if (!file) return;
 
+  const maxSize = 2 * 1024 * 1024; // 2MB
+
+  // 🔥 SIZE VALIDATION
+  if (file.size > maxSize) {
+    this.toastr.error('File size should be less than 2MB');
+    event.target.value = ''; // reset input
+    return;
+  }
+
+  // 🔥 OPTIONAL: TYPE CHECK (PDF only)
+  if (file.type !== 'application/pdf') {
+    this.toastr.error('Only PDF files are allowed');
+    event.target.value = '';
+    return;
+  }
+
   this.selectedFile = file;
 }
 
 
 async confirmUpload() {
+
   if (!this.selectedFile) {
     this.toastr.warning('Please select a file');
+    return;
+  }
+
+  const maxSize = 2 * 1024 * 1024;
+
+  // 🔥 DOUBLE CHECK (IMPORTANT)
+  if (this.selectedFile.size > maxSize) {
+    this.toastr.error('File size should be less than 2MB');
     return;
   }
 
@@ -185,14 +210,9 @@ async confirmUpload() {
       .uploadDocumentMeta(payload)
       .toPromise();
 
-    if (!metaRes?.success) {
-      throw new Error('Failed to get upload URL');
-    }
-
     const { upload, fileId } = metaRes.data;
 
-    // ✅ S3 Upload
-    const s3Response = await fetch(upload.url, {
+    await fetch(upload.url, {
       method: upload.method || 'PUT',
       headers: {
         ...(upload.headers || {}),
@@ -201,24 +221,11 @@ async confirmUpload() {
       body: this.selectedFile,
     });
 
-    if (!s3Response.ok) {
-      throw new Error('Upload failed');
-    }
-
-    // ✅ Complete upload
-    const completeRes: any = await this.contentService
-      .completeUpload(fileId)
-      .toPromise();
-
-    if (!completeRes?.success) {
-      throw new Error('Failed to complete upload');
-    }
+    await this.contentService.completeUpload(fileId).toPromise();
 
     this.toastr.success('Document uploaded successfully ✅');
     this.closeUpload();
 
-    // 🔥🔥🔥 IMPORTANT FIX
-    // 🔁 ALWAYS REFRESH CHECKLIST AFTER UPLOAD
     this.loadDocumentChecklist();
 
   } catch (err: any) {
@@ -230,7 +237,6 @@ async confirmUpload() {
     this.selectedFile = undefined as any;
   }
 }
-
 
 
   /* ===============================

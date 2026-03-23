@@ -114,60 +114,69 @@ export class SalarySlipComponent implements OnInit {
   }
 
   /* ================= UPLOAD ================= */
-  async uploadSalarySlip() {
-    if (!this.selectedFile || this.isUploading) return;
+async uploadSalarySlip() {
 
-    this.isUploading = true;
-    this.spinner.show();
+  if (!this.selectedFile || this.isUploading) return;
 
-    try {
-      const current = this.salaryMonths[this.activeIndex];
+  // 🔥 FILE SIZE CHECK (2MB)
+  const maxSize = 2 * 1024 * 1024; // 2MB
 
-      const payload = {
-        applicationId: this.applicationId,
-        docTypeId: current.docTypeId, // 🔥 dynamic
-        fileName: this.selectedFile.name,
-        contentType: this.selectedFile.type,
-        password: this.password || null,
-      };
-
-      const metaRes: any = await this.contentService
-        .uploadDocumentMeta(payload)
-        .toPromise();
-
-      const { upload, fileId } = metaRes.data;
-
-      await fetch(upload.url, {
-        method: upload.method || 'PUT',
-        headers: {
-          ...(upload.headers || {}),
-          'Content-Type': this.selectedFile.type,
-        },
-        body: this.selectedFile,
-      });
-
-      await this.contentService.completeUpload(fileId).toPromise();
-
-      // ✅ mark uploaded
-      this.salaryMonths[this.activeIndex].uploaded = true;
-      this.toastr.success('Salary slip uploaded');
-
-      this.closeUpload();
-
-      // 🔥 all uploaded → documents
-      if (this.salaryMonths.every(m => m.uploaded)) {
-        setTimeout(() => {
-          this.router.navigate(['/dashboard/loan/documents']);
-        }, 300);
-      }
-    } catch (err: any) {
-      this.toastr.error(err?.message || 'Upload failed');
-    } finally {
-      this.spinner.hide();
-      this.isUploading = false;
-    }
+  if (this.selectedFile.size > maxSize) {
+    this.toastr.error('File size should be less than 2MB');
+    return;
   }
 
+  this.isUploading = true;
+  this.spinner.show();
+
+  try {
+
+    const current = this.salaryMonths[this.activeIndex];
+
+    const payload = {
+      applicationId: this.applicationId,
+      docTypeId: current.docTypeId,
+      fileName: this.selectedFile.name,
+      contentType: this.selectedFile.type,
+      password: this.password || null,
+    };
+
+    const metaRes: any = await this.contentService
+      .uploadDocumentMeta(payload)
+      .toPromise();
+
+    const { upload, fileId } = metaRes.data;
+
+    await fetch(upload.url, {
+      method: upload.method || 'PUT',
+      headers: {
+        ...(upload.headers || {}),
+        'Content-Type': this.selectedFile.type,
+      },
+      body: this.selectedFile,
+    });
+
+    await this.contentService.completeUpload(fileId).toPromise();
+
+    // ✅ mark uploaded
+    this.salaryMonths[this.activeIndex].uploaded = true;
+    this.toastr.success('Salary slip uploaded');
+
+    this.closeUpload();
+
+    if (this.salaryMonths.every(m => m.uploaded)) {
+      setTimeout(() => {
+        this.router.navigate(['/dashboard/loan/documents']);
+      }, 300);
+    }
+
+  } catch (err: any) {
+    this.toastr.error(err?.message || 'Upload failed');
+  } finally {
+    this.spinner.hide();
+    this.isUploading = false;
+  }
+}
 
   skipSalarySlipProcess() {
   if (!this.applicationId) {
