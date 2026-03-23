@@ -26,8 +26,8 @@
     justify-items: center;
     font-size: 14px;
     text-decoration: none;
-    border: 2px solid #8541da;
-    color: #8541da;
+    border: 2px solid #3da3d5;
+    color: #3da3d5;
     border-radius: 50px;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .btn-save {
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    background: linear-gradient(270deg, #2c5aa0, #3da3d5);
     font-family: "Poppins", sans-serif;
     border: none;
     padding: 10px 30px;

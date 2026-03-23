@@ -52,7 +52,7 @@
 
 .loan-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+  background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
 }
 
 .loan-progress-percent {
@@ -60,7 +60,7 @@
   font-size: 12px;
   font-weight: 600;
   margin-top: 6px;
-  color: #7c4fe0;
+  color: #31a5e5;
 }
 
 /* ================= STEP CARD ================= */
@@ -114,23 +114,23 @@
 
 /* ================= STATES ================= */
 .loan-step.completed {
-  border-left: 4px solid #7c4fe0;
+  border-left: 4px solid #31a5e5;
 }
 
 .loan-step.active {
-  border-left: 4px solid #7c4fe0;
+  border-left: 4px solid #31a5e5;
   background: #eef4ff;
 }
 
 .loan-step.active .loan-step-text h5 {
-  color: #7c4fe0;
+  color: #31a5e5;
 }
 
 /* ================= ARROW ================= */
 .loan-step-arrow {
   margin-left: auto;
   font-size: 20px;
-  color: #7c4fe0;
+  color: #31a5e5;
   font-weight: bold;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .loan-step.active {
-  border-left: 4px solid #6366f1;
+  border-left: 4px solid #31a5e5;
   background: #f5f3ff;
 }
 

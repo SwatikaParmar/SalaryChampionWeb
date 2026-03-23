@@ -69,7 +69,7 @@
 
 /* BUTTON */
 .btn-start {
-  background: linear-gradient(90deg, #7c4fe0, #4528dc);
+  background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
   font-family: "Poppins", sans-serif;
   border: none;
   padding: 10px 22px;
@@ -81,7 +81,7 @@
 
 /* RIGHT */
 .profile-right {    
-    color: #4528dc;
+    color: #31a5e5;
     padding: 30px;
     border-radius: 10px;
     text-align: center;
@@ -98,14 +98,14 @@
 }
 
 .profile-right span {
-  color: #4528dc;
+  color: #31a5e5;
   font-weight: 500;
 }
 
 /* SUPPORT BUTTON */
 .support-btn {
     margin-top: 20px;
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
     color: #fff;
     border: none;
     font-size: 15px;

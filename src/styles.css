@@ -118,6 +118,37 @@ h3{
       background: var(--brand-gradient);
     }
 
+    .theme-btn{
+        width: 100%;
+        padding: 12px;
+        border-radius: 10px;
+        border: none;
+        background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
+        color: #fff;
+        font-size: 16px;
+    }
+    .resend span {
+        color: #31a5e5 !important;
+        font-weight: 400 !important;
+    }
+
+    .theme-btn2[_ngcontent-ng-c3746909487] {
+        margin-top: 20px;
+        background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
+        color: #fff;
+        border: none;
+        font-size: 15px;
+        font-weight: 400;
+        text-transform: capitalize;
+        font-family: "Poppins", sans-serif;
+        padding: 10px 22px;
+        border-radius: 7px;
+        cursor: pointer;
+    }
+    .otp-inputs input:focus {
+        border-color: #525252 !important;
+    }
+
     /* Center Menu on Desktop */
     @media (min-width: 992px){
       .navbar-nav{
@@ -184,7 +215,7 @@ h3{
     color: #3c3c3c;
 }
 .btn-secondary:hover{
-    background: linear-gradient(90deg, #7c4fe0, #4528dc)
+    background: linear-gradient(270deg, #2c5aa0, #3da3d5);
 }
 
 .features {
@@ -520,7 +551,7 @@ background: var(--brand-light);
       border-radius: 50%;
 background: var(--brand-light);
       border: 3px solid #fff;
-      box-shadow: 0 2px 6px #5a00d7;
+      box-shadow: 0 2px 6px #31a5e5;
       cursor:pointer;
       transition: .2s;
     }
@@ -619,7 +650,7 @@ background: var(--brand-light);
       border-radius: 50%;
     }
 
-    .dot.principal{ background: #8338ec; }
+    .dot.principal{ background: #31a5e5; }
     .dot.interest{ background: #8338ec55; }
 
     .amount{
@@ -680,7 +711,7 @@ background: var(--brand-light);
     margin-bottom: 5px;
 }
 .testimonial-card .title{
-  color: #6d28d9;
+  color: #31a5e5;
   font-weight: 600;
   margin-bottom: 14px;
 }

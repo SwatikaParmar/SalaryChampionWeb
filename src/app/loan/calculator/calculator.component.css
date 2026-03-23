@@ -13,7 +13,7 @@
 
 .calculator-left h3 {
   margin-bottom: 10px;
-  color: #813dda;
+  color: #3c3c3c;
 }
 
 .calculator-left p {
@@ -44,7 +44,7 @@
 }
 
 .btn-accept {
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
+    background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
     font-family: "Poppins", sans-serif;
     border: none;
     padding: 10px 30px;
@@ -104,14 +104,14 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #5b04d9; /* thumb color */
+  background: #31a5e5; /* thumb color */
   cursor: pointer;
 }
 
 .field small {
     font-family: "Poppins", sans-serif;
     font-size: 13px;
-    color: #8541db;
+    color: #31a5e5;
 }
 
 .range-info{
@@ -127,7 +127,7 @@
 
 .result {
   flex: 1;
-  background: rgb(241 231 255);
+  background: rgb(231 239 255);
   border-radius: 10px;
   padding: 25px;
   text-align: center;
@@ -140,7 +140,7 @@
 }
 
 .result h4 {
-  color: #8541da;
+  color: #31a5e5;
 }
 .range-custom{
   -webkit-appearance: none;
@@ -148,7 +148,7 @@
   height: 7px;
   border-radius: 50px;
   outline: none;
-  background: linear-gradient(to right, #5b04d9 0%, #5b04d9 50%, #e5e7eb 50%, #e5e7eb 100%);
+  background: linear-gradient(to right, #1c4685 0%, #31a5e5 50%, #e5e7eb 50%, #e5e7eb 100%);
 }
 
 .range-custom::-webkit-slider-thumb{
@@ -156,7 +156,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #5b04d9;
+  background: #31a5e5;
   border: 3px solid #fff;
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
   cursor: pointer;
