@@ -483,7 +483,7 @@
 
 
       <button class="btn-primary" (click)="verifyEnach()">
-        Verify & Continue
+        Cancel
       </button>
 
     </div>
@@ -594,12 +594,22 @@
       </div>
     </div>
 
-      <button class="support-btn">
-    Support
-  </button>
+  
 
   </div>
 
+  <div>
+
+      <button class="support-btn">
+    Support
+  </button>
+&nbsp;
+       <button class="support-btn" (click)="refreshStatus()">
+    Refresh Status
+  </button>
+
+
+  </div>
 
   <!-- 🔥 RELOAN DASHBOARD -->
   <!-- <div class="reloan-dashboard" *ngIf="isReloanJourney">
