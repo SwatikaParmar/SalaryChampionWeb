@@ -174,10 +174,81 @@
   </div>
 </div>
 
+<div class="active-loan-card col-md-12" *ngIf="showActiveLoanCard && activeLoan && !showReloanActionButton">
+  <div class="active-loan-shell">
+    <div class="active-loan-hero">
+      <div>
+        <div class="active-loan-kicker">Live Loan Snapshot</div>
+        <h3>My Loan</h3>
+        <p>
+          <span class="loan-chip">{{ activeLoan?.status || 'ACTIVE' }}</span>
+          <span *ngIf="activeLoan?.loanNumber" class="loan-reference">
+            Loan ID: {{ activeLoan?.loanNumber }}
+          </span>
+        </p>
+      </div>
 
+      <div class="active-loan-highlight">
+        <span>Approved Amount</span>
+        <strong>
+          {{ activeLoan?.approvedAmount ? (activeLoan?.approvedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+        <small>
+          Disbursed:
+          {{ activeLoan?.netDisbursalAmount ? (activeLoan?.netDisbursalAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </small>
+      </div>
+    </div>
+
+    <div class="active-loan-grid">
+      <div class="active-loan-stat">
+        <label>Outstanding</label>
+        <strong>
+          {{ activeLoan?.outstandingAmount ? (activeLoan?.outstandingAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Total Payable</label>
+        <strong>
+          {{ activeLoan?.repayAmount ? (activeLoan?.repayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Next Due Amount</label>
+        <strong>
+          {{ activeLoan?.nextDueAmount ? (activeLoan?.nextDueAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Next Due Date</label>
+        <strong>
+          {{ activeLoan?.nextDueDateDisplay || '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Auto Debit</label>
+        <strong [class.success-text]="activeLoan?.autoDebitStatus">
+          {{ activeLoan?.autoDebitStatus || '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Repay By</label>
+        <strong>
+          {{ activeLoan?.repayDateDisplay || '--' }}
+        </strong>
+      </div>
+    </div>
+
+  </div>
+</div>
 <!-- ✅ STATUS TRACKER -->
 <div class="tracker-card"
-     *ngIf="showTracker && !showReloanActionButton" >
+     *ngIf="showTracker && !showActiveLoanCard">
 
 <!-- 🔥 HEADER -->
 <div class="tracker-header">
@@ -514,7 +585,7 @@
 </div>
 
 <div class="credit-wrapper"
-     *ngIf="loanProgress === 100 && creditManager && !showReloanActionButton">
+     *ngIf="loanProgress === 100 && creditManager && !showActiveLoanCard">
 
   <!-- TITLE -->
   <h2 class="section-title">
@@ -573,29 +644,22 @@
 </div>
     
 
- <!-- 🔥 NORMAL DASHBOARD -->
-  <div *ngIf="!isReloanJourney">
-
-    <!-- APPLY RELOAN BUTTON -->
-    <div *ngIf="showReloanActionButton" class="reloan-eligibility-card">
-      <div class="reloan-eligibility-copy">
-        <span class="reloan-badge">Reloan Offer</span>
-        <h3>You are eligible for reloan</h3>
-        <p>
-          Your previous loan journey is complete. You can now continue with a new
-          reloan application.
-        </p>
-      </div>
-
-      <div class="reloan-eligibility-action">
-        <button class="btn-start" (click)="applyReloan()">
-          Apply For Reloan
-        </button>
-      </div>
+ <!-- RELOAN CTA -->
+  <div *ngIf="showReloanActionButton" class="reloan-eligibility-card">
+    <div class="reloan-eligibility-copy">
+      <span class="reloan-badge">Reloan Offer</span>
+      <h3>You are eligible for reloan</h3>
+      <p>
+        Your previous loan journey is complete. You can now continue with a new
+        reloan application.
+      </p>
     </div>
 
-  
-
+    <div class="reloan-eligibility-action">
+      <button class="btn-start" (click)="applyReloan()">
+        Apply For Reloan
+      </button>
+    </div>
   </div>
 
   <div>
@@ -604,7 +668,7 @@
     Support
   </button>
 &nbsp;
-       <button class="support-btn" (click)="refreshStatus()">
+       <button class="support-btn" (click)="refreshStatus()"   *ngIf="showTracker && !showActiveLoanCard">
     Refresh Status
   </button>
 
@@ -632,3 +696,6 @@
 
 
 </div>
+
+
+

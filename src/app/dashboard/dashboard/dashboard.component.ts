@@ -50,9 +50,7 @@ kycUrlSafe!: SafeResourceUrl;
 
   get showReloanActionButton(): boolean {
     return (
-      !this.isReloanJourney &&
       this.loanTracking?.showReloanCard === true &&
-      this.trackingSteps?.disbursement === 'DONE' &&
       !!this.loanTracking?.nextAction?.url
     );
   }
@@ -69,6 +67,9 @@ kycUrlSafe!: SafeResourceUrl;
     this.getBorrowerSnapshot();
   }
 
+  showActiveLoanCard: boolean = false;
+  activeLoan: any = null;
+
 getBorrowerSnapshot() {
   this.spinner.show();
 
@@ -78,80 +79,39 @@ getBorrowerSnapshot() {
 
       if (!res?.success) return;
 
-      const data = res.data;
-      // ✅ IDs
-      this.applicationId = data?.application?.id;
+      const data = res?.data || {};
+      this.applicationId = data?.application?.id || '';
+      this.profileProgress = data?.basicFlow?.percent || 0;
+      this.loanProgress = data?.applicationFlow?.percent || 0;
+      this.loanTracking = data?.loanTracking || null;
+      this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
+      this.steps = data?.applicationFlow?.steps || {};
+      this.currentLoanRequest = data?.currentLoanRequest || null;
 
-      // ✅ Progress
-      this.profileProgress = data.basicFlow?.percent || 0;
-      this.loanProgress = data.applicationFlow?.percent || 0;
+      const creditManagerDetail =
+        this.loanTracking?.creditManagerDetail ||
+        this.loanTracking?.assignedRoleDetails?.find((role: any) => role?.roleCode === 'CREDIT_MANAGER') ||
+        this.loanTracking?.assignedRoleDetails?.[0];
 
-      
-      // ===============================
-      // 🔥 CREDIT MANAGER FROM assignedRoleDetails[0]
-      // ===============================
-      const roles = data?.loanTracking?.assignedRoleDetails;
+      this.creditManager = creditManagerDetail ? {
+        name: creditManagerDetail?.name,
+        mobile: creditManagerDetail?.phone || creditManagerDetail?.contact,
+        email: creditManagerDetail?.email,
+        role: creditManagerDetail?.roleName
+      } : null;
 
-      if (roles && roles.length > 0) {
-        const cm = roles[0]; // 👈 FIRST ITEM
+      this.showTracker = this.loanProgress === 100;
+      this.patchTrackerFromSnapshot();
+      this.patchActiveLoanFromSnapshot();
 
-        this.creditManager = {
-          name: cm?.name,
-          mobile: cm?.phone || cm?.contact,
-          email: cm?.email,
-          role: cm?.roleName
-        };
-      } else {
-        this.creditManager = null;
-      }
-
-      // ✅ UI Control
       this.showLoanCard =
-        this.profileProgress === 100 && this.loanProgress < 100;
+        !this.showActiveLoanCard &&
+        this.profileProgress === 100 &&
+        this.loanProgress < 100;
 
-      this.showTracker =
-        this.loanProgress === 100;
-
-      // ❌ REMOVE THIS (important)
-      // this.trackingSteps = tracking?.steps;
-
-      // ✅ CALL REAL STATUS API
       if (this.showTracker) {
         this.applicationStatusApi();
       }
-
-          // 🔥 RELOAN FLAG
-    this.isReloanJourney = data?.isReloanJourney;
-
-    // 🔥 REQUEST
-    this.currentLoanRequest = data?.currentLoanRequest;
-
-    // 🔥 STEPS
-this.isReloanJourney = data?.isReloanJourney;
-
-// 🔥 IMPORTANT
-this.steps = data?.applicationFlow?.steps || {};
-
-// fallback safe
-if (this.isReloanJourney) {
-  this.showLoanCard = false;
-  this.showTracker = false;
-}    
-
-  // 🔥 TRACKING
-        this.loanTracking = data?.loanTracking;
-
-        // 🔥 RELOAN FLAGS
-        this.isReloanJourney = data?.isReloanJourney;
-        this.steps = data?.applicationFlow?.steps || {};
-        this.currentLoanRequest = data?.currentLoanRequest;
-
-        // NORMAL UI CONTROL
-        this.showLoanCard =
-          this.profileProgress === 100 && this.loanProgress < 100;
-
-        this.showTracker = this.loanProgress === 100;
-
     },
     error: () => {
       this.spinner.hide();
@@ -159,6 +119,46 @@ if (this.isReloanJourney) {
   });
 }
 
+private patchTrackerFromSnapshot() {
+  const snapshotSteps = this.loanTracking?.steps;
+  if (!snapshotSteps) return;
+
+  this.trackingSteps = snapshotSteps;
+  this.currentTitle =
+    this.loanTracking?.currentTitle ||
+    this.loanTracking?.currentStage ||
+    this.currentTitle;
+  this.currentMessage =
+    this.loanTracking?.currentMessage ||
+    this.currentMessage;
+}
+
+private patchActiveLoanFromSnapshot() {
+  const tracking = this.loanTracking || {};
+  const activeLoan = tracking?.activeLoan || {};
+  const repayment = tracking?.repayment || {};
+
+  this.showActiveLoanCard = tracking?.showActiveLoanCard === true;
+
+  if (!this.showActiveLoanCard) {
+    this.activeLoan = null;
+    return;
+  }
+
+  this.activeLoan = {
+    loanNumber: tracking?.applicationNumber || tracking?.loanAccountNo || tracking?.loanId,
+    status: tracking?.loanStatus || activeLoan?.status || 'ACTIVE',
+    approvedAmount: activeLoan?.approvedAmount || tracking?.approvedAmount || activeLoan?.principal,
+    netDisbursalAmount: activeLoan?.netDisbursalAmount || tracking?.netDisbursalAmount,
+    outstandingAmount: repayment?.outstandingAmount || tracking?.outstandingAmount || repayment?.principalOutstanding,
+    repayAmount: repayment?.repayAmount || activeLoan?.repayAmount || tracking?.repayAmount,
+    nextDueAmount: repayment?.nextDueAmount || tracking?.nextDueAmount || repayment?.minimumDueAmount,
+    nextDueDateDisplay: repayment?.nextDueDate || tracking?.nextDueDate || activeLoan?.repayDate,
+    repayDateDisplay: activeLoan?.repayDate || tracking?.repayDate || activeLoan?.maturityDate,
+    disbursalDateDisplay: activeLoan?.disbursalDate || tracking?.disbursalDate || activeLoan?.startedOn,
+    autoDebitStatus: repayment?.autoDebitStatus || tracking?.autoDebitStatus || tracking?.mandateStatus
+  };
+}
 
 
 
@@ -272,18 +272,18 @@ applicationStatusApi() {
 
       if (!res?.success) return;
 
-      const data = res.data;
-
-      // ✅ 🔥 REAL STEPS (IMPORTANT)
-      this.trackingSteps = data?.steps || {};
-
-      // ✅ MESSAGE
-      this.currentTitle = data?.borrowerGuidance?.title || '';
-      this.currentMessage = data?.borrowerGuidance?.message || '';
-
-      // ✅ VIDEO KYC
+      const data = res?.data || {};
+      this.trackingSteps = data?.steps || this.trackingSteps || {};
+      this.currentTitle =
+        data?.borrowerGuidance?.title ||
+        this.loanTracking?.currentTitle ||
+        this.loanTracking?.currentStage ||
+        '';
+      this.currentMessage =
+        data?.borrowerGuidance?.message ||
+        this.loanTracking?.currentMessage ||
+        '';
       this.videoKycData = data?.videoKyc;
-
     },
     error: () => {
       this.spinner.hide();
@@ -641,3 +641,6 @@ refreshStatus() {
 }
 
 }
+
+
+

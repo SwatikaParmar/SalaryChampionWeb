@@ -172,10 +172,6 @@ if (f['personalEmail'].invalid) {
   return;
 }
 
-if (f['officialEmail'].invalid) {
-  this.toastr.warning('Enter valid official email');
-  return;
-}
 
 const payload = this.basicForm.getRawValue();
 
