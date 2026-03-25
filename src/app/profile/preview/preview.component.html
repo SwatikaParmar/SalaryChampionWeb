@@ -53,7 +53,7 @@
       <div class="row"><span>Your Name</span><span>{{ user?.name }}</span></div>
       <div class="row"><span>Gender</span><span>{{ user?.gender }}</span></div>
       <div class="row"><span>DOB</span><span>{{ user?.dob }}</span></div>
-      <div class="row"><span>Marital Status</span><span>{{ user?.maritalStatus }}</span></div>
+      <!-- <div class="row"><span>Marital Status</span><span>{{ user?.maritalStatus }}</span></div> -->
       <div class="row"><span>Personal Email</span><span>{{ user?.email }}</span></div>
     </div>
 
@@ -69,14 +69,14 @@
         </span>
       </div>
       <div class="row"><span>Residence Type</span><span>{{ address?.residenceTypeCode }}</span></div>
-      <div class="row"><span>Residing Since</span><span>{{ address?.residingSince }}</span></div>
+      <!-- <div class="row"><span>Residing Since</span><span>{{ address?.residingSince }}</span></div> -->
     </div>
 
     <!-- INCOME -->
     <div class="tab-content" *ngIf="selectedTab === 'INCOME'">
       <div class="row"><span>Employment Type</span><span>{{ employment?.employmentType }}</span></div>
       <div class="row"><span>Monthly Income</span><span>₹ {{ employment?.netMonthlyIncome }}</span></div>
-      <div class="row"><span>Existing EMI</span><span>₹ {{ employment?.existingEmiTotal }}</span></div>
+      <!-- <div class="row"><span>Existing EMI</span><span>₹ {{ employment?.existingEmiTotal }}</span></div> -->
     </div>
 
     <!-- CTA -->

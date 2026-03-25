@@ -140,7 +140,7 @@ async uploadSalarySlip() {
       contentType: this.selectedFile.type,
       password: this.getUploadPassword(),
     };
-
+debugger
     const metaRes: any = await this.contentService
       .uploadDocumentMeta(payload)
       .toPromise();

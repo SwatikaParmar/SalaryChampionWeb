@@ -163,16 +163,6 @@ Enter valid email address
 formControlName="officialEmail"
 placeholder="Enter Official Mail ID">
 
-<small class="error"
-*ngIf="basicForm.get('officialEmail')?.touched && basicForm.get('officialEmail')?.errors?.['required']">
-Official email is required
-</small>
-
-<small class="error"
-*ngIf="basicForm.get('officialEmail')?.touched && basicForm.get('officialEmail')?.errors?.['pattern']">
-Enter valid official email
-</small>
-
 
 </div>
 

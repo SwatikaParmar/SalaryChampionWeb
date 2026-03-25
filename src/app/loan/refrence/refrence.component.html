@@ -71,17 +71,17 @@
   </div>
 
   <!-- ACTION BUTTON -->
-    <div class="col-md-12">
-      <div class="btn-row">
-        <button
-          type="button"
-          class="btn-save"
-          (click)="save()"
-          [disabled]="isSaving"
-        >
-          {{ isSaving ? 'Saving...' : 'Save References' }}
-        </button>
-      </div>
-    </div>
+<div class="col-md-12">
+  <div class="btn-row d-flex justify-content-end">
+    <button
+      type="button"
+      class="btn-save"
+      (click)="save()"
+      [disabled]="isSaving"
+    >
+      {{ isSaving ? 'Saving...' : 'Save References' }}
+    </button>
+  </div>
+</div>
   </form>
 </div>

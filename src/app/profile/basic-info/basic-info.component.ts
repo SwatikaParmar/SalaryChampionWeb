@@ -37,11 +37,7 @@ this.basicForm = this.fb.group({
     ]
   ],
   officialEmail: [
-    '',
-    [
-      Validators.required,
-      Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)
-    ]
+    ''
   ]
 });
 
