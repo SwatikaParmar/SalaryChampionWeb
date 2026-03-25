@@ -240,6 +240,26 @@ refreshPayment(data: any) {
   );
 }
 
+getBorrowerRepaymentSummary(applicationId: string) {
+  return this.http.get<any>(
+    `${environment.apiUrl}loan/borrower/repay/summary?applicationId=${applicationId}`
+  );
+}
+
+createBorrowerRepaymentOrder(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/borrower/repay/cashfree/order',
+    data
+  );
+}
+
+refreshBorrowerRepayment(data: any) {
+  return this.http.post<any>(
+    environment.apiUrl + 'loan/borrower/repay/cashfree/refresh',
+    data
+  );
+}
+
 applicationStatus(applicationId: any) {
   return this.http.get<any>(
     environment.apiUrl + ApiEndPoint.applicationStatus + '?applicationId=' + applicationId

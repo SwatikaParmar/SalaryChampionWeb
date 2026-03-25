@@ -131,7 +131,7 @@ checkBankStatementStatus() {
         docTypeId: 3,
         fileName: this.selectedFile.name,
         contentType: this.selectedFile.type,
-        password: this.password || null,
+        password: this.getUploadPassword(),
       };
 
       const metaRes: any = await this.contentService
@@ -170,5 +170,10 @@ checkBankStatementStatus() {
   /* ================= CONTINUE ================= */
   continue() {
     this.router.navigate(['/dashboard/loan/salary-slip']);
+  }
+
+  private getUploadPassword(): string | null {
+    const normalizedPassword = this.password.trim();
+    return normalizedPassword ? normalizedPassword : null;
   }
 }

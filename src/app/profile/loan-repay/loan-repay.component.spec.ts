@@ -1,21 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 
-import { LoanDetailComponent } from './loan-detail.component';
+import { LoanRepayComponent } from './loan-repay.component';
 import { ContentService } from '../../../service/content.service';
 
-describe('LoanDetailComponent', () => {
-  let component: LoanDetailComponent;
-  let fixture: ComponentFixture<LoanDetailComponent>;
+describe('LoanRepayComponent', () => {
+  let component: LoanRepayComponent;
+  let fixture: ComponentFixture<LoanRepayComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [LoanDetailComponent],
-      imports: [RouterTestingModule],
+      declarations: [LoanRepayComponent],
+      imports: [FormsModule, RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -24,13 +25,14 @@ describe('LoanDetailComponent', () => {
               paramMap: {
                 get: () => 'APP123'
               }
-            }
+            },
+            queryParams: of({})
           }
         },
         {
           provide: ContentService,
           useValue: {
-            getLoanDetail: () => of({ data: {} })
+            getBorrowerRepaymentSummary: () => of({ data: {} })
           }
         },
         {
@@ -43,14 +45,15 @@ describe('LoanDetailComponent', () => {
         {
           provide: ToastrService,
           useValue: {
-            error: () => undefined
+            error: () => undefined,
+            warning: () => undefined
           }
         }
       ]
     })
     .compileComponents();
-    
-    fixture = TestBed.createComponent(LoanDetailComponent);
+
+    fixture = TestBed.createComponent(LoanRepayComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

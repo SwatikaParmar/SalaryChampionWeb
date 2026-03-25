@@ -14,6 +14,7 @@ import { CheckEligibilityErrorComponent } from './check-eligibility-error/check-
 import { CheckEligibilitySuccessComponent } from './check-eligibility-success/check-eligibility-success.component';
 import { LoanHistoryComponent } from './loan-history/loan-history.component';
 import { LoanDetailComponent } from './loan-detail/loan-detail.component';
+import { LoanRepayComponent } from './loan-repay/loan-repay.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { LoanDetailComponent } from './loan-detail/loan-detail.component';
     CheckEligibilitySuccessComponent,
     LoanHistoryComponent,
     LoanDetailComponent,
+    LoanRepayComponent,
   ],
   imports: [
     CommonModule,

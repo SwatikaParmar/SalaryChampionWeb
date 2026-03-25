@@ -31,7 +31,6 @@ export class LoanDetailComponent implements OnInit {
   }
 
   getLoanDetail() {
-    debugger
     if (!this.applicationId) return;
 
     this.spinner.show();
@@ -39,7 +38,6 @@ export class LoanDetailComponent implements OnInit {
     this.contentService.getLoanDetail(this.applicationId).subscribe({
       next: (res: any) => {
         this.spinner.hide();
-debugger
         const d = res?.data;
 
         this.data = d;
@@ -57,7 +55,7 @@ debugger
   }
 
   goBack() {
-  window.history.back();
-}
+    window.history.back();
+  }
 
 }

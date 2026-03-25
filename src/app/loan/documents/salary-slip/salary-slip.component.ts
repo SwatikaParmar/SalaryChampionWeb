@@ -138,7 +138,7 @@ async uploadSalarySlip() {
       docTypeId: current.docTypeId,
       fileName: this.selectedFile.name,
       contentType: this.selectedFile.type,
-      password: this.password || null,
+      password: this.getUploadPassword(),
     };
 
     const metaRes: any = await this.contentService
@@ -178,7 +178,7 @@ async uploadSalarySlip() {
   }
 }
 
-  skipSalarySlipProcess() {
+skipSalarySlipProcess() {
   if (!this.applicationId) {
     this.toastr.error('Application ID missing');
     return;
@@ -209,6 +209,11 @@ async uploadSalarySlip() {
       this.toastr.error('Skip failed');
     }
   });
+}
+
+private getUploadPassword(): string | null {
+  const normalizedPassword = this.password.trim();
+  return normalizedPassword ? normalizedPassword : null;
 }
 
 }

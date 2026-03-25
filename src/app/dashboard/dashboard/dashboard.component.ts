@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -56,6 +57,7 @@ kycUrlSafe!: SafeResourceUrl;
   }
 
   constructor(
+    private router: Router,
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
       private sanitizer: DomSanitizer,
@@ -638,6 +640,15 @@ setDashboardFlags(data: any) {
 
 refreshStatus() {
   this.applicationStatusApi(); // or your API method
+}
+
+openRepayment(): void {
+  if (!this.applicationId) {
+    this.toastr.error('Application not found');
+    return;
+  }
+
+  this.router.navigate(['/dashboard/profile/loan-repay', this.applicationId]);
 }
 
 }

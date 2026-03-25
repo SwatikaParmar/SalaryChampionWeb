@@ -11,6 +11,7 @@ import { CheckEligibilityErrorComponent } from './check-eligibility-error/check-
 import { CheckEligibilitySuccessComponent } from './check-eligibility-success/check-eligibility-success.component';
 import { LoanHistoryComponent } from './loan-history/loan-history.component';
 import { LoanDetailComponent } from './loan-detail/loan-detail.component';
+import { LoanRepayComponent } from './loan-repay/loan-repay.component';
 
 // profile-routing.module.ts
 const routes: Routes = [
@@ -24,7 +25,8 @@ const routes: Routes = [
   { path: 'success-eligibility', component:CheckEligibilitySuccessComponent},
   { path: 'error-eligibility', component:CheckEligibilityErrorComponent},
   { path: 'loan-history', component:LoanHistoryComponent},
-  { path: 'loan-detail/:id', component:LoanDetailComponent}
+  { path: 'loan-detail/:id', component:LoanDetailComponent},
+  { path: 'loan-repay/:id', component:LoanRepayComponent}
 ];
 
 @NgModule({
