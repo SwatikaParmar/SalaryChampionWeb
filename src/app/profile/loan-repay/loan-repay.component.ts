@@ -216,7 +216,7 @@ export class LoanRepayComponent implements OnInit {
       applicationId: this.applicationId,
       amount: this.paymentType === 'FULL' ? this.payableAmount : this.selectedAmount,
       paymentType: this.paymentType,
-      returnUrl: `https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/profile/loan-repay/${this.applicationId}`,
+      returnUrl: `https://staging.d3vz8sn6l3j2ck.amplifyapp.com/dashboard/profile/loan-repay/${this.applicationId}`,
       orderNote: `Repayment for ${this.applicationNumber}`
     };
 

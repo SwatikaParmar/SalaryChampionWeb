@@ -22,8 +22,9 @@ export class DashboardComponent implements OnInit {
 
 
   isEligible: boolean = true;
-ineligibleReason: string = '';
-retryDate: string = '';
+  hasEvaluatedEligibility = false;
+  ineligibleReason: string = '';
+  retryDate: string = '';
 
 trackingSteps: any = {};
 currentTitle: string = '';
@@ -82,13 +83,18 @@ getBorrowerSnapshot() {
       if (!res?.success) return;
 
       const data = res?.data || {};
+      const offer = data?.offer || {};
+      const eligibility = data?.eligibility || {};
+
       this.applicationId = data?.application?.id || '';
       this.profileProgress = data?.basicFlow?.percent || 0;
       this.loanProgress = data?.applicationFlow?.percent || 0;
+      this.overallProgress = data?.progressPercent || 0;
       this.loanTracking = data?.loanTracking || null;
       this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
       this.steps = data?.applicationFlow?.steps || {};
       this.currentLoanRequest = data?.currentLoanRequest || null;
+      this.applyEligibilityState(offer, eligibility);
 
       const creditManagerDetail =
         this.loanTracking?.creditManagerDetail ||
@@ -108,6 +114,7 @@ getBorrowerSnapshot() {
 
       this.showLoanCard =
         !this.showActiveLoanCard &&
+        this.isEligible &&
         this.profileProgress === 100 &&
         this.loanProgress < 100;
 
@@ -119,6 +126,75 @@ getBorrowerSnapshot() {
       this.spinner.hide();
     }
   });
+}
+
+private applyEligibilityState(offer: any, eligibility: any) {
+  const ineligible = offer?.ineligible || {};
+  const decision =
+    eligibility?.decision ||
+    eligibility?.eligibilityDecision ||
+    ineligible?.decision ||
+    offer?.decision ||
+    offer?.eligibilityDecision ||
+    offer?.status ||
+    '';
+  const normalizedDecision = typeof decision === 'string' ? decision.toUpperCase() : '';
+  const hasEvaluated =
+    eligibility?.hasEvaluatedEligibilityOnce === true ||
+    offer?.hasEvaluatedEligibilityOnce === true ||
+    !!normalizedDecision;
+  const rawEligible =
+    typeof eligibility?.isEligible === 'boolean'
+      ? eligibility.isEligible
+      : offer?.isEligible;
+
+  this.hasEvaluatedEligibility = hasEvaluated;
+
+  if (!hasEvaluated) {
+    this.isEligible = true;
+    this.ineligibleReason = '';
+    this.retryDate = '';
+    return;
+  }
+
+  this.isEligible =
+    typeof rawEligible === 'boolean'
+      ? rawEligible
+      : normalizedDecision !== 'NOT_ELIGIBLE';
+  this.ineligibleReason =
+    this.mapIneligibleReason(eligibility?.reasons || ineligible?.reasons) ||
+    eligibility?.reason ||
+    eligibility?.message ||
+    eligibility?.ineligibleReason ||
+    ineligible?.reason ||
+    ineligible?.message ||
+    ineligible?.ineligibleReason ||
+    offer?.reason ||
+    offer?.message ||
+    offer?.ineligibleReason ||
+    '';
+  this.retryDate =
+    eligibility?.nextEligibilityAllowedOn ||
+    ineligible?.retryAfter ||
+    eligibility?.retryDate ||
+    eligibility?.retryAt ||
+    eligibility?.nextEligibleAt ||
+    offer?.retryDate ||
+    offer?.retryAt ||
+    offer?.nextEligibleAt ||
+    '';
+}
+
+private mapIneligibleReason(reasons: string[] = []): string {
+  if (!Array.isArray(reasons) || reasons.length === 0) return '';
+
+  const reasonMap: Record<string, string> = {
+    COOLDOWN_ACTIVE: 'Retry window is active right now.'
+  };
+
+  return reasons
+    .map((reason) => reasonMap[reason] || reason.replace(/_/g, ' '))
+    .join(', ');
 }
 
 private patchTrackerFromSnapshot() {

@@ -206,14 +206,9 @@ this.toastr.error('Something went wrong');
       next: (res) => {
         // ✅ STOP spinner
         this.spinner.hide();
+debugger
+         this.handleEligibilityResponse(res);
 
-        if (res?.success === true) {
-          this.router.navigate(['/dashboard/profile/success-eligibility']);
-        } else {
-          this.router.navigate(['/dashboard/profile/error-eligibility'], {
-            state: { message: res?.message || 'Not eligible' },
-          });
-        }
       },
 
       error: () => {
@@ -225,5 +220,19 @@ this.toastr.error('Something went wrong');
       },
     });
   }
+
+  handleEligibilityResponse(res: any) {
+  const decision = res?.data?.decision;
+debugger
+  if (decision === 'ELIGIBLE') {
+    // ✅ success page
+    this.router.navigate(['/dashboard/profile/success-eligibility']);
+
+  } else if (decision === 'NOT_ELIGIBLE') {
+    // ❌ error page
+     this.router.navigate(['/dashboard/profile/error-eligibility']
+    );
+  }
+}
 
 }
