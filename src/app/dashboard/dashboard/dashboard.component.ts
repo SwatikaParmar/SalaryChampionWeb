@@ -460,7 +460,7 @@ closeKycModal() {
   this.showKycModal = false;
 
   // 🔥 CALL REFRESH API
-  this.videoKycRefresh();
+//  this.videoKycRefresh();
 }
 
 videoKycRefresh() {
