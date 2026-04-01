@@ -59,7 +59,7 @@ fetchBankStatement() {
 
   const payload = {
     applicationId: this.applicationId,
-    redirectUrl: 'https://staging.d3vz8sn6l3j2ck.amplifyapp.com/dashboard/loan/bank-verification',
+    redirectUrl: 'http://localhost:63831/dashboard/loan/bank-verification',
   };
 
   this.spinner.show();

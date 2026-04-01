@@ -1,9 +1,9 @@
-import { AuthServiceService } from './../../../service/auth-service.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { AuthServiceService } from './../../../service/auth-service.service';
 
 @Component({
   selector: 'app-otp',
@@ -211,7 +211,7 @@ export class OtpComponent implements OnInit {
       deviceId: 'WEB-' + Math.random().toString(36).substring(2),
       appVersion: '1.0.0',
       model: 'Chrome Browser',
-osVersion: 'Windows 10',
+      osVersion: 'Windows 10',
       language: 'en',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       lat: this.lat,

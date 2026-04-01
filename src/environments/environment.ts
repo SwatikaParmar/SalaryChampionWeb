@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
-  rootPathUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
+  apiUrl: "https://d2sgezubpok1gq.cloudfront.net/",
+  rootPathUrl: "https://d2sgezubpok1gq.cloudfront.net/",
   firebase : {
   apiKey: "AIzaSyA4u51jhF9KijKON-xrvC7YgHIcpAZsEco",
   authDomain: "salary-champion.firebaseapp.com",

@@ -345,19 +345,27 @@
     </div>
 
     <!-- BODY -->
-    <div class="kyc-body">
+    <div class="kyc-body" [class.kyc-body-message]="!!videoKycModalMessage">
 
-<iframe
-  *ngIf="kycUrl"
-  [src]="kycUrlSafe"
-  frameborder="0"
-  allow="geolocation; camera; microphone"
-></iframe>
+      <div *ngIf="videoKycModalMessage; else videoKycFrameBlock" class="fallback fallback-message">
+        <div class="fallback-card fallback-card-message">
+          <p>{{ videoKycModalMessage }}</p>
+        </div>
+      </div>
+
+      <ng-template #videoKycFrameBlock>
+        <iframe
+          *ngIf="kycUrl"
+          [src]="kycUrlSafe"
+          frameborder="0"
+          allow="geolocation; camera; microphone"
+        ></iframe>
 
       <!-- FALLBACK -->
       <div *ngIf="!kycUrl" class="fallback">
         <p>Unable to load KYC. Please try again.</p>
       </div>
+      </ng-template>
 
     </div>
 

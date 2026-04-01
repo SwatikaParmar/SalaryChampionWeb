@@ -484,6 +484,10 @@
   background: #000;
 }
 
+.kyc-body.kyc-body-message {
+  background: linear-gradient(180deg, #09131f, #13263d);
+}
+
 .kyc-body iframe {
   width: 100%;
   height: 100%;
@@ -510,6 +514,44 @@
   color: #fff;
   text-align: center;
   padding-top: 100px;
+}
+
+.fallback-message {
+  height: 100%;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fallback-card {
+  width: min(520px, 100%);
+  padding: 24px 28px;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #dbe7f3;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+
+.fallback-card p {
+  margin: 0;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.fallback-card-message {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: none;
+}
+
+.fallback-card-message p {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* ANIMATION */

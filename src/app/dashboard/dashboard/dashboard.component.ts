@@ -39,6 +39,8 @@ showTracker: boolean = false;
 showKycModal: boolean = false;
 kycUrl: string = '';
 kycUrlSafe!: SafeResourceUrl;
+videoKycCustomerUrl: string = '';
+videoKycModalMessage: string = '';
   creditManager: any;
   to: any;
 
@@ -91,6 +93,18 @@ getBorrowerSnapshot() {
       this.loanProgress = data?.applicationFlow?.percent || 0;
       this.overallProgress = data?.progressPercent || 0;
       this.loanTracking = data?.loanTracking || null;
+      this.videoKycCustomerUrl =
+        data?.videoKycCustomerUrl ||
+        data?.journeyLinks?.videoKycCustomerUrl ||
+        data?.journey?.links?.videoKycCustomerUrl ||
+        data?.journey?.journeyLinks?.videoKycCustomerUrl ||
+        this.loanTracking?.videoKycCustomerUrl ||
+        this.loanTracking?.journeyLinks?.videoKycCustomerUrl ||
+        this.loanTracking?.journey?.links?.videoKycCustomerUrl ||
+        this.loanTracking?.journey?.journeyLinks?.videoKycCustomerUrl ||
+        this.loanTracking?.nextAction?.url ||
+        this.loanTracking?.videoKyc?.customerUrl ||
+        '';
       this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
       this.steps = data?.applicationFlow?.steps || {};
       this.currentLoanRequest = data?.currentLoanRequest || null;
@@ -370,39 +384,16 @@ applicationStatusApi() {
   });
 }
 async startVideoKyc() {
-  if (!this.applicationId) return;
+  if (!this.videoKycCustomerUrl) {
+    this.toastr.error('KYC URL not found');
+    return;
+  }
 
   // ✅ पहले permission लो
   const allowed = await this.ensureLocationAccess();
   if (!allowed) return;
 
-  this.spinner.show();
-
-  this.contentService.startVideoKyc({
-    applicationId: this.applicationId
-  }).subscribe({
-    next: (res: any) => {
-      this.spinner.hide();
-
-      const url = res?.data?.videoKyc?.customerUrl;
-
-      if (res?.success && url) {
-
-        this.kycUrl = url;
-        this.kycUrlSafe =
-          this.sanitizer.bypassSecurityTrustResourceUrl(url);
-
-        this.showKycModal = true;
-
-      } else {
-        this.toastr.error('KYC URL not found');
-      }
-    },
-    error: () => {
-      this.spinner.hide();
-      this.toastr.error('Video KYC failed');
-    }
-  });
+  await this.openVideoKycModalWithUrl();
 }
 
 
@@ -458,9 +449,39 @@ requestLocationPermission(): Promise<boolean> {
 
 closeKycModal() {
   this.showKycModal = false;
+  this.kycUrl = '';
+  this.videoKycModalMessage = '';
+  this.kycUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
 
   // 🔥 CALL REFRESH API
 //  this.videoKycRefresh();
+}
+
+private buildVideoKycModalUrl(url: string): string {
+  try {
+    const parsedUrl = new URL(url);
+    parsedUrl.searchParams.set('_modalReload', Date.now().toString());
+    return parsedUrl.toString();
+  } catch {
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}_modalReload=${Date.now()}`;
+  }
+}
+
+private async openVideoKycModalWithUrl() {
+  const modalUrl = this.buildVideoKycModalUrl(this.videoKycCustomerUrl);
+
+  this.showKycModal = false;
+  this.kycUrl = '';
+  this.videoKycModalMessage = '';
+  this.kycUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
+
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  this.kycUrl = modalUrl;
+  this.kycUrlSafe =
+    this.sanitizer.bypassSecurityTrustResourceUrl(modalUrl);
+  this.showKycModal = true;
 }
 
 videoKycRefresh() {
@@ -500,7 +521,7 @@ openSanctionLetter() {
 
   this.contentService.sanctionEsignLink(this.applicationId).subscribe({
     next: async (res: any) => {
-
+debugger
       const url = res?.data?.sanctionLetterUrl;
 
       if (!url) {

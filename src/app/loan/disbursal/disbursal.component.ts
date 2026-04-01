@@ -17,6 +17,7 @@ export class DisbursalComponent implements OnInit {
   isSubmitting = false;
   id: any;
   isAccountReadonly = false;
+  userId: any;
 
   constructor(
     private fb: FormBuilder,
@@ -73,8 +74,9 @@ export class DisbursalComponent implements OnInit {
           this.toastr.error('Failed to load borrower details');
           return;
         }
-
+debugger
         this.applicationId = res.data.application?.id;
+        this.userId = res.data.user.id;
         this.getDisbursalBankDetails();
       },
       error: () => {
@@ -128,12 +130,12 @@ submit() {
   this.spinner.show();
 
   // ✅ payload me id sirf tab add hogi jab value ho
-  const payload: any = {
-    applicationId: this.applicationId,
-    ...this.disbursalForm.getRawValue(),
-    ...(this.id ? { id: this.id } : {}) // 🔥 MAGIC LINE
-  };
-
+const payload: any = {
+  applicationId: this.applicationId,
+  ...this.disbursalForm.getRawValue(),
+  ...(this.userId ? { id: this.userId } : {}) // ✅ updated
+};
+debugger
   this.contentService.disbursalBankAccount(payload).subscribe({
     next: (res: any) => {
       if (!res?.success) {
