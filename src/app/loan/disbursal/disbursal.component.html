@@ -18,7 +18,7 @@
     <div class="col-md-6">
       <div class="form-group">
         <label>Account Number <span>*</span></label>
-        <input type="text" formControlName="accountNumber" placeholder="Enter account number" />
+        <input type="text" formControlName="accountNumber" placeholder="Enter account number" [readonly]="isAccountReadonly" />
         <small *ngIf="f.accountNumber.touched && f.accountNumber.invalid">
           Enter valid account number (9–18 digits)
         </small>

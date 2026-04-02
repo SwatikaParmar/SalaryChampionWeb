@@ -736,7 +736,7 @@ setDashboardFlags(data: any) {
 
 
 refreshStatus() {
-  this.applicationStatusApi(); // or your API method
+  window.location.reload();
 }
 
 openRepayment(): void {

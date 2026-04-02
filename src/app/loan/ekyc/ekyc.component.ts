@@ -45,8 +45,8 @@ export class EkycComponent implements OnInit {
     const payload = {
       applicationId: this.applicationId,
       successRedirectUrl:
-        'http://localhost:63831/dashboard/loan/ekyc-verification',
-      failureRedirectUrl: 'http://localhost:63831/dashboard/loan/ekyc-error',
+        'http://localhost:49970/dashboard/loan/ekyc-verification',
+      failureRedirectUrl: 'http://localhost:49970/dashboard/loan/ekyc-error',
     };
 
     this.contentService.ekycStart(payload).subscribe({

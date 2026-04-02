@@ -99,16 +99,17 @@ debugger
           if (!res?.success || !res.data?.length) return;
 
           const bank = res.data[0];
+          const accountNumber = bank.accountNumber || '';
 
           this.disbursalForm.patchValue({
             ifsc: bank.ifsc,
             holderName: bank.holderName,
             mobile: bank.mobile,
-            accountNumber: bank.accountNumberMasked,
+            accountNumber,
           });
 
           this.id = bank.id;
-          this.isAccountReadonly = true;
+          this.isAccountReadonly = !!accountNumber;
         },
         error: () => {
           this.spinner.hide();
