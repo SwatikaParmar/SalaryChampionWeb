@@ -59,7 +59,7 @@ fetchBankStatement() {
 
   const payload = {
     applicationId: this.applicationId,
-    redirectUrl: 'http://localhost:49970/dashboard/loan/bank-verification',
+    redirectUrl: 'http://localhost:52748/dashboard/loan/bank-verification',
   };
 
   this.spinner.show();

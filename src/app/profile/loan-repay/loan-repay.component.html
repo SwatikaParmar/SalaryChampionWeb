@@ -35,9 +35,9 @@
     </div>
 
     <div class="info-card amount-card">
-      <label>Payable Amount</label>
+      <label>{{ amountHeadlineLabel }}</label>
       <h3>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</h3>
-      <small *ngIf="maxPayAmount <= 0">No payment is due for this loan right now.</small>
+      <small *ngIf="amountHeadlineHint">{{ amountHeadlineHint }}</small>
     </div>
 
     <div class="info-card">
@@ -58,6 +58,46 @@
     <div class="info-card">
       <label>Allowed Range</label>
       <p>{{ minPayAmount | currency:'INR':'symbol':'1.0-0' }} to {{ maxPayAmount | currency:'INR':'symbol':'1.0-0' }}</p>
+    </div>
+  </div>
+
+  <div class="section-card foreclosure-card" *ngIf="hasForeclosureQuote">
+    <div class="section-head">
+      <div>
+        <h3>Foreclosure Quote</h3>
+        <p>As of {{ summary?.foreclosureAsOfDate | date:'mediumDate' }}, you can close this loan early at a reduced amount.</p>
+      </div>
+
+      <div class="savings-pill">
+        Save {{ foreclosureSavings | currency:'INR':'symbol':'1.0-0' }}
+      </div>
+    </div>
+
+    <div class="foreclosure-grid">
+      <div class="quote-metric highlight">
+        <label>Foreclosure Payable</label>
+        <h4>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</h4>
+      </div>
+      <div class="quote-metric">
+        <label>Regular Due</label>
+        <p>{{ regularPayableAmount | currency:'INR':'symbol':'1.0-0' }}</p>
+      </div>
+      <div class="quote-metric">
+        <label>Interest Accrued Till Date</label>
+        <p>{{ foreclosureInterestAccrued | currency:'INR':'symbol':'1.0-0' }}</p>
+      </div>
+      <div class="quote-metric">
+        <label>Waiver Applied</label>
+        <p>{{ foreclosureSavings | currency:'INR':'symbol':'1.0-0' }}</p>
+      </div>
+      <div class="quote-metric">
+        <label>Days Elapsed</label>
+        <p>{{ summary?.foreclosureElapsedDays || 0 }} / {{ summary?.foreclosureTotalDays || 0 }}</p>
+      </div>
+      <div class="quote-metric">
+        <label>Maturity Date</label>
+        <p>{{ summary?.foreclosureMaturityDate ? (summary?.foreclosureMaturityDate | date:'mediumDate') : '--' }}</p>
+      </div>
     </div>
   </div>
 
@@ -111,11 +151,24 @@
     <div class="section-head">
       <div>
         <h3>Select Payment Type</h3>
-        <p>Choose full payment, minimum due, or a custom amount within the allowed range.</p>
+        <p *ngIf="hasForeclosureQuote">Choose foreclosure settlement, regular full due, or any custom amount within the allowed range.</p>
+        <p *ngIf="!hasForeclosureQuote">Choose full payment, minimum due, or a custom amount within the allowed range.</p>
       </div>
     </div>
 
     <div class="option-grid">
+      <button
+        class="option-card foreclosure-option"
+        type="button"
+        *ngIf="hasForeclosureQuote"
+        [class.active]="amountOption === 'FORECLOSURE'"
+        (click)="selectAmountOption('FORECLOSURE')"
+      >
+        <span>Foreclosure Quote</span>
+        <strong>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
+        <small>Close the loan early and save {{ foreclosureSavings | currency:'INR':'symbol':'1.0-0' }}</small>
+      </button>
+
       <button
         class="option-card"
         type="button"
@@ -131,11 +184,15 @@
         class="option-card"
         type="button"
         [class.active]="amountOption === 'FULL'"
+        [class.disabled]="!isFullDueEnabled"
+        [disabled]="!isFullDueEnabled"
         (click)="selectAmountOption('FULL')"
       >
         <span>Full Due</span>
-        <strong>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
-        <small>Backend resolves full payable amount</small>
+        <strong>{{ regularPayableAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
+        <small *ngIf="hasForeclosureQuote">Continue with the regular scheduled due</small>
+        <small *ngIf="!hasForeclosureQuote">Backend resolves full payable amount</small>
+        <small *ngIf="!isFullDueEnabled">Enabled on {{ (summary?.foreclosureMaturityDate || summary?.nextDueDate) | date:'mediumDate' }}</small>
       </button>
 
       <button
@@ -157,7 +214,7 @@
         *ngFor="let amount of quickAmounts"
         (click)="applyQuickAmount(amount)"
       >
-        {{ amount === maxPayAmount ? 'Full Amount' : (amount | currency:'INR':'symbol':'1.0-0') }}
+        {{ amount === regularPayableAmount ? 'Full Amount' : amount === payableAmount && hasForeclosureQuote ? 'Foreclosure Amount' : (amount | currency:'INR':'symbol':'1.0-0') }}
       </button>
     </div>
 
@@ -181,7 +238,7 @@
       <div>
         <label>Selected Amount</label>
         <h4>{{ selectedAmount | currency:'INR':'symbol':'1.0-0' }}</h4>
-        <p>{{ paymentType === 'FULL' ? 'Full payment' : 'Partial payment' }}</p>
+        <p>{{ amountOption === 'FORECLOSURE' ? 'Foreclosure settlement' : paymentType === 'FULL' ? 'Full payment' : 'Partial payment' }}</p>
       </div>
 
       <button

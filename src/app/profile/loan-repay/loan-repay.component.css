@@ -114,16 +114,56 @@
   margin-bottom: 16px;
 }
 
+.foreclosure-card {
+  background:
+    radial-gradient(circle at top right, rgba(29, 181, 116, 0.14), transparent 32%),
+    linear-gradient(135deg, #f7fffa, #ffffff);
+  border: 1px solid #d8f3df;
+}
+
 .section-head {
   align-items: flex-start;
   margin-bottom: 16px;
 }
 
 .meta-row,
-.status-grid {
+.status-grid,
+.foreclosure-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
+}
+
+.savings-pill {
+  background: #e7f8ee;
+  color: #157347;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.quote-metric {
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.quote-metric.highlight {
+  background: linear-gradient(135deg, #173a69, #1f9fd6);
+  border-color: transparent;
+}
+
+.quote-metric.highlight label,
+.quote-metric.highlight p,
+.quote-metric.highlight h4 {
+  color: #ffffff;
+}
+
+.quote-metric h4 {
+  margin: 0;
+  color: #0f4c81;
 }
 
 label {
@@ -157,6 +197,35 @@ p {
   border-color: #1f9fd6;
   box-shadow: 0 0 0 2px rgba(31, 159, 214, 0.12);
   background: #eef8fe;
+}
+
+.option-card.disabled,
+.option-card:disabled {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.option-card.disabled strong,
+.option-card:disabled strong {
+  color: #94a3b8;
+}
+
+.foreclosure-option {
+  background: linear-gradient(135deg, #f3fff7, #ffffff);
+  border-color: #bde7cb;
+}
+
+.foreclosure-option strong {
+  color: #157347;
+}
+
+.foreclosure-option.active {
+  border-color: #22c55e;
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.16);
+  background: #effdf4;
 }
 
 .option-card span,
@@ -238,7 +307,8 @@ p {
 
 @media (max-width: 768px) {
   .page-header,
-  .pay-footer {
+  .pay-footer,
+  .section-head {
     flex-direction: column;
     align-items: stretch;
   }

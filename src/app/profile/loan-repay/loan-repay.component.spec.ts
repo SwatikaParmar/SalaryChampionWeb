@@ -12,8 +12,47 @@ import { ContentService } from '../../../service/content.service';
 describe('LoanRepayComponent', () => {
   let component: LoanRepayComponent;
   let fixture: ComponentFixture<LoanRepayComponent>;
+  let repaymentSummaryResponse: any;
 
   beforeEach(async () => {
+    repaymentSummaryResponse = {
+      data: {
+        application: {
+          applicationNumber: 'AP2026000128'
+        },
+        borrower: {
+          name: 'SAJAD PARVAIZ PARVAIZ RATHER'
+        },
+        loan: {
+          status: 'ACTIVE'
+        },
+        summary: {
+          nextDueDate: '2026-04-17',
+          nextDueAmount: '19550.00'
+        },
+        dues: {
+          overdueAmount: '0.00',
+          payableAmount: '19550.00',
+          foreclosureQuote: {
+            eligible: true,
+            asOfDate: '2026-04-03',
+            maturityDate: '2026-04-17',
+            totalDays: 15,
+            elapsedDays: 1,
+            interestAccruedTillDate: '170.00',
+            interestWaived: '2380.00',
+            regularPayableAmount: '19550.00',
+            payableAmount: '17170.00'
+          }
+        },
+        paymentOptions: {
+          minPayAmount: 1,
+          maxPayAmount: 19550,
+          suggestedAmounts: [17170, 19550]
+        }
+      }
+    };
+
     await TestBed.configureTestingModule({
       declarations: [LoanRepayComponent],
       imports: [FormsModule, RouterTestingModule],
@@ -24,6 +63,9 @@ describe('LoanRepayComponent', () => {
             snapshot: {
               paramMap: {
                 get: () => 'APP123'
+              },
+              queryParamMap: {
+                get: () => null
               }
             },
             queryParams: of({})
@@ -32,7 +74,9 @@ describe('LoanRepayComponent', () => {
         {
           provide: ContentService,
           useValue: {
-            getBorrowerRepaymentSummary: () => of({ data: {} })
+            getBorrowerRepaymentSummary: () => of(repaymentSummaryResponse),
+            refreshBorrowerRepayment: () => of({ data: {} }),
+            createBorrowerRepaymentOrder: () => of({ data: {} })
           }
         },
         {
@@ -60,5 +104,50 @@ describe('LoanRepayComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should default to foreclosure quote when eligible', () => {
+    expect(component.hasForeclosureQuote).toBeTrue();
+    expect(component.amountOption).toBe('FORECLOSURE');
+    expect(component.payableAmount).toBe(17170);
+    expect(component.regularPayableAmount).toBe(19550);
+    expect(component.selectedAmount).toBe(17170);
+    expect(component.paymentType).toBe('FULL');
+  });
+
+  it('should preserve both foreclosure and regular quick amounts', () => {
+    expect(component.quickAmounts).toEqual([17170, 19550]);
+  });
+
+  it('should keep minimum and custom selections as partial', () => {
+    component.selectAmountOption('MINIMUM');
+    expect(component.paymentType).toBe('PARTIAL');
+
+    component.selectAmountOption('CUSTOM');
+    component.customAmount = 500;
+    expect(component.paymentType).toBe('PARTIAL');
+  });
+
+  it('should disable full due before maturity date', () => {
+    expect(component.isFullDueEnabled).toBeFalse();
+
+    component.selectAmountOption('FULL');
+    expect(component.amountOption).not.toBe('FULL');
+    expect(component.canPay).toBeTrue();
+  });
+
+  it('should enable full due when maturity date matches current date', () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = `${today.getMonth() + 1}`.padStart(2, '0');
+    const day = `${today.getDate()}`.padStart(2, '0');
+    const dateOnly = `${year}-${month}-${day}`;
+
+    component.summary.foreclosureMaturityDate = dateOnly;
+    component.selectAmountOption('FULL');
+
+    expect(component.isFullDueEnabled).toBeTrue();
+    expect(component.amountOption).toBe('FULL');
+    expect(component.paymentType).toBe('FULL');
   });
 });
