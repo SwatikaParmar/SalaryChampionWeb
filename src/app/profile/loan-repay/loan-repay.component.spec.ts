@@ -150,4 +150,13 @@ describe('LoanRepayComponent', () => {
     expect(component.amountOption).toBe('FULL');
     expect(component.paymentType).toBe('FULL');
   });
+
+  it('should keep full due enabled after maturity date', () => {
+    component.summary.foreclosureMaturityDate = '2020-01-01';
+
+    expect(component.isFullDueEnabled).toBeTrue();
+
+    component.selectAmountOption('FULL');
+    expect(component.amountOption).toBe('FULL');
+  });
 });

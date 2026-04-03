@@ -155,7 +155,14 @@ export class LoanRepayComponent implements OnInit {
       return true;
     }
 
-    return this.toDateOnly(maturityDate) === this.toDateOnly(new Date());
+    const maturityDateValue = this.toDateValue(maturityDate);
+    const todayValue = this.toDateValue(new Date());
+
+    if (maturityDateValue === null || todayValue === null) {
+      return true;
+    }
+
+    return todayValue >= maturityDateValue;
   }
 
   get quickAmounts(): number[] {
@@ -482,11 +489,21 @@ this.router.navigateByUrl('/dashboard')  }
       return '';
     }
 
-    const year = date.getFullYear();
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const day = `${date.getDate()}`.padStart(2, '0');
+    const year = date.getUTCFullYear();
+    const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
+    const day = `${date.getUTCDate()}`.padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  private toDateValue(value: string | Date): number | null {
+    const normalized = this.toDateOnly(value);
+
+    if (!normalized) {
+      return null;
+    }
+
+    return Number(normalized.replace(/-/g, ''));
   }
 
   formatCurrency(value: number): string {
