@@ -29,13 +29,37 @@
     <div class="col-md-6">
       <div class="form-group">
         <label>IFSC Code <span>*</span></label>
-<input
-  type="text"
-  formControlName="ifsc"
-  placeholder="Enter IFSC code"
-  maxlength="11"
-  (input)="onIfscInput($event)"
-/>
+        <div class="ifsc-input-wrap">
+          <input
+            type="text"
+            formControlName="ifsc"
+            placeholder="Enter IFSC code"
+            maxlength="11"
+            (input)="onIfscInput($event)"
+            (focus)="onIfscFocus()"
+            (blur)="onIfscBlur()"
+            [class.has-verified-ifsc]="selectedIfscOption"
+          />
+
+          <div class="ifsc-icons" *ngIf="selectedIfscOption">
+            <i class="fa-solid fa-circle-check ifsc-verified-icon" aria-hidden="true"></i>
+            <button type="button" class="ifsc-eye-btn" (click)="toggleIfscDetails($event)" aria-label="View IFSC info">
+              <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+        <div class="ifsc-suggestions" *ngIf="showIfscSuggestions">
+          <button
+            type="button"
+            class="ifsc-option"
+            *ngFor="let option of ifscSuggestions"
+            (mousedown)="selectIfsc(option)"
+          >
+            <span class="ifsc-option-code">{{ option.ifscCode }}</span>
+            <span class="ifsc-option-meta">{{ option.bankName }} | {{ option.city }}</span>
+          </button>
+        </div>
+        <small class="ifsc-loading" *ngIf="isIfscLookupLoading">Fetching IFSC details...</small>
         <small *ngIf="f.ifsc.touched && f.ifsc.invalid">
           Enter valid IFSC (e.g. HDFC0001234)
         </small>
@@ -75,6 +99,19 @@
     </div>
   </form>
 
+</div>
+
+<div class="ifsc-details-backdrop" *ngIf="showIfscDetails" (click)="closeIfscDetails()"></div>
+<div class="ifsc-details-modal" *ngIf="showIfscDetails && selectedIfscOption">
+  <div class="ifsc-details-head">
+    <h6>IFSC Details</h6>
+    <button type="button" class="ifsc-details-close" (click)="closeIfscDetails()">x</button>
+  </div>
+  <div class="ifsc-details-body">
+    <p><strong>IFSC:</strong> {{ selectedIfscOption.ifscCode }}</p>
+    <p><strong>Bank:</strong> {{ selectedIfscOption.bankName }}</p>
+    <p><strong>City:</strong> {{ selectedIfscOption.city }}</p>
+  </div>
 </div>
 
 

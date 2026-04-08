@@ -166,6 +166,12 @@ pennyDrop(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.pennyDrop,data)
 }
 
+ifscLookup(ifsc: string) {
+  return this.http.get<any>(
+    `${environment.apiUrl}${ApiEndPoint.ifscLookup}?ifsc=${encodeURIComponent(ifsc)}`
+  );
+}
+
 verifyBank(id: any) {
   const url = ApiEndPoint.verifyBank.replace('{id}', id);
   return this.http.get<any>(environment.apiUrl + url);

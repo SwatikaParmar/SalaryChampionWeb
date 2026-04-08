@@ -18,6 +18,14 @@ export class DisbursalComponent implements OnInit {
   id: any;
   isAccountReadonly = false;
   userId: any;
+  ifscSuggestions: Array<{ ifscCode: string; bankName: string; city: string }> =
+    [];
+  selectedIfscOption: { ifscCode: string; bankName: string; city: string } | null =
+    null;
+  showIfscSuggestions = false;
+  showIfscDetails = false;
+  isIfscLookupLoading = false;
+  private lastIfscQueried = '';
 
   constructor(
     private fb: FormBuilder,
@@ -170,6 +178,94 @@ onIfscInput(event: Event) {
 
   // update form control without infinite loop
   this.disbursalForm.get('ifsc')?.setValue(upperValue, { emitEvent: false });
+
+  if (upperValue.length === 11) {
+    this.lookupIfsc(upperValue);
+    return;
+  }
+
+  this.lastIfscQueried = '';
+  this.ifscSuggestions = [];
+  this.showIfscSuggestions = false;
+  this.selectedIfscOption = null;
+  this.showIfscDetails = false;
+}
+
+lookupIfsc(ifscCode: string) {
+  if (!ifscCode || ifscCode.length !== 11 || this.lastIfscQueried === ifscCode) {
+    return;
+  }
+
+  this.lastIfscQueried = ifscCode;
+  this.isIfscLookupLoading = true;
+  this.ifscSuggestions = [];
+
+  this.contentService.ifscLookup(ifscCode).subscribe({
+    next: (res: any) => {
+      this.isIfscLookupLoading = false;
+
+      const details = res?.data?.details;
+      if (!res?.success || !details?.ifscCode) {
+        this.showIfscSuggestions = false;
+        this.selectedIfscOption = null;
+        this.showIfscDetails = false;
+        return;
+      }
+
+      this.ifscSuggestions = [
+        {
+          ifscCode: details.ifscCode,
+          bankName: details.bankName || '-',
+          city: details.city || '-',
+        },
+      ];
+      this.selectedIfscOption = this.ifscSuggestions[0];
+      this.showIfscSuggestions = true;
+    },
+    error: () => {
+      this.isIfscLookupLoading = false;
+      this.showIfscSuggestions = false;
+      this.ifscSuggestions = [];
+      this.selectedIfscOption = null;
+      this.showIfscDetails = false;
+    },
+  });
+}
+
+onIfscFocus() {
+  if (this.ifscSuggestions.length) {
+    this.showIfscSuggestions = true;
+  }
+}
+
+onIfscBlur() {
+  // Delay so mousedown selection can run before list hides.
+  setTimeout(() => {
+    this.showIfscSuggestions = false;
+  }, 150);
+}
+
+selectIfsc(option: { ifscCode: string; bankName: string; city: string }) {
+  this.disbursalForm.get('ifsc')?.setValue(option.ifscCode);
+  this.ifscSuggestions = [option];
+  this.selectedIfscOption = option;
+  this.showIfscSuggestions = false;
+  this.showIfscDetails = false;
+}
+
+toggleIfscDetails(event: Event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!this.selectedIfscOption) {
+    return;
+  }
+
+  this.showIfscDetails = !this.showIfscDetails;
+}
+
+closeIfscDetails() {
+  this.showIfscDetails = false;
 }
 
 
