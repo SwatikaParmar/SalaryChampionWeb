@@ -11,7 +11,7 @@
       </a>
 
       <!-- Mobile Toggle -->
-      <button class="navbar-toggler border-0 shadow-none" type="button"
+      <button (click)="toggleMenu()" class="navbar-toggler border-0 shadow-none" type="button"
               data-bs-toggle="collapse" data-bs-target="#mainNavbar">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -519,7 +519,7 @@
     <div class="container">
       <div class="row">
 
-        <div class="col-md-3">
+        <div class="col-lg-3 col-md-12 sm-space-bottom-40">
           <img src="assets/images/logo.png" class="img-fluid" style="max-width: 200px; margin-bottom: 25px; filter: brightness(0) invert(1);">
           <p>India's most trusted NBFC providing quick salary advances and personal loans with transparent terms and competitive rates.</p>
 
@@ -531,7 +531,7 @@
 
         </div>
 
-        <div class="col-md-3 footer-links">
+        <div class="col-lg-3 col-md-3 footer-links">
           <h4>Quick Links</h4>
           <ul class="link-ft">
             <li><a href="#">Home</a></li>
@@ -543,7 +543,7 @@
           </ul>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-lg-3 col-md-5">
           <h4>Contact Us</h4>
           <div class="info">
             <i class="fa-solid fa-location-dot"></i>
@@ -567,7 +567,7 @@
 
         </div>
 
-        <div class="col-md-3 updates">
+        <div class="col-lg-3 col-md-4 updates">
           <h4>Stay Updated</h4>
           <p>Get the latest updates, offers and financial tips directly in your inbox.</p>
 
@@ -585,7 +585,7 @@
 
       <div class="row mt-3">
         <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
-        <div class="col-md-6">
+        <div class="col-md-6 xs-mt-40">
           <ul class="link-ft small-li">
             <li><a href="#">Terms & Conditions</a></li>
             <li><a href="#">Privacy Policy</a></li>
@@ -598,3 +598,16 @@
 
     </div>
   </footer>
+
+  <script>
+    function toggleMenu() {
+      const menu = document.getElementById('mainNavbar');
+      menu.classList.toggle('show');
+    }
+
+    $(document).ready(function(){
+      $('.navbar-toggler').click(function(){
+        toggleMenu();
+      });
+    });
+  </script>
