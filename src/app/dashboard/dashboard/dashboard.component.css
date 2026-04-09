@@ -382,10 +382,15 @@
     padding: 25px;
     border-radius: 10px;
   }
+  .dashboard-home{
+      padding: 30px 15px;
+  }
 }
 
 @media only screen and (max-width: 767px) {
-
+  .dashboard-home{
+      padding: 30px 15px;
+  }
   .tracker-row{
       padding: 25px;
       display: grid;
@@ -398,6 +403,12 @@
     border: 1px solid #ddd;
     padding: 25px;
     border-radius: 10px;
+  }
+  .loan-dashboard-card{
+    grid-template-columns: auto;
+  }
+  .preview-container{
+    
   }
 
 }
