@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 
@@ -8,6 +8,9 @@ import { ContentService } from '../../../service/content.service';
   styleUrls: ['./sidebar.component.css'], // ✅ correct
 })
 export class SidebarComponent {
+  @Input() isSidebarOpen = true;
+  @Output() sidebarClosed = new EventEmitter<void>();
+
   profileProgress: any;
   loanProgress: any;
   overallProgress: any;
@@ -45,5 +48,13 @@ export class SidebarComponent {
   logout(): void {
     localStorage.clear();
     this.router.navigateByUrl('/'); // or '/login'
+  }
+
+  closeSidebar(): void {
+    this.sidebarClosed.emit();
+  }
+
+  get isMobile(): boolean {
+    return window.innerWidth <= 992;
   }
 }

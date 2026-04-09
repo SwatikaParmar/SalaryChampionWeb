@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ContentService } from '../../../service/content.service';
 
 @Component({
@@ -7,6 +7,7 @@ import { ContentService } from '../../../service/content.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
+  @Output() sidebarToggle = new EventEmitter<void>();
   user: any = null;
 
   constructor(private contentService: ContentService) {}
@@ -42,5 +43,9 @@ export class HeaderComponent implements OnInit {
 
   onImageError(event: Event) {
     (event.target as HTMLImageElement).src = 'assets/images/c1_1.webp';
+  }
+
+  toggleSidebar(): void {
+    this.sidebarToggle.emit();
   }
 }

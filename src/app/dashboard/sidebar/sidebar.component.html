@@ -45,4 +45,4 @@
 
 </aside>
 
-<div class="overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
+<div class="overlay" *ngIf="isSidebarOpen && isMobile" (click)="closeSidebar()"></div>

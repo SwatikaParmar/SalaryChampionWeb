@@ -1,11 +1,20 @@
 .sidebar {
   width: 17%;
+  max-width: 280px;
   min-height: 100vh;
   background: linear-gradient(90deg, #1c4685, #31a5e5) !important;
   color: #fff;
   padding: 20px 0;
   position: fixed;
   left: 0;
+  top: 0;
+  transform: translateX(-100%);
+  transition: transform 0.25s ease;
+  z-index: 1001;
+}
+
+.sidebar.active {
+  transform: translateX(0);
 }
 
 .logo {
@@ -73,6 +82,13 @@
   
 }
 
+@media (max-width: 992px) {
+  .sidebar {
+    width: 280px;
+    max-width: 85vw;
+  }
+}
+
 .disabled-tab {
   opacity: 0.5;
   cursor: not-allowed;
@@ -81,4 +97,11 @@
 
 .disabled-icon {
   filter: grayscale(100%);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 1000;
 }
