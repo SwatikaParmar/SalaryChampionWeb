@@ -123,10 +123,12 @@
 }
 
 .Offering{
-  background: #f1f1f1;
-  padding: 10px 15px;
-  border-radius: 50px;
-  font-size: 15px;
+    background: #f1f1f1;
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-size: 15px;
+    display: inline-block;
+    margin-bottom: 10px;
 }
 
 .hero-text h1{
@@ -148,6 +150,10 @@
     }
     .navbar-nav .nav-link {
         padding: 10px 0px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
     }
     .navbar-nav .dropdown-menu{
         box-shadow: none;
@@ -156,7 +162,8 @@
         margin: 0;
     }
     .dropdown-item {
-        padding: 10px 10px;
+        padding: 5px 0px;
+        font-weight: 400;
     }
     .how-it-works::after{
         height: 407px;

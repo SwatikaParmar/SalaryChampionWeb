@@ -270,7 +270,7 @@ h3{
     top: 0;
     left: 0;
     width: 100%;
-    height: 50%;
+    height: 45%;
     background: #fff;
     position: absolute;
     z-index: 0;
@@ -1240,6 +1240,55 @@ background: var(--brand-light);
     border-top: 1px dashed #ccc;
 }
 
+.menu-toggle {
+  font-size: 22px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: none;
+}
+
+/* Show only on mobile */
+@media (max-width: 991px) {
+  .menu-toggle {
+    display: block;
+  }
+}
+
+/* Sidebar default */
+.sidebar {
+  width: 260px;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: linear-gradient(180deg, #2d5b8f, #3fa3d1);
+  transition: transform 0.3s ease;
+}
+
+/* Mobile me hidden */
+@media (max-width: 991px) {
+  .sidebar {
+    transform: translateX(-100%);
+    z-index: 1000;
+  }
+
+  .sidebar.active {
+    transform: translateX(0);
+  }
+}
+
+/* Overlay */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  z-index: 999;
+}
+
 /* Responsive */
 @media(max-width:768px){
     .secure-payment{
@@ -1257,13 +1306,47 @@ background: var(--brand-light);
 
 /* Up to 767px (mobile landscape & small devices) */
 @media only screen and (max-width: 991px) {
-  .sm-mt-40{
-    margin-top: 40px;
-  }
+
+    .auth-card{
+        max-width: 700px !important;
+    }
+
+    .feature-card{
+        padding: 40px 15px;
+    }
+    .testimonial-carousel{
+        grid-template-columns: repeat(1, 1fr);
+    }
+    .sm-mt-40{
+        margin-top: 40px;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .auth-card{
+        grid-template-columns: repeat(1, 1fr) !important;
+        max-width: 420px !important;
+    }
+    .auth-card figure{
+        display: none;
+    }
+    .left_boxx h5 br{
+        display: none;
+    }
 }
 
 @media only screen and (min-width: 320px) and (max-width: 480px) {
   .contact-card div{
     font-size: 16px !important;
   }
+  .hero-actions{
+    display: grid;
+    grid-row-gap: 10px;
+  }
+  .auth-card{
+    grid-template-columns: repeat(1, 1fr) !important;
+    max-width: 90% !important;
+  }
+  .checkbox{display: inline-block !important;}
+
 }

@@ -1,4 +1,4 @@
-<aside class="sidebar">
+<aside class="sidebar" [class.active]="isSidebarOpen">
 
   <div class="logo">
     <img src="assets/images/logo.png" alt="Salary Champion" />
@@ -44,3 +44,5 @@
   </ul>
 
 </aside>
+
+<div class="overlay" *ngIf="isSidebarOpen" (click)="closeSidebar()"></div>
