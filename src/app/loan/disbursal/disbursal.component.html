@@ -91,7 +91,7 @@
     <div class="col-md-12 ">
         <div class="btn-row d-flex justify-content-end">
 
-      <button class="submit-btn" [disabled]="isSubmitting">
+      <button class="submit-btn" [disabled]="isSubmitting || !isIfscVerified">
         {{ isSubmitting ? 'Saving...' : 'Save' }}
       </button>
     </div>

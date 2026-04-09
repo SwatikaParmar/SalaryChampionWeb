@@ -118,6 +118,11 @@ debugger
 
           this.id = bank.id;
           this.isAccountReadonly = !!accountNumber;
+
+          const existingIfsc = (bank.ifsc || '').toUpperCase();
+          if (existingIfsc.length === 11) {
+            this.lookupIfsc(existingIfsc);
+          }
         },
         error: () => {
           this.spinner.hide();
@@ -130,7 +135,7 @@ debugger
      SUBMIT BANK DETAILS
   =============================== */
 submit() {
-  if (this.disbursalForm.invalid || this.isSubmitting) {
+  if (this.disbursalForm.invalid || this.isSubmitting || !this.isIfscVerified) {
     this.disbursalForm.markAllAsTouched();
     return;
   }
@@ -326,5 +331,15 @@ onPennyDropOk() {
       holderName: any;
       mobile: any;
     };
+  }
+
+  get isIfscVerified(): boolean {
+    const ifscValue = this.disbursalForm.get('ifsc')?.value;
+    return !!(
+      this.selectedIfscOption &&
+      ifscValue &&
+      ifscValue === this.selectedIfscOption.ifscCode &&
+      !this.isIfscLookupLoading
+    );
   }
 }
