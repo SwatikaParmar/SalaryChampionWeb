@@ -226,3 +226,9 @@
   opacity: 0.6;
   pointer-events: none;
 }
+
+@media only screen and (max-width: 767px) {
+    .docoment-page{
+        padding: 30px 15px;
+    }
+}
