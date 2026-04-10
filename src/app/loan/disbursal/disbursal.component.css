@@ -278,3 +278,16 @@
 .ifsc-details-body p:last-child {
   margin-bottom: 0;
 }
+
+.btn-close{
+    position: absolute;
+    right: 0;
+    font-size: 10px;
+    padding: 10px;
+}
+
+@media only screen and (max-width: 767px) {
+    .page-wrapper{
+        padding: 30px 15px !important;
+    }
+}
