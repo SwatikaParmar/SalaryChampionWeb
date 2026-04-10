@@ -1411,4 +1411,8 @@
   .active-loan-footer {
     grid-template-columns: 1fr;
   }
+  .active-loan-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+
 }
