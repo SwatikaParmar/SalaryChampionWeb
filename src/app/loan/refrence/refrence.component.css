@@ -44,7 +44,6 @@
 .company-card {
     background: #ffffff;
     padding: 30px;
-    margin-bottom: 30px;
 }
 
 .sub-title {
@@ -59,7 +58,7 @@
    FORM
 ================================ */
 .form-group {
-  margin-bottom: 30px;
+  margin-bottom: 15px;
 }
 
 .form-group label {
@@ -172,6 +171,11 @@
    CARD SEPARATOR FEEL
 ================================ */
 
+@media only screen and (max-width: 767px) {
+  .row-grid-6{
+    grid-template-columns: auto;
+  }
+}
 
 /* ===============================
    MOBILE POLISH
@@ -185,3 +189,4 @@
     width: 100%;
   }
 }
+
