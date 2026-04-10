@@ -1269,7 +1269,11 @@ background: var(--brand-light);
     }
     .testimonial-carousel{
         grid-template-columns: repeat(1, 1fr);
-    }    
+    }
+    h3.doc-title{
+        font-size: 22px !important;
+        font-weight: 500 !important;
+    }
 
     .sm-mt-40{
         margin-top: 40px;
@@ -1300,6 +1304,17 @@ background: var(--brand-light);
     .profile-card{
         width: auto !important;
     }
+    .personal-info-container{
+        padding: 30px 15px !important;
+    }
+    .personal-info-container .wrapper{
+        padding: 15px 10px !important;
+    }
+
+    h3.doc-title{
+        font-size: 16px !important;
+        font-weight: 500 !important;
+    }
 }
 
 @media only screen and (min-width: 320px) and (max-width: 480px) {
@@ -1320,6 +1335,13 @@ background: var(--brand-light);
         -webkit-box-direction: normal;
         -ms-flex-direction: column;
         flex-direction: column;
-    }    
+    }
+
+    .skip-btn{   
+        padding: 5px 12px !important;
+        line-height: normal;    
+        font-size: 12px !important;
+        font-family: "Poppins", sans-serif;    
+    }
 
 }
