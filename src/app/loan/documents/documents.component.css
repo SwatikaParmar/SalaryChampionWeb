@@ -181,6 +181,7 @@
     margin: 16px 0;
     cursor: pointer;
     font-family: "Poppins", sans-serif;
+    font-size: 14px;
 }
 
 .upload-icon {
@@ -231,4 +232,9 @@
     .docoment-page{
         padding: 30px 15px;
     }
+    .upload-modal .upload-box span {
+      font-size: 14px;
+      display: block;
+      word-wrap: break-word;
+  }
 }
