@@ -207,16 +207,7 @@
       </button>
     </div>
 
-    <div class="quick-amounts" *ngIf="quickAmounts.length">
-      <button
-        class="chip-btn"
-        type="button"
-        *ngFor="let amount of quickAmounts"
-        (click)="applyQuickAmount(amount)"
-      >
-        {{ amount === regularPayableAmount ? 'Full Amount' : amount === payableAmount && hasForeclosureQuote ? 'Foreclosure Amount' : (amount | currency:'INR':'symbol':'1.0-0') }}
-      </button>
-    </div>
+
 
     <div class="custom-amount" *ngIf="amountOption === 'CUSTOM'">
       <label for="customAmount">Custom Amount</label>

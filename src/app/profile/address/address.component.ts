@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-address',
@@ -71,12 +72,12 @@ export class AddressComponent implements OnInit {
           // ✅ navigate after success
           this.router.navigate(['/dashboard/profile/income']);
         } else {
-          this.toastr.error(res?.message || 'Failed to save address');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to save address'));
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide(); // ✅ STOP spinner
-        this.toastr.error('Failed to save address');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to save address'));
       },
     });
   }

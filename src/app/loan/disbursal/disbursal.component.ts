@@ -4,6 +4,7 @@ import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 declare var bootstrap: any;
 
 @Component({
@@ -155,7 +156,9 @@ debugger
       if (!res?.success) {
         this.spinner.hide();
         this.isSubmitting = false;
-        this.toastr.error('Failed to save bank details');
+        this.toastr.error(
+          getFirstApiErrorMessage(res, 'Failed to save bank details'),
+        );
         return;
       }
 
@@ -165,10 +168,12 @@ debugger
       // ✅ STEP 2: Penny Drop hit
       this.hitPennyDrop();
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
       this.isSubmitting = false;
-      this.toastr.error('Something went wrong');
+      this.toastr.error(
+        getFirstApiErrorMessage(err, 'Failed to save bank details'),
+      );
     },
   });
 }

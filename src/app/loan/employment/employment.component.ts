@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-employment',
@@ -21,6 +23,7 @@ export class EmploymentComponent implements OnInit {
     private contentService: ContentService,
     private router: Router,
     private spinner: NgxSpinnerService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -95,11 +98,18 @@ export class EmploymentComponent implements OnInit {
 
         if (res?.success) {
           this.router.navigateByUrl('/dashboard/loan/ekyc');
+          return;
         }
+
+        this.toastr.error(
+          getFirstApiErrorMessage(res, 'Failed to save employment details'),
+        );
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide(); // ✅ ALWAYS HIDE
-        console.error('Save failed');
+        this.toastr.error(
+          getFirstApiErrorMessage(err, 'Failed to save employment details'),
+        );
       },
     });
   }

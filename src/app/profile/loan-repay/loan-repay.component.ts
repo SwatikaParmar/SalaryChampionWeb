@@ -292,10 +292,10 @@ export class LoanRepayComponent implements OnInit {
       applicationId: this.applicationId,
       amount: this.selectedAmount,
       paymentType: this.paymentType,
-      returnUrl: `http://localhost:4200/dashboard/profile/loan-repay/${this.applicationId}`,
+      returnUrl: `https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/profile/loan-repay/${this.applicationId}`,
       orderNote: `Repayment for ${this.applicationNumber}`
     };
-debugger
+
     this.creatingOrder = true;
     this.contentService.createBorrowerRepaymentOrder(payload).subscribe({
       next: (res: any) => {
@@ -303,12 +303,22 @@ debugger
 
         const data = res?.data || res;
         const orderId = data?.cashfreeOrderId || data?.orderId || data?.paymentGatewayOrder?.orderId || '';
+        const hostedPaymentUrl =
+          data?.cashfree?.hostedPaymentUrl ||
+          data?.paymentGatewayOrder?.hostedPaymentUrl ||
+          data?.hostedPaymentUrl ||
+          '';
 
         if (orderId) {
           sessionStorage.setItem(`repay-order:${this.applicationId}`, orderId);
         }
 
-        window.location.href = '/dashboard';
+        if (hostedPaymentUrl) {
+          window.location.assign(hostedPaymentUrl);
+          return;
+        }
+
+        this.toastr.error('Payment link was not received. Please try again.');
       },
       error: (err) => {
         this.creatingOrder = false;

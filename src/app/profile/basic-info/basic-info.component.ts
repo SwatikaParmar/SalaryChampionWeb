@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 @Component({
   selector: 'app-basic-info',
   templateUrl: './basic-info.component.html',
@@ -183,14 +184,14 @@ if(res?.success){
   this.checkEligibility();
 this.toastr.success('Basic details saved');
 }else{
-this.toastr.error(res?.message);
+this.toastr.error(getFirstApiErrorMessage(res, 'Failed to save basic details'));
 }
 
 },
 
-error:()=>{
+error:(err)=>{
 this.spinner.hide();
-this.toastr.error('Something went wrong');
+this.toastr.error(getFirstApiErrorMessage(err, 'Failed to save basic details'));
 }
 
 })

@@ -99,6 +99,10 @@ h3{
       color: #fff;
       background: #3c3c3c;
     }
+    .btn-apply.active {
+      color: #fff;
+      background: #3c3c3c;
+    }
 
     .btn-light {
         background: #3c3c3c;
@@ -778,6 +782,11 @@ background: var(--brand-light);
 .info p, .info a, .info i, .info small{
     color: #ffffff;
     text-decoration: none;
+}
+.info p,
+.info a {
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 .info i {
     color: #ffb900;

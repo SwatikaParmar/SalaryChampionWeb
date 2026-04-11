@@ -4,6 +4,7 @@ import { ContentService } from '../../../service/content.service';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-refrence',
@@ -118,17 +119,21 @@ export class RefrenceComponent implements OnInit {
         this.spinner.hide(); // ✅ STOP LOADER
 
         if (!res?.success) {
-          this.toastr.error('Failed to save references');
+          this.toastr.error(
+            getFirstApiErrorMessage(res, 'Failed to save references'),
+          );
           return;
         }
 
         this.toastr.success('References saved successfully ✅');
         this.router.navigate(['/dashboard/loan/bank-statement']);
       },
-      error: () => {
+      error: (err) => {
         this.isSaving = false;
         this.spinner.hide();
-        this.toastr.error('Something went wrong ❌');
+        this.toastr.error(
+          getFirstApiErrorMessage(err, 'Failed to save references'),
+        );
       }
     });
   }

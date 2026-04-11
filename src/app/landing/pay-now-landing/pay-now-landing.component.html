@@ -22,7 +22,14 @@
         <!-- Center Menu -->
         <ul class="navbar-nav mx-lg-auto align-items-lg-center">
           <li class="nav-item">
-            <a class="nav-link active" href="#">Home</a>
+            <a
+              class="nav-link"
+              [routerLink]="['/']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Home
+            </a>
           </li>
 
           <li class="nav-item dropdown">
@@ -39,7 +46,14 @@
     
 
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/contact-us']">Contact Us</a>
+            <a
+              class="nav-link"
+              [routerLink]="['/contact-us']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Contact Us
+            </a>
           </li>
         </ul>
 
@@ -47,7 +61,14 @@
           <!-- Right Button -->
         <div class="d-flex mt-3 mt-lg-0" style="grid-gap: 10px;">
             <a [routerLink]="['/auth/login']" class="btn btn-light">Apply Now</a>
-            <a [routerLink]="['/pay-now']" class="btn btn-apply">Pay Now</a>
+            <a
+              [routerLink]="['/pay-now']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="btn btn-apply"
+            >
+              Pay Now
+            </a>
         </div>
 
       </div>
@@ -198,7 +219,7 @@
                             <div class="info-card h-100">
                                 <h5>Need Help?</h5>
                                 <p>Our support team is available to assist you with payment-related queries.</p>
-                                <a href="tel:+919876543210">+91 9876543210</a>
+                                <a href="tel:+919876543210">+91 88009 44435</a>
                             </div>
                         </div>
 
@@ -206,11 +227,12 @@
                             <div class="info-card h-100">
                                 <h5>Business Hours</h5>
                                 <p>Monday - Friday: 10:30 AM - 6:30 PM</p>
-                                <p>Email: 
-                                    <a href="mailto:grievance@salarychampion.com">
-                                        grievancesalarychampion.com
-                                    </a>
-                                </p>
+                                <p>
+  Email:
+  <a href="mailto:grievance@salarychampion.com">
+    {{ 'grievance@salarychampion.com' }}
+  </a>
+</p>
                             </div>
                         </div>
                     </div>
@@ -539,8 +561,7 @@
 
           <div class="info">
             <i class="fa-solid fa-envelope"></i>
-            <p>grievancesalarychampion.com</p>
-          </div>
+<p>{{ 'grievance@salarychampion.com' }}</p>          </div>
 
           <div class="info" style="grid-template-columns: auto; grid-gap: 0;">
             <small>Business Hours:</small>

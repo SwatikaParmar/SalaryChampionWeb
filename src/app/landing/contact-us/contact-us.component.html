@@ -22,7 +22,14 @@
         <!-- Center Menu -->
         <ul class="navbar-nav mx-lg-auto align-items-lg-center">
           <li class="nav-item">
-            <a class="nav-link active" href="#">Home</a>
+            <a
+              class="nav-link"
+              [routerLink]="['/']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Home
+            </a>
           </li>
 
           <li class="nav-item dropdown">
@@ -39,14 +46,28 @@
    
 
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/contact-us']">Contact Us</a>
+            <a
+              class="nav-link"
+              [routerLink]="['/contact-us']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Contact Us
+            </a>
           </li>
         </ul>
 
         <!-- Right Button -->
         <div class="d-flex mt-3 mt-lg-0" style="grid-gap: 10px;">
             <a [routerLink]="['/auth/login']" class="btn btn-light">Apply Now</a>
-            <a [routerLink]="['/pay-now']" class="btn btn-apply">Pay Now</a>
+            <a
+              [routerLink]="['/pay-now']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="btn btn-apply"
+            >
+              Pay Now
+            </a>
         </div>
 
       </div>
@@ -184,7 +205,7 @@
                 <div class="contact-card contact-blue">
                     <div>
                         <small>Email us</small>
-                        <div class="fs-6">salarychampion.com</div>
+                        <div class="fs-6">{{ 'support@salarychampion' }}         </div>
                     </div>
                     <div class="contact-icon"><img src="assets/images/mail-icon.svg" class="img-fluid"></div>
                 </div>
@@ -303,8 +324,7 @@
 
           <div class="info">
             <i class="fa-solid fa-envelope"></i>
-            <p>grievancesalarychampion.com</p>
-          </div>
+<p>{{ 'grievance@salarychampion.com' }}</p>                    </div>
 
           <div class="info" style="grid-template-columns: auto; grid-gap: 0;">
             <small>Business Hours:</small>
