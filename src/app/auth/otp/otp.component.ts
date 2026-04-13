@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { AuthServiceService } from './../../../service/auth-service.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-otp',
@@ -130,7 +131,7 @@ export class OtpComponent implements OnInit {
         this.spinner.hide();
 
         if (!res?.success) {
-          this.toastr.error(res?.message || 'Invalid OTP');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Invalid OTP'));
           return;
         }
 
@@ -161,7 +162,7 @@ export class OtpComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.spinner.hide();
-        this.toastr.error(err?.error?.message || 'OTP verification failed');
+        this.toastr.error(getFirstApiErrorMessage(err, 'OTP verification failed'));
       },
     });
   }
@@ -188,12 +189,15 @@ export class OtpComponent implements OnInit {
           this.toastr.success(res?.message || 'OTP resent successfully');
           this.timer = res?.data?.nextRequestInSec || 45;
           this.startCountdown();
+          return;
         }
+
+        this.toastr.error(getFirstApiErrorMessage(res, 'Failed to resend OTP'));
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
         this.spinner.hide();
-        this.toastr.error('Failed to resend OTP');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to resend OTP'));
       },
     });
   }

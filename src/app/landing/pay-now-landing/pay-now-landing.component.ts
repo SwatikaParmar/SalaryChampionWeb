@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { ToastrService } from 'ngx-toastr';
 import { ActivatedRoute } from '@angular/router';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 declare var bootstrap: any;
 
 @Component({
@@ -135,7 +136,7 @@ submitPan() {
 
       // ❌ HANDLE BUSINESS ERROR (success = false)
       if (!res?.success) {
-        this.toastr.error(res?.message || 'Something went wrong');
+        this.toastr.error(getFirstApiErrorMessage(res, 'Something went wrong'));
         return;
       }
 
@@ -157,12 +158,7 @@ submitPan() {
     error: (err) => {
 
       // ❌ HANDLE API ERROR (500, 404 etc)
-      const msg =
-        err?.error?.message ||
-        err?.message ||
-        'OTP request failed';
-
-      this.toastr.error(msg);
+      this.toastr.error(getFirstApiErrorMessage(err, 'OTP request failed'));
     }
 
   });
@@ -194,7 +190,7 @@ verifyOtp() {
 
       // ❌ HANDLE BUSINESS ERROR
       if (!res?.success) {
-        this.toastr.error(res?.message || 'OTP verification failed');
+        this.toastr.error(getFirstApiErrorMessage(res, 'OTP verification failed'));
         return;
       }
 
@@ -222,12 +218,7 @@ verifyOtp() {
     error: (err) => {
 
       // ❌ HANDLE HTTP ERROR (wrong OTP / expired etc)
-      const msg =
-        err?.error?.message ||
-        err?.message ||
-        'Invalid OTP';
-
-      this.toastr.error(msg);
+      this.toastr.error(getFirstApiErrorMessage(err, 'Invalid OTP'));
     }
 
   });
@@ -278,7 +269,10 @@ returnUrl: window.location.origin + '/pay-now'   };
   this.contentService.createRepaymentOrder(payload).subscribe({
     next: (res: any) => {
 
-      if (!res?.success) return;
+      if (!res?.success) {
+        this.toastr.error(getFirstApiErrorMessage(res, 'Payment failed to initiate'));
+        return;
+      }
 
       const data = res.data;
 
@@ -292,8 +286,8 @@ returnUrl: window.location.origin + '/pay-now'   };
       window.location.href = this.hostedPaymentUrl;
 
     },
-    error: () => {
-      alert('Payment failed to initiate');
+    error: (err) => {
+      this.toastr.error(getFirstApiErrorMessage(err, 'Payment failed to initiate'));
     }
   });
 }

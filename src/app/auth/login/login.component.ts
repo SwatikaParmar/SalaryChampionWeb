@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { AuthServiceService } from '../../../service/auth-service.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-login',
@@ -80,13 +81,13 @@ export class LoginComponent implements OnInit {
           this.toastr.success(res?.message || 'OTP sent successfully');
           this.router.navigate(['/auth/otp']);
         } else {
-          this.toastr.error(res?.message || 'Failed to send OTP');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to send OTP'));
         }
       },
       error: (err) => {
         this.isLoading = false;
         this.spinner.hide();
-        this.toastr.error(err?.error?.message || 'Something went wrong');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Something went wrong'));
       },
     });
   }

@@ -5,6 +5,7 @@ import { FaceDetection } from '@mediapipe/face_detection';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-selfie',
@@ -153,7 +154,7 @@ export class SelfieComponent implements OnDestroy {
     } catch (err: any) {
       this.spinner.hide();
       console.error(err);
-      this.toastr.error(err?.message || 'Selfie upload failed');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Selfie upload failed'));
     }
   }
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ContentService } from '../../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../../service/api-error.util';
 
 declare var bootstrap: any;
 
@@ -41,7 +42,7 @@ export class BankStatementComponent implements OnInit {
       next: (res: any) => {
         if (!res?.success) {
           this.spinner.hide();
-          this.toastr.error('Failed to load borrower snapshot');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower snapshot'));
           return;
         }
 
@@ -50,9 +51,9 @@ export class BankStatementComponent implements OnInit {
         // 🔥 CHECK BANK STATEMENT STATUS
         this.checkBankStatementStatus();
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to load borrower snapshot');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load borrower snapshot'));
       },
     });
   }
@@ -94,9 +95,9 @@ checkBankStatementStatus() {
       // ❌ CASE 3: Required but NOT uploaded
       // stay on this page → upload UI visible
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
-      this.toastr.error('Failed to load document checklist');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load document checklist'));
     },
   });
 }
@@ -158,7 +159,7 @@ checkBankStatementStatus() {
 
       this.uploadModal.hide();
     } catch (err: any) {
-      this.toastr.error(err?.message || 'Upload failed');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Upload failed'));
     } finally {
       this.spinner.hide();
       this.isUploading = false;

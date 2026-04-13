@@ -1,16 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
+  private readonly enachMandateStorageKey = 'dashboard.enachMandateRowId';
 
   // flags
   isProfileComplete = false;
@@ -33,8 +35,10 @@ currentMessage: string = '';
 hasActiveApplication: boolean = false;
 
 
-showLoanCard: boolean = false;
-showTracker: boolean = false;
+  showLoanCard: boolean = false;
+  showTracker: boolean = false;
+  private hasAutoTriggeredEnachRefresh = false;
+  private enachWindowPollTimer: ReturnType<typeof setInterval> | null = null;
 
 showKycModal: boolean = false;
 kycUrl: string = '';
@@ -69,7 +73,12 @@ videoKycModalMessage: string = '';
   ) {}
 
   ngOnInit(): void {
+    this.restorePendingEnachMandateRowId();
     this.getBorrowerSnapshot();
+  }
+
+  ngOnDestroy(): void {
+    this.clearEnachWindowPollTimer();
   }
 
   showActiveLoanCard: boolean = false;
@@ -125,6 +134,7 @@ getBorrowerSnapshot() {
       this.showTracker = this.loanProgress === 100;
       this.patchTrackerFromSnapshot();
       this.patchActiveLoanFromSnapshot();
+      this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
 
       this.showLoanCard =
         !this.showActiveLoanCard &&
@@ -133,7 +143,9 @@ getBorrowerSnapshot() {
         this.loanProgress < 100;
 
       if (this.showTracker) {
-        this.applicationStatusApi();
+        if (!this.tryAutoRefreshEnachStatus()) {
+          this.applicationStatusApi();
+        }
       }
     },
     error: () => {
@@ -293,11 +305,20 @@ private patchActiveLoanFromSnapshot() {
 
           // 🔥 REFRESH SNAPSHOT
           this.getBorrowerSnapshot();
+          return;
+        }
+
+        const errorMessage = getFirstApiErrorMessage(res);
+        if (errorMessage) {
+          this.toastr.error(errorMessage);
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Reloan failed');
+        const errorMessage = getFirstApiErrorMessage(err);
+        if (errorMessage) {
+          this.toastr.error(errorMessage);
+        }
       }
     });
   }
@@ -366,6 +387,7 @@ applicationStatusApi() {
 
       const data = res?.data || {};
       this.trackingSteps = data?.steps || this.trackingSteps || {};
+      this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
       this.currentTitle =
         data?.borrowerGuidance?.title ||
         this.loanTracking?.currentTitle ||
@@ -664,14 +686,11 @@ openEnach() {
 
       // 🔥 STORE mandateRowId
       this.mandateRowId = res?.data?.mandateRowId;
+      this.persistPendingEnachMandateRowId(this.mandateRowId);
 
       if (url) {
         this.enachUrl = url;
-
-        this.enachUrlSafe =
-          this.sanitizer.bypassSecurityTrustResourceUrl(url);
-
-        this.showEnachModal = true;
+        this.openEnachInNewTab();
 
       } else {
         console.error('Mandate URL not found');
@@ -685,6 +704,8 @@ openEnach() {
 
 
 verifyEnach() {
+  this.restorePendingEnachMandateRowId();
+
   if (!this.mandateRowId) {
     console.error('Mandate ID missing');
     return;
@@ -703,7 +724,6 @@ verifyEnach() {
       if (!res?.success) return;
 
       // ✅ modal close
-      this.showEnachModal = false;
 
       // 🔥 tracker refresh
       this.applicationStatusApi();
@@ -720,8 +740,76 @@ verifyEnach() {
 
 openEnachInNewTab() {
   if (this.enachUrl) {
-    window.open(this.enachUrl, '_blank');
+    const enachWindow = window.open(this.enachUrl, '_blank', 'noopener');
+
+    if (!enachWindow) {
+      this.toastr.error('Please allow popups to continue eNACH');
+      return;
+    }
+
+    this.toastr.info('eNACH opened in a new tab. Complete it there and return here.');
+    this.monitorEnachWindow(enachWindow);
   }
+}
+
+private monitorEnachWindow(enachWindow: Window) {
+  this.clearEnachWindowPollTimer();
+
+  this.enachWindowPollTimer = setInterval(() => {
+    if (!enachWindow.closed) return;
+
+    this.clearEnachWindowPollTimer();
+
+    if (this.mandateRowId) {
+      this.verifyEnach();
+    }
+  }, 1500);
+}
+
+private clearEnachWindowPollTimer() {
+  if (this.enachWindowPollTimer) {
+    clearInterval(this.enachWindowPollTimer);
+    this.enachWindowPollTimer = null;
+  }
+}
+
+private tryAutoRefreshEnachStatus(): boolean {
+  if (this.hasAutoTriggeredEnachRefresh || !this.mandateRowId) {
+    return false;
+  }
+
+  this.hasAutoTriggeredEnachRefresh = true;
+  this.verifyEnach();
+  return true;
+}
+
+private persistPendingEnachMandateRowId(mandateRowId: string) {
+  if (!this.canUseSessionStorage()) return;
+
+  if (mandateRowId) {
+    sessionStorage.setItem(this.enachMandateStorageKey, mandateRowId);
+    return;
+  }
+
+  sessionStorage.removeItem(this.enachMandateStorageKey);
+}
+
+private restorePendingEnachMandateRowId() {
+  if (this.mandateRowId || !this.canUseSessionStorage()) return;
+
+  this.mandateRowId =
+    sessionStorage.getItem(this.enachMandateStorageKey)?.trim() || '';
+}
+
+private clearPendingEnachMandateIfCompleted(steps: any) {
+  if (steps?.enach !== 'DONE') return;
+
+  this.mandateRowId = '';
+  this.persistPendingEnachMandateRowId('');
+}
+
+private canUseSessionStorage(): boolean {
+  return typeof window !== 'undefined' && typeof sessionStorage !== 'undefined';
 }
 
 isLoanCompleted: boolean = false;

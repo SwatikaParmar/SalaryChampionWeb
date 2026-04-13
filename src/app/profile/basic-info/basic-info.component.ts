@@ -55,7 +55,7 @@ this.basicForm = this.fb.group({
           this.patchBorrowerData(res.data.user);
         }
       },
-      error: () => {
+      error: (err) => {
         console.error('Failed to fetch borrower snapshot');
       },
     });
@@ -212,11 +212,11 @@ debugger
 
       },
 
-      error: () => {
+      error: (err) => {
         // ✅ STOP spinner
         this.spinner.hide();
         this.router.navigate(['/dashboard/profile/error-eligibility'], {
-          state: { message: 'Something went wrong' },
+          state: { message: getFirstApiErrorMessage(err) },
         });
       },
     });
@@ -231,8 +231,9 @@ debugger
 
   } else if (decision === 'NOT_ELIGIBLE') {
     // ❌ error page
-     this.router.navigate(['/dashboard/profile/error-eligibility']
-    );
+     this.router.navigate(['/dashboard/profile/error-eligibility'], {
+      state: { message: getFirstApiErrorMessage(res) }
+    });
   }
 }
 

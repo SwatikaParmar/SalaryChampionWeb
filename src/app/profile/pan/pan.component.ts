@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../service/content.service';
-import { error } from 'console';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 @Component({
   selector: 'app-pan',
   templateUrl: './pan.component.html',
@@ -105,7 +105,7 @@ debugger
         this.spinner.hide();
 
         if (!res?.success) {
-          this.toastr.error('PAN verification failed');
+          this.toastr.error(getFirstApiErrorMessage(res, 'PAN verification failed'));
           return;
         }
 
@@ -117,9 +117,9 @@ debugger
 
         this.toastr.success('PAN preview fetched successfully');
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Server error while verifying PAN');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Server error while verifying PAN'));
       },
     });
   }
@@ -149,7 +149,7 @@ debugger
           !res?.success ||
           res?.statusCode !== 200
         ) {
-          this.toastr.error(res?.message || 'PAN verification failed');
+          this.toastr.error(getFirstApiErrorMessage(res, 'PAN verification failed'));
                   this.showModal = false;
 
           return;
@@ -159,9 +159,9 @@ debugger
         this.showModal = false;
         this.router.navigate(['/dashboard/profile/basic-info']);
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.toastr.error('PAN verification error');
+        this.toastr.error(getFirstApiErrorMessage(err, 'PAN verification error'));
       },
     });
   }

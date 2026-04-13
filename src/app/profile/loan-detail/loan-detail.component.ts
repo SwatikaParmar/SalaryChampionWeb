@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-loan-detail',
@@ -38,6 +39,12 @@ export class LoanDetailComponent implements OnInit {
     this.contentService.getLoanDetail(this.applicationId).subscribe({
       next: (res: any) => {
         this.spinner.hide();
+
+        if (res?.success === false) {
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load details'));
+          return;
+        }
+
         const d = res?.data;
 
         this.data = d;
@@ -47,9 +54,9 @@ export class LoanDetailComponent implements OnInit {
         this.borrower = d?.applicationSnapshot?.applicationBasic;
 
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to load details');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load details'));
       }
     });
   }

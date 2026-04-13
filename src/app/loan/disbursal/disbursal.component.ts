@@ -80,7 +80,7 @@ export class DisbursalComponent implements OnInit {
       next: (res: any) => {
         if (!res?.success) {
           this.spinner.hide();
-          this.toastr.error('Failed to load borrower details');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower details'));
           return;
         }
 debugger
@@ -88,9 +88,9 @@ debugger
         this.userId = res.data.user.id;
         this.getDisbursalBankDetails();
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to fetch borrower snapshot');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'));
       },
     });
   }
@@ -125,9 +125,9 @@ debugger
             this.lookupIfsc(existingIfsc);
           }
         },
-        error: () => {
+        error: (err) => {
           this.spinner.hide();
-          this.toastr.error('Failed to fetch bank details');
+          this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch bank details'));
         },
       });
   }
@@ -301,14 +301,14 @@ hitPennyDrop() {
 
       } else {
         this.toastr.warning(
-          res?.message || 'Penny drop verification failed'
+          getFirstApiErrorMessage(res, 'Penny drop verification failed')
         );
       }
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
       this.isSubmitting = false;
-      this.toastr.error('Penny drop failed');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Penny drop failed'));
     }
   });
 }

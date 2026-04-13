@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM' | 'FORECLOSURE';
 
@@ -133,7 +134,7 @@ export class LoanRepayComponent implements OnInit {
   }
 
   get amountHeadlineLabel(): string {
-    return this.hasForeclosureQuote ? 'Foreclosure Payable' : 'Payable Amount';
+    return 'Precolsure Amount';
   }
 
   get amountHeadlineHint(): string {
@@ -221,6 +222,12 @@ export class LoanRepayComponent implements OnInit {
         this.spinner.hide();
         this.loadingSummary = false;
 
+        if (res?.success === false) {
+          this.summary = null;
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load repayment summary'));
+          return;
+        }
+
         const raw = res?.data || res;
         this.summary = this.normalizeSummary(raw);
 
@@ -244,7 +251,7 @@ export class LoanRepayComponent implements OnInit {
         this.spinner.hide();
         this.loadingSummary = false;
         this.summary = null;
-        this.toastr.error(err?.error?.message || 'Failed to load repayment summary');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load repayment summary'));
       }
     });
   }
@@ -301,6 +308,11 @@ export class LoanRepayComponent implements OnInit {
       next: (res: any) => {
         this.creatingOrder = false;
 
+        if (res?.success === false) {
+          this.toastr.error(getFirstApiErrorMessage(res, 'Unable to create payment order'));
+          return;
+        }
+
         const data = res?.data || res;
         const orderId = data?.cashfreeOrderId || data?.orderId || data?.paymentGatewayOrder?.orderId || '';
         const hostedPaymentUrl =
@@ -318,11 +330,14 @@ export class LoanRepayComponent implements OnInit {
           return;
         }
 
-        this.toastr.error('Payment link was not received. Please try again.');
+        const paymentLinkMessage = getFirstApiErrorMessage(res);
+        if (paymentLinkMessage) {
+          this.toastr.error(paymentLinkMessage);
+        }
       },
       error: (err) => {
         this.creatingOrder = false;
-        this.toastr.error(err?.error?.message || 'Unable to create payment order');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Unable to create payment order'));
       }
     });
   }
@@ -346,6 +361,12 @@ export class LoanRepayComponent implements OnInit {
       next: (res: any) => {
         this.refreshingStatus = false;
 
+        if (res?.success === false) {
+          this.clearCallbackParams();
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to refresh payment status'));
+          return;
+        }
+
         const data = res?.data || res;
         this.refreshResult = this.normalizeSummary(
           data?.repaymentSummary || data?.repayment || data?.summary || data
@@ -356,7 +377,13 @@ export class LoanRepayComponent implements OnInit {
         if (this.orderStatus?.paidAt || this.orderStatus?.paymentStatus === 'SUCCESS') {
           this.toastr.success('Payment status updated successfully');
         } else if (this.orderStatus?.paymentStatus === 'FAILED') {
-          this.toastr.error('Payment failed. You can retry from this page.');
+          const paymentFailureMessage =
+            getFirstApiErrorMessage(this.orderStatus) ||
+            getFirstApiErrorMessage(data);
+
+          if (paymentFailureMessage) {
+            this.toastr.error(paymentFailureMessage);
+          }
         }
 
         this.clearCallbackParams();
@@ -365,7 +392,7 @@ export class LoanRepayComponent implements OnInit {
       error: (err) => {
         this.refreshingStatus = false;
         this.clearCallbackParams();
-        this.toastr.error(err?.error?.message || 'Failed to refresh payment status');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to refresh payment status'));
       }
     });
   }

@@ -13,9 +13,7 @@
         </div>
 
         <!-- Message -->
-        <p class="ekyc-text">
-          {{ reason || 'Verification was cancelled or failed. Please try again.' }}
-        </p>
+        <p class="ekyc-text" *ngIf="reason">{{ reason }}</p>
 
         <!-- Actions -->
         <div class="action-buttons">

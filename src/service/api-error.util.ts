@@ -1,9 +1,11 @@
 const MESSAGE_KEYS = [
   'message',
+  'errorMessage',
   'error',
   'detail',
   'title',
   'msg',
+  'statusMessage',
   'description',
 ];
 
@@ -62,14 +64,10 @@ function findFirstMessage(value: any, depth = 0): string | null {
   return null;
 }
 
-export function getFirstApiErrorMessage(
-  source: any,
-  fallback = 'Something went wrong',
-): string {
-  const message =
+export function getFirstApiErrorMessage(source: any, _fallback?: string): string {
+  return (
     findFirstMessage(source?.error) ??
     findFirstMessage(source) ??
-    fallback;
-
-  return message;
+    ''
+  );
 }

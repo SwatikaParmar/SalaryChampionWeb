@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-bank',
@@ -32,7 +33,7 @@ export class BankComponent implements OnInit {
         this.spinner.hide();
 
         if (!res?.success) {
-          this.toastr.error('Failed to load borrower details');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower details'));
           return;
         }
 
@@ -42,9 +43,9 @@ export class BankComponent implements OnInit {
           this.toastr.warning('Application not found');
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to fetch borrower snapshot');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'));
       },
     });
   }
@@ -90,7 +91,7 @@ fetchBankStatement() {
         window.open(res.data.url, '_self');
 
       } else {
-        this.toastr.error(res?.message || 'Failed to generate bank statement link');
+        this.toastr.error(getFirstApiErrorMessage(res, 'Failed to generate bank statement link'));
       }
 
     },
@@ -98,7 +99,7 @@ fetchBankStatement() {
     error: (err) => {
       this.spinner.hide();
       console.error(err);
-      this.toastr.error('Failed to fetch bank statement');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch bank statement'));
     }
 
   });
@@ -128,9 +129,9 @@ skipProcess() {
       });
 
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
-      this.toastr.error('Skip failed');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Skip failed'));
     }
   });
 }

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 type PreviewTab = 'BASIC' | 'ADDRESS' | 'INCOME';
 
@@ -76,16 +77,16 @@ export class PreviewComponent implements OnInit {
           this.router.navigate(['/dashboard/profile/success-eligibility']);
         } else {
           this.router.navigate(['/dashboard/profile/error-eligibility'], {
-            state: { message: res?.message || 'Not eligible' },
+            state: { message: getFirstApiErrorMessage(res, 'Not eligible') },
           });
         }
       },
 
-      error: () => {
+      error: (err) => {
         // ✅ STOP spinner
         this.spinner.hide();
         this.router.navigate(['/dashboard/profile/error-eligibility'], {
-          state: { message: 'Something went wrong' },
+          state: { message: getFirstApiErrorMessage(err, 'Something went wrong') },
         });
       },
     });

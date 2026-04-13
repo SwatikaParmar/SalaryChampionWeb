@@ -75,7 +75,7 @@
 
     <div class="foreclosure-grid">
       <div class="quote-metric highlight">
-        <label>Foreclosure Payable</label>
+        <label>Preclosure Amount</label>
         <h4>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</h4>
       </div>
       <div class="quote-metric">
@@ -95,7 +95,7 @@
         <p>{{ summary?.foreclosureElapsedDays || 0 }} / {{ summary?.foreclosureTotalDays || 0 }}</p>
       </div>
       <div class="quote-metric">
-        <label>Maturity Date</label>
+        <label>Repay Date</label>
         <p>{{ summary?.foreclosureMaturityDate ? (summary?.foreclosureMaturityDate | date:'mediumDate') : '--' }}</p>
       </div>
     </div>

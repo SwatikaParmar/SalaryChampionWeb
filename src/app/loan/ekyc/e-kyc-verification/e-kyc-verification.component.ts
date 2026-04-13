@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ContentService } from '../../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../../service/api-error.util';
 
 declare var bootstrap: any;
 
@@ -25,13 +26,20 @@ export class EKYCVerificationComponent implements OnInit {
     private toastr: ToastrService
   ) {}
 
+  private openEkycError(reason = ''): void {
+    this.router.navigate(['/dashboard/loan/e-kyc-error'], {
+      queryParams: reason ? { reason } : undefined,
+    });
+  }
+
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.requestId = params['requestId'] || '';
       const status = params['status'];
+      const reason = params['reason'] || '';
 
       if (!this.requestId || status !== 'success') {
-        this.router.navigate(['/dashboard/loan/e-kyc-error']);
+        this.openEkycError(reason);
         return;
       }
 
@@ -62,12 +70,12 @@ export class EKYCVerificationComponent implements OnInit {
         if (res?.success) {
           this.openSuccessModal();
         } else {
-          this.router.navigate(['/dashboard/loan/e-kyc-error']);
+          this.openEkycError(getFirstApiErrorMessage(res));
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.router.navigate(['/dashboard/loan/e-kyc-error']);
+        this.openEkycError(getFirstApiErrorMessage(err));
       }
     });
   }

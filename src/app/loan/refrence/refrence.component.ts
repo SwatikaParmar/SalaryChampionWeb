@@ -66,7 +66,10 @@ export class RefrenceComponent implements OnInit {
       next: (res: any) => {
         this.spinner.hide(); // ✅ STOP LOADER
 
-        if (!res?.success) return;
+        if (!res?.success) {
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load references'));
+          return;
+        }
 
         this.applicationId = res.data.application?.id;
         this.userId = res.data.user?.id;
@@ -87,9 +90,9 @@ export class RefrenceComponent implements OnInit {
           });
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to load references');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load references'));
       }
     });
   }

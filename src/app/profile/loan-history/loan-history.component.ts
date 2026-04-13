@@ -3,6 +3,7 @@ import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 @Component({
   selector: 'app-loan-history',
@@ -87,6 +88,11 @@ export class LoanHistoryComponent implements OnInit {
         this.spinner.hide();
         this.isLoading = false;
 
+        if (res?.success === false) {
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load loan history'));
+          return;
+        }
+
         const data = res?.data;
         if (!data) return;
 
@@ -107,10 +113,10 @@ export class LoanHistoryComponent implements OnInit {
         this.totalPages = data.totalPages || 0;
       },
 
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
         this.isLoading = false;
-        this.toastr.error('Failed to load loan history');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load loan history'));
       }
 
     });

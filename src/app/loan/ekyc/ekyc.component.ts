@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 @Component({
   selector: 'app-ekyc',
   templateUrl: './ekyc.component.html',
@@ -25,12 +26,15 @@ export class EkycComponent implements OnInit {
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
-        if (!res?.success) return;
+        if (!res?.success) {
+          this.errorMsg = getFirstApiErrorMessage(res);
+          return;
+        }
 
         this.applicationId = res.data?.application?.id || '';
       },
-      error: () => {
-        this.errorMsg = 'Failed to load application';
+      error: (err) => {
+        this.errorMsg = getFirstApiErrorMessage(err);
       },
     });
   }
@@ -57,12 +61,12 @@ export class EkycComponent implements OnInit {
           // 🔥 SAME TAB REDIRECT (NO NEW TAB)
           window.location.href = res.data.url;
         } else {
-          this.errorMsg = 'Unable to start eKYC';
+          this.errorMsg = getFirstApiErrorMessage(res);
         }
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.errorMsg = 'eKYC initiation failed';
+        this.errorMsg = getFirstApiErrorMessage(err);
       },
     });
   }
