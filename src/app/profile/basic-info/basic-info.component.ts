@@ -5,6 +5,7 @@ import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay, formatDateInput, normalizeDateForInput } from '../../shared/date-format.util';
 @Component({
   selector: 'app-basic-info',
   templateUrl: './basic-info.component.html',
@@ -13,6 +14,7 @@ import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 export class BasicInfoComponent implements OnInit {
   basicForm!: FormGroup;
   isMarried = false;
+  dobDisplay = '';
 
   constructor(
     private fb: FormBuilder,
@@ -63,7 +65,8 @@ this.basicForm = this.fb.group({
 
   patchBasicData(data:any){
 
-const formattedDob = data?.dob?.split('T')[0];
+const formattedDob = normalizeDateForInput(data?.dob);
+this.dobDisplay = formatDateForDisplay(formattedDob);
 
 this.basicForm.patchValue({
   employmentType: data.employmentType,
@@ -81,8 +84,8 @@ this.basicForm.patchValue({
 
   // 🔐 PATCH + LOCK PAN VERIFIED DATA
   patchBorrowerData(user: any) {
-  // Ensure YYYY-MM-DD
-  const formattedDob = user.dob.split('T')[0];
+  const formattedDob = normalizeDateForInput(user?.dob);
+  this.dobDisplay = formatDateForDisplay(formattedDob);
 
   this.basicForm.patchValue({
     dob: formattedDob
@@ -104,6 +107,37 @@ this.basicForm.patchValue({
     }
 
     this.isMarried = user.maritalStatus === 'MARRIED';
+  }
+
+  onDobInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const formattedValue = formatDateInput(input.value);
+
+    this.dobDisplay = formattedValue;
+    input.value = formattedValue;
+
+    this.basicForm.get('dob')?.setValue(normalizeDateForInput(formattedValue), {
+      emitEvent: false
+    });
+  }
+
+  onDobBlur() {
+    this.basicForm.get('dob')?.markAsTouched();
+
+    if (!this.dobDisplay.trim()) {
+      this.basicForm.get('dob')?.setValue('', { emitEvent: false });
+      return;
+    }
+
+    const normalizedDob = normalizeDateForInput(this.dobDisplay);
+
+    if (!normalizedDob) {
+      this.basicForm.get('dob')?.setValue('', { emitEvent: false });
+      return;
+    }
+
+    this.basicForm.get('dob')?.setValue(normalizedDob, { emitEvent: false });
+    this.dobDisplay = formatDateForDisplay(normalizedDob);
   }
 
   watchMaritalStatus() {

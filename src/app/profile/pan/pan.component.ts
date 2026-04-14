@@ -5,6 +5,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../service/content.service';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay, normalizeDateForInput } from '../../shared/date-format.util';
 @Component({
   selector: 'app-pan',
   templateUrl: './pan.component.html',
@@ -52,7 +53,7 @@ export class PanComponent {
 
     this.basicForm.patchValue({
       name: pan.fullName || '',
-      dob: pan.dob || '',
+      dob: normalizeDateForInput(pan.dob),
       gender: this.mapGender(pan.gender),
     });
   }
@@ -108,7 +109,10 @@ export class PanComponent {
           return;
         }
 
-        this.panData = res.data;
+        this.panData = {
+          ...res.data,
+          dobDisplay: formatDateForDisplay(res?.data?.dob)
+        };
         this.showModal = true;
 
         // ✅ store PAN preview for next screen

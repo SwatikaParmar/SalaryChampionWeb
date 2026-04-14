@@ -47,7 +47,7 @@
 
     <div class="info-card">
       <label>Due Date</label>
-      <p>{{ summary?.nextDueDate ? (summary?.nextDueDate | date:'mediumDate') : '--' }}</p>
+      <p>{{ summary?.nextDueDate ? (summary?.nextDueDate | date:'dd-MM-yyyy') : '--' }}</p>
     </div>
 
     <div class="info-card">
@@ -65,7 +65,7 @@
     <div class="section-head">
       <div>
         <h3>Foreclosure Quote</h3>
-        <p>As of {{ summary?.foreclosureAsOfDate | date:'mediumDate' }}, you can close this loan early at a reduced amount.</p>
+        <p>As of {{ summary?.foreclosureAsOfDate | date:'dd-MM-yyyy' }}, you can close this loan early at a reduced amount.</p>
       </div>
 
       <div class="savings-pill">
@@ -96,7 +96,7 @@
       </div>
       <div class="quote-metric">
         <label>Repay Date</label>
-        <p>{{ summary?.foreclosureMaturityDate ? (summary?.foreclosureMaturityDate | date:'mediumDate') : '--' }}</p>
+        <p>{{ summary?.foreclosureMaturityDate ? (summary?.foreclosureMaturityDate | date:'dd-MM-yyyy') : '--' }}</p>
       </div>
     </div>
   </div>
@@ -134,7 +134,7 @@
       </div>
       <div>
         <label>Next Due Date</label>
-        <p>{{ refreshResult?.nextDueDate ? (refreshResult?.nextDueDate | date:'mediumDate') : '--' }}</p>
+        <p>{{ refreshResult?.nextDueDate ? (refreshResult?.nextDueDate | date:'dd-MM-yyyy') : '--' }}</p>
       </div>
       <div>
         <label>Loan Status</label>
@@ -192,7 +192,7 @@
         <strong>{{ regularPayableAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
         <small *ngIf="hasForeclosureQuote">Continue with the regular scheduled due</small>
         <small *ngIf="!hasForeclosureQuote">Backend resolves full payable amount</small>
-        <small *ngIf="!isFullDueEnabled">Enabled on {{ (summary?.foreclosureMaturityDate || summary?.nextDueDate) | date:'mediumDate' }}</small>
+        <small *ngIf="!isFullDueEnabled">Enabled on {{ (summary?.foreclosureMaturityDate || summary?.nextDueDate) | date:'dd-MM-yyyy' }}</small>
       </button>
 
       <button

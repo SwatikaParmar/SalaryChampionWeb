@@ -52,7 +52,7 @@
     <div class="tab-content" *ngIf="selectedTab === 'BASIC'">
       <div class="row"><span>Your Name</span><span>{{ user?.name }}</span></div>
       <div class="row"><span>Gender</span><span>{{ user?.gender }}</span></div>
-      <div class="row"><span>DOB</span><span>{{ user?.dob }}</span></div>
+      <div class="row"><span>DOB</span><span>{{ user?.dob ? (user?.dob | date:'dd-MM-yyyy') : '--' }}</span></div>
       <!-- <div class="row"><span>Marital Status</span><span>{{ user?.maritalStatus }}</span></div> -->
       <div class="row"><span>Personal Email</span><span>{{ user?.email }}</span></div>
     </div>

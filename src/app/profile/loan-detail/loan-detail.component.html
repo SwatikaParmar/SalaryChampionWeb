@@ -47,7 +47,7 @@
 
       <div>
         <label>DOB</label>
-        <p>{{ borrower?.dateOfBirth }}</p>
+        <p>{{ borrower?.dateOfBirth ? (borrower?.dateOfBirth | date:'dd-MM-yyyy') : '--' }}</p>
       </div>
     </div>
 

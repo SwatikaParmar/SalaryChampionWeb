@@ -5,6 +5,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay } from '../../shared/date-format.util';
 
 @Component({
   selector: 'app-dashboard',
@@ -286,9 +287,9 @@ private patchActiveLoanFromSnapshot() {
     outstandingAmount: repayment?.outstandingAmount || tracking?.outstandingAmount || repayment?.principalOutstanding,
     repayAmount: repayment?.repayAmount || activeLoan?.repayAmount || tracking?.repayAmount,
     nextDueAmount: repayment?.nextDueAmount || tracking?.nextDueAmount || repayment?.minimumDueAmount,
-    nextDueDateDisplay: repayment?.nextDueDate || tracking?.nextDueDate || activeLoan?.repayDate,
-    repayDateDisplay: activeLoan?.repayDate || tracking?.repayDate || activeLoan?.maturityDate,
-    disbursalDateDisplay: activeLoan?.disbursalDate || tracking?.disbursalDate || activeLoan?.startedOn,
+    nextDueDateDisplay: formatDateForDisplay(repayment?.nextDueDate || tracking?.nextDueDate || activeLoan?.repayDate),
+    repayDateDisplay: formatDateForDisplay(activeLoan?.repayDate || tracking?.repayDate || activeLoan?.maturityDate),
+    disbursalDateDisplay: formatDateForDisplay(activeLoan?.disbursalDate || tracking?.disbursalDate || activeLoan?.startedOn),
     autoDebitStatus: repayment?.autoDebitStatus || tracking?.autoDebitStatus || tracking?.mandateStatus
   };
 }

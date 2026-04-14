@@ -79,7 +79,14 @@ Rented
 
 <label>Date Of Birth *</label>
 
-<input type="date" formControlName="dob">
+<input
+type="text"
+placeholder="dd-mm-yyyy"
+[value]="dobDisplay"
+(input)="onDobInput($event)"
+(blur)="onDobBlur()"
+[disabled]="basicForm.get('dob')?.disabled"
+maxlength="10">
 
 </div>
 

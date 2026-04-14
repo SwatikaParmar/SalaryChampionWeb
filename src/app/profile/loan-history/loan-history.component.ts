@@ -4,6 +4,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay } from '../../shared/date-format.util';
 
 @Component({
   selector: 'app-loan-history',
@@ -97,7 +98,16 @@ export class LoanHistoryComponent implements OnInit {
         if (!data) return;
 
         // 🔥 LIST
-        this.loanList = data.items || [];
+        this.loanList = (data.items || []).map((item: any) => ({
+          ...item,
+          overview: {
+            ...item?.overview,
+            nextDueDateDisplay:
+              formatDateForDisplay(item?.overview?.nextDueDateDisplay) ||
+              item?.overview?.nextDueDateDisplay ||
+              ''
+          }
+        }));
 
         // 🔥 SUMMARY
         const normalized = this.normalizeSummary(data.summary);
