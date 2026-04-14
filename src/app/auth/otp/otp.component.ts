@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -11,7 +11,7 @@ import { getFirstApiErrorMessage } from '../../../service/api-error.util';
   templateUrl: './otp.component.html',
   styleUrl: './otp.component.css',
 })
-export class OtpComponent implements OnInit {
+export class OtpComponent implements OnInit, OnDestroy {
   otpForm!: FormGroup;
   isLoading = false;
   isLocationLoading = false;
@@ -63,6 +63,12 @@ export class OtpComponent implements OnInit {
 
     if (this.lat === null || this.long === null) {
       this.getLocation();
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
     }
   }
 
@@ -247,6 +253,7 @@ export class OtpComponent implements OnInit {
     }
 
     this.isLocationLoading = true;
+    this.spinner.show();
 
     try {
       const location = await this.auth.requestCurrentLocation();
@@ -262,6 +269,7 @@ export class OtpComponent implements OnInit {
       return false;
     } finally {
       this.isLocationLoading = false;
+      this.spinner.hide();
     }
   }
 }

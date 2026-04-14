@@ -4,18 +4,20 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-  HttpResponse,
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../service/auth-service.service';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   private static isLoggingOut = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthServiceService,
+  ) {}
 
   intercept(
     request: HttpRequest<any>,
@@ -42,10 +44,10 @@ export class JwtInterceptor implements HttpInterceptor {
 
           alert('Session expired. Please login again.');
 
-          localStorage.clear();
+          this.authService.logout({ preserveLoginLocation: true });
 
-          this.router.navigate(['/auth/login']).then(() => {
-            window.location.reload();
+          this.router.navigate(['/auth/login']).finally(() => {
+            JwtInterceptor.isLoggingOut = false;
           });
         }
 

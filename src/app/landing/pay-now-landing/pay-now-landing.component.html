@@ -88,7 +88,7 @@
     </div>
   </section>  
 
-<section class="payment-wrapper tb-10">
+<section class="payment-wrapper tb-10" *ngIf="!showScannerFallbackCard">
   <div class="container">
     <div class="row justify-content-between">
 
@@ -181,6 +181,126 @@
   </div>
 </section>
 
+<section class="payment-wrapper tb-10" *ngIf="showScannerFallbackCard">
+  <div class="container">
+   <div class="row justify-content-between scanner-fallback-row">
+
+  <!-- ================= SCAN & PAY ================= -->
+  <div class="col-lg-6 col-md-12">
+    <div class="manual-payment-card inline-manual-card">
+
+      <div class="manual-payment-title">
+        <i class="fa-solid fa-mobile-screen-button"></i>
+        <span>SCAN & PAY</span>
+      </div>
+
+
+
+      <!-- 🔥 QR -->
+      <div class="manual-qr-shell text-center">
+        <img [src]="qrCodeUrl" class="manual-qr-image">
+      </div>
+
+      <!-- 🔥 UPI -->
+      <div class="manual-section-label mt-3">UPI ID:</div>
+      <div class="manual-copy-row">
+        <span>{{ selectedBank.upiId }}</span>
+        <button
+          type="button"
+          class="manual-copy-btn"
+          (click)="copyPaymentDetail(selectedBank.upiId, 'UPI ID')">
+          <i class="fa-regular fa-copy"></i>
+        </button>
+      </div>
+
+      <!-- NOTE -->
+      <div class="manual-note-box">
+        Please mention your loan reference number or registered mobile number in the payment description.
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= BANK DETAILS ================= -->
+<div class="col-lg-6 col-md-12 sm-mt-40">
+  <div class="manual-payment-card inline-manual-card">
+
+    <div class="manual-payment-title">
+      <i class="fa-solid fa-building-columns"></i>
+      <span>Bank Transfer Details</span>
+    </div>
+
+    <!-- 🔥 BIG TAB STYLE BUTTONS -->
+    <div class="bank-selector text-center mb-4">
+
+      <button 
+        *ngFor="let bank of banks"
+        class="bank-tab-btn"
+        [class.active]="selectedBank.name === bank.name"
+        (click)="selectedBank = bank">
+
+        {{ bank.name }}
+      </button>
+
+    </div>
+
+    <!-- BENEFICIARY -->
+    <div class="manual-detail-row">
+      <div>
+        <div class="manual-detail-label">Beneficiary Name</div>
+        <div class="manual-detail-value">
+          {{ selectedBank.beneficiaryName }}
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="manual-detail-row">
+      <div>
+        <div class="manual-detail-label">Account Number</div>
+        <div class="manual-detail-value">
+          {{ selectedBank.accountNumber }}
+        </div>
+      </div>
+      <button
+        type="button"
+        class="manual-copy-btn"
+        (click)="copyPaymentDetail(selectedBank.accountNumber, 'Account number')">
+        <i class="fa-regular fa-copy"></i>
+      </button>
+    </div>
+
+    <!-- IFSC -->
+    <div class="manual-detail-row">
+      <div>
+        <div class="manual-detail-label">IFSC Code</div>
+        <div class="manual-detail-value">
+          {{ selectedBank.ifscCode }}
+        </div>
+      </div>
+      <button
+        type="button"
+        class="manual-copy-btn"
+        (click)="copyPaymentDetail(selectedBank.ifscCode, 'IFSC code')">
+        <i class="fa-regular fa-copy"></i>
+      </button>
+    </div>
+
+    <!-- WARNING -->
+    <div class="manual-warning-box">
+      <i class="fa-solid fa-circle-info"></i>
+      <span>
+        Always verify these payment details by calling support before making transactions.
+      </span>
+    </div>
+
+  </div>
+</div>
+
+</div>
+  </div>
+</section>
+
   <section class="payment-wrapper tb-10 pt-0">
     <div class="container">
         <div class="row justify-content-between">
@@ -203,6 +323,14 @@
                         If you encounter any issues or have questions about your payment, please contact our customer support.
                     </p>
 
+                    <div *ngIf="isManualPaymentActive" class="manual-payment-alert">
+                        Higher repayment amounts first open the scan-and-pay / bank transfer details. After that, clicking the secure payment button again will show the payment fields below.
+                    </div>
+
+                    <div *ngIf="showScannerFallbackCard" class="manual-payment-alert">
+                        Scanner card visible hai. Is button par click karne se same PAN entry modal dubara open hoga.
+                    </div>
+
                     <!-- Button -->
                     <div class="text-center mb-5">
                         <button 
@@ -214,7 +342,7 @@
                     </div>
 
                     <!-- Bottom Cards -->
-                    <div class="row g-4">
+                    <div class="row g-4" *ngIf="!showScannerFallbackCard">
                         <div class="col-md-6">
                             <div class="info-card h-100">
                                 <h5>Need Help?</h5>
@@ -306,6 +434,13 @@
           Max: ₹ {{ dues?.payableAmount }}
         </small>
 
+        <small
+          *ngIf="paymentType === 'PARTIAL' && amount >= manualPaymentThreshold"
+          class="manual-amount-hint d-block mt-2"
+        >
+          This amount will first open the scan-and-pay details.
+        </small>
+
       </div>
     </div>
 
@@ -328,6 +463,14 @@
 <div class="modal fade custom-modal" id="panModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
+      <button
+        type="button"
+        class="modal-close-btn"
+        aria-label="Close"
+        (click)="closePanModal()"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
 
       <!-- HEADER / ICON -->
       <div class="text-center">
@@ -422,10 +565,125 @@
   </div>
 </div>
 
+<!-- MANUAL PAYMENT MODAL -->
+<div class="modal fade manual-payment-modal" id="manualPaymentModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content manual-payment-content">
+      <button
+        type="button"
+        class="modal-close-btn"
+        aria-label="Close"
+        (click)="closeManualPaymentModal()"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+
+      <div class="manual-payment-layout">
+        <div class="manual-payment-card">
+          <div class="manual-payment-title">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span>SCAN &amp; PAY</span>
+          </div>
+
+          <div class="manual-qr-shell">
+            <img [src]="qrCodeUrl" alt="Scan and pay QR code" class="manual-qr-image">
+          </div>
+
+          <div class="manual-section-label">UPI ID:</div>
+          <div class="manual-copy-row">
+            <span>{{ manualPaymentDetails.upiId }}</span>
+            <button
+              type="button"
+              class="manual-copy-btn"
+              (click)="copyPaymentDetail(manualPaymentDetails.upiId, 'UPI ID')"
+              aria-label="Copy UPI ID"
+            >
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+
+          <div *ngIf="selectedPaymentAmount > 0" class="manual-pay-amount">
+            Suggested amount: {{ selectedPaymentAmount | currency:'INR':'symbol':'1.0-0' }}
+          </div>
+
+          <div class="manual-note-box">
+            {{ manualPaymentDetails.note }}
+          </div>
+        </div>
+
+        <div class="manual-payment-card">
+          <div class="manual-payment-title">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>Bank Transfer Details</span>
+          </div>
+
+          <div class="manual-detail-row">
+            <div>
+              <div class="manual-detail-label">Beneficiary Name</div>
+              <div class="manual-detail-value">{{ manualPaymentDetails.beneficiaryName }}</div>
+            </div>
+            <button
+              type="button"
+              class="manual-copy-btn"
+              (click)="copyPaymentDetail(manualPaymentDetails.beneficiaryName, 'Beneficiary name')"
+              aria-label="Copy beneficiary name"
+            >
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+
+          <div class="manual-detail-row">
+            <div>
+              <div class="manual-detail-label">Account Number</div>
+              <div class="manual-detail-value">{{ manualPaymentDetails.accountNumber }}</div>
+            </div>
+            <button
+              type="button"
+              class="manual-copy-btn"
+              (click)="copyPaymentDetail(manualPaymentDetails.accountNumber, 'Account number')"
+              aria-label="Copy account number"
+            >
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+
+          <div class="manual-detail-row">
+            <div>
+              <div class="manual-detail-label">IFSC Code</div>
+              <div class="manual-detail-value">{{ manualPaymentDetails.ifscCode }}</div>
+            </div>
+            <button
+              type="button"
+              class="manual-copy-btn"
+              (click)="copyPaymentDetail(manualPaymentDetails.ifscCode, 'IFSC code')"
+              aria-label="Copy IFSC code"
+            >
+              <i class="fa-regular fa-copy"></i>
+            </button>
+          </div>
+
+          <div class="manual-warning-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>{{ manualPaymentDetails.warning }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- PAYMENT RESULT MODAL -->
 <div class="modal fade" id="resultModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content p-4">
+      <button
+        type="button"
+        class="modal-close-btn"
+        aria-label="Close"
+        (click)="closeResultModal()"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
 
       <!-- LOADING -->
       <div *ngIf="!paymentStatus" class="text-center">

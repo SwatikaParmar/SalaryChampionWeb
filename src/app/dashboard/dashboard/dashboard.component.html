@@ -213,28 +213,28 @@
 
     <div class="active-loan-grid">
       <div class="active-loan-stat">
-        <label>Outstanding</label>
+        <label>Current Outstanding</label>
         <strong>
           {{ activeLoan?.outstandingAmount ? (activeLoan?.outstandingAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
       </div>
 
       <div class="active-loan-stat">
-        <label>Total Payable</label>
+        <label>Total Repayment</label>
         <strong>
           {{ activeLoan?.repayAmount ? (activeLoan?.repayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
       </div>
 
       <div class="active-loan-stat">
-        <label>Next Due Amount</label>
+        <label>Total Due Amount</label>
         <strong>
           {{ activeLoan?.nextDueAmount ? (activeLoan?.nextDueAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
       </div>
 
       <div class="active-loan-stat">
-        <label>Next Due Date</label>
+        <label>Due Date</label>
         <strong>
           {{ activeLoan?.nextDueDateDisplay || '--' }}
         </strong>
@@ -286,7 +286,9 @@
    <div class="tracker-row">
 
   <!-- Submitted -->
-  <div [ngClass]="'step ' + getStepClass(trackingSteps?.applicationSubmitted)">
+  <div
+    *ngIf="shouldShowTrackerStep('applicationSubmitted')"
+    [ngClass]="'step ' + getStepClass(trackingSteps?.applicationSubmitted)">
     <div class="circle"
          [class.green]="trackingSteps?.applicationSubmitted === 'DONE'">
       <i class="fa-solid"
@@ -297,7 +299,9 @@
   </div>
 
   <!-- In Review -->
-  <div [ngClass]="'step ' + getStepClass(trackingSteps?.applicationInReview)">
+  <div
+    *ngIf="shouldShowTrackerStep('applicationInReview')"
+    [ngClass]="'step ' + getStepClass(trackingSteps?.applicationInReview)">
     <div class="circle"
          [class.green]="trackingSteps?.applicationInReview === 'DONE'">
       <i class="fa-solid"
@@ -310,9 +314,10 @@
   <!-- Video KYC -->
 <!-- Video KYC -->
 <div 
+  *ngIf="shouldShowTrackerStep('videoKyc')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.videoKyc)"
-  (click)="trackingSteps?.videoKyc === 'PENDING' && onVideoKycClick()"
-  [style.cursor]="trackingSteps?.videoKyc === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('videoKyc') && onVideoKycClick()"
+  [style.cursor]="canOpenTrackerStep('videoKyc') ? 'pointer' : 'not-allowed'"
 >
   <div class="circle"
        [class.green]="trackingSteps?.videoKyc === 'DONE'"
@@ -384,9 +389,10 @@
   <!-- Sanction -->
 <!-- Sanction -->
 <div 
+  *ngIf="shouldShowTrackerStep('sanction')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.sanction)"
-  (click)="trackingSteps?.sanction === 'PENDING' && openSanctionLetter()"
-  [style.cursor]="trackingSteps?.sanction === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('sanction') && openSanctionLetter()"
+  [style.cursor]="canOpenTrackerStep('sanction') ? 'pointer' : 'not-allowed'"
 >
 
   <div class="circle"
@@ -461,9 +467,10 @@
   <!-- E-Sign -->
 <!-- E-Sign -->
 <div 
+  *ngIf="shouldShowTrackerStep('esign')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.esign)"
-  (click)="trackingSteps?.esign === 'PENDING' && openEsign()"
-  [style.cursor]="trackingSteps?.esign === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('esign') && openEsign()"
+  [style.cursor]="canOpenTrackerStep('esign') ? 'pointer' : 'not-allowed'"
 >
 
   <div class="circle"
@@ -518,9 +525,10 @@
 
 <!-- ENACH -->
 <div 
+  *ngIf="shouldShowTrackerStep('enach')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.enach)"
-  (click)="trackingSteps?.enach === 'PENDING' && openEnach()"
-  [style.cursor]="trackingSteps?.enach === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('enach') && openEnach()"
+  [style.cursor]="canOpenTrackerStep('enach') ? 'pointer' : 'not-allowed'"
 >
 
   <div class="circle"
@@ -583,7 +591,9 @@
 </div>
 
   <!-- Disbursement -->
-  <div [ngClass]="'step ' + getStepClass(trackingSteps?.disbursement)">
+  <div
+    *ngIf="shouldShowTrackerStep('disbursement')"
+    [ngClass]="'step ' + getStepClass(trackingSteps?.disbursement)">
     <div class="circle"
          [class.green]="trackingSteps?.disbursement === 'DONE'">
       <i class="fa-solid"

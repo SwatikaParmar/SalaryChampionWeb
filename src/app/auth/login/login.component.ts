@@ -44,6 +44,19 @@ export class LoginComponent implements OnInit {
     if (savedLocation) {
       this.lat = savedLocation.lat;
       this.long = savedLocation.long;
+    } else {
+      this.authService
+        .prefetchLocationIfAvailable()
+        .then(() => {
+          const latestLocation = this.authService.getSavedLoginLocation();
+          if (!latestLocation) {
+            return;
+          }
+
+          this.lat = latestLocation.lat;
+          this.long = latestLocation.long;
+        })
+        .catch(() => {});
     }
   }
 
@@ -124,6 +137,7 @@ export class LoginComponent implements OnInit {
     }
 
     this.isLocationLoading = true;
+    this.spinner.show();
 
     try {
       const location = await this.authService.requestCurrentLocation();
@@ -139,6 +153,7 @@ export class LoginComponent implements OnInit {
       return false;
     } finally {
       this.isLocationLoading = false;
+      this.spinner.hide();
     }
   }
 }

@@ -46,9 +46,21 @@
       <button
         class="theme-btn"
         type="submit"
-        [disabled]="mobileForm.invalid"
+        [disabled]="mobileForm.invalid || isLoading || isLocationLoading"
       >
-        Send OTP
+        <span
+          *ngIf="isLoading || isLocationLoading"
+          class="spinner-border spinner-border-sm me-2"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        {{
+          isLocationLoading
+            ? 'Fetching location...'
+            : isLoading
+              ? 'Sending OTP...'
+              : 'Send OTP'
+        }}
       </button>
 
     </form>

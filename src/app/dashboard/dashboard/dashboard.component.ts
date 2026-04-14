@@ -13,6 +13,24 @@ import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 })
 export class DashboardComponent implements OnInit, OnDestroy {
   private readonly enachMandateStorageKey = 'dashboard.enachMandateRowId';
+  private readonly defaultTrackerFlow = [
+    'applicationSubmitted',
+    'applicationInReview',
+    'videoKyc',
+    'sanction',
+    'esign',
+    'enach',
+    'disbursement'
+  ];
+  private readonly trackerFlowKeyMap: Record<string, string> = {
+    APPLICATION_SUBMITTED: 'applicationSubmitted',
+    APPLICATION_IN_REVIEW: 'applicationInReview',
+    VIDEO_KYC: 'videoKyc',
+    SANCTION: 'sanction',
+    ESIGN: 'esign',
+    ENACH: 'enach',
+    DISBURSEMENT: 'disbursement'
+  };
 
   // flags
   isProfileComplete = false;
@@ -29,6 +47,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   retryDate: string = '';
 
 trackingSteps: any = {};
+trackerFlow: string[] = [...this.defaultTrackerFlow];
 currentTitle: string = '';
 currentMessage: string = '';
 
@@ -116,6 +135,11 @@ getBorrowerSnapshot() {
         '';
       this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
       this.steps = data?.applicationFlow?.steps || {};
+      this.updateTrackerFlow(
+        this.loanTracking?.statusFlow ||
+        data?.applicationFlow?.statusFlow ||
+        data?.statusFlow
+      );
       this.currentLoanRequest = data?.currentLoanRequest || null;
       this.applyEligibilityState(offer, eligibility);
 
@@ -224,8 +248,8 @@ private mapIneligibleReason(reasons: string[] = []): string {
 }
 
 private patchTrackerFromSnapshot() {
-  const snapshotSteps = this.loanTracking?.steps;
-  if (!snapshotSteps) return;
+  const snapshotSteps = this.loanTracking?.steps || this.steps;
+  if (!snapshotSteps || Object.keys(snapshotSteps).length === 0) return;
 
   this.trackingSteps = snapshotSteps;
   this.currentTitle =
@@ -241,8 +265,11 @@ private patchActiveLoanFromSnapshot() {
   const tracking = this.loanTracking || {};
   const activeLoan = tracking?.activeLoan || {};
   const repayment = tracking?.repayment || {};
+  const isDisbursementDone = this.isDisbursementCompleted();
 
-  this.showActiveLoanCard = tracking?.showActiveLoanCard === true;
+  this.showActiveLoanCard =
+    tracking?.showActiveLoanCard === true &&
+    isDisbursementDone;
 
   if (!this.showActiveLoanCard) {
     this.activeLoan = null;
@@ -262,6 +289,15 @@ private patchActiveLoanFromSnapshot() {
     disbursalDateDisplay: activeLoan?.disbursalDate || tracking?.disbursalDate || activeLoan?.startedOn,
     autoDebitStatus: repayment?.autoDebitStatus || tracking?.autoDebitStatus || tracking?.mandateStatus
   };
+}
+
+private isDisbursementCompleted(): boolean {
+  const disbursementStatus =
+    this.trackingSteps?.disbursement ||
+    this.loanTracking?.steps?.disbursement ||
+    this.steps?.disbursement;
+
+  return disbursementStatus === 'DONE';
 }
 
 
@@ -371,6 +407,43 @@ getStepClass(status: string) {
   return 'locked';
 }
 
+private updateTrackerFlow(flow: any) {
+  if (!Array.isArray(flow) || flow.length === 0) {
+    this.trackerFlow = [...this.defaultTrackerFlow];
+    return;
+  }
+
+  const normalizedFlow = flow
+    .map((step) => this.normalizeTrackerStepKey(step))
+    .filter((step): step is string => !!step);
+
+  this.trackerFlow = normalizedFlow.length
+    ? normalizedFlow
+    : [...this.defaultTrackerFlow];
+}
+
+private normalizeTrackerStepKey(step: any): string | null {
+  if (typeof step !== 'string') return null;
+
+  return this.trackerFlowKeyMap[step] || step;
+}
+
+shouldShowTrackerStep(stepKey: string): boolean {
+  const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
+  const currentStepIndex = flow.indexOf(stepKey);
+
+  if (currentStepIndex === -1) return false;
+  if (currentStepIndex === 0) return true;
+
+  return flow
+    .slice(0, currentStepIndex)
+    .every((previousStepKey) => this.trackingSteps?.[previousStepKey] === 'DONE');
+}
+
+canOpenTrackerStep(stepKey: string): boolean {
+  return this.shouldShowTrackerStep(stepKey) && this.trackingSteps?.[stepKey] === 'PENDING';
+}
+
 
 videoKycData: any = null;
 
@@ -386,7 +459,9 @@ applicationStatusApi() {
       if (!res?.success) return;
 
       const data = res?.data || {};
+      this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
       this.trackingSteps = data?.steps || this.trackingSteps || {};
+      this.patchActiveLoanFromSnapshot();
       this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
       this.currentTitle =
         data?.borrowerGuidance?.title ||
@@ -432,7 +507,6 @@ async ensureLocationAccess(): Promise<boolean> {
 }
 
 onVideoKycClick() {
-decodeURI
   // ❌ agar locked hai toh kuch mat karo
   if (this.trackingSteps?.videoKyc === 'LOCKED') return;
 
@@ -543,7 +617,6 @@ openSanctionLetter() {
 
   this.contentService.sanctionEsignLink(this.applicationId).subscribe({
     next: async (res: any) => {
-debugger
       const url = res?.data?.sanctionLetterUrl;
 
       if (!url) {
@@ -835,6 +908,8 @@ openRepayment(): void {
 
   this.router.navigate(['/dashboard/profile/loan-repay', this.applicationId]);
 }
+
+
 
 }
 

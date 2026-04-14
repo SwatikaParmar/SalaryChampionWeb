@@ -56,7 +56,7 @@
   <!-- LOAN -->
   <div class="card compact">
 
-    <h3>Loan</h3>
+    <h3>Loan Amount</h3>
 
     <div class="grid">
       <div>
@@ -66,7 +66,7 @@
 
       <div>
         <label>Tenure</label>
-        <p>{{ borrower?.tenureDays }} Days</p>
+        <p>{{ loanTerms?.tenureDays }} Days</p>
       </div>
 
       <div>
@@ -76,53 +76,12 @@
 
       <div>
         <label>Status</label>
-        <p class="status">{{ summary?.applicationStatus }}</p>
+        <p class="status">{{ summary?.loanStatus }}</p>
       </div>
     </div>
 
   </div>
 
-  <!-- JOURNEY -->
-  <div class="card compact">
 
-    <h3>Journey</h3>
-
-    <div class="grid">
-      <div>
-        <label>Current</label>
-        <p>{{ journey?.currentStep }}</p>
-      </div>
-
-      <div>
-        <label>Next</label>
-        <p>{{ journey?.nextStep }}</p>
-      </div>
-
-      <div>
-        <label>Stage</label>
-        <p>{{ journey?.workflowStage }}</p>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- STATEMENT -->
-  <div class="card compact">
-
-    <h3>Bank Statement</h3>
-
-    <div class="grid">
-      <div>
-        <label>AA</label>
-        <p>{{ statement?.aa?.status }}</p>
-      </div>
-
-      <div>
-        <label>BSA</label>
-        <p>{{ statement?.bsa?.status || 'N/A' }}</p>
-      </div>
-    </div>
-
-  </div>
 
 </div>

@@ -41,12 +41,12 @@
     </div>
 
     <div class="info-card">
-      <label>Next Due Amount</label>
+      <label>Total Repayment</label>
       <p>{{ nextDueAmount | currency:'INR':'symbol':'1.0-0' }}</p>
     </div>
 
     <div class="info-card">
-      <label>Next Due Date</label>
+      <label>Due Date</label>
       <p>{{ summary?.nextDueDate ? (summary?.nextDueDate | date:'mediumDate') : '--' }}</p>
     </div>
 
@@ -55,10 +55,10 @@
       <p>{{ overdueAmount | currency:'INR':'symbol':'1.0-0' }}</p>
     </div>
 
-    <div class="info-card">
+    <!-- <div class="info-card">
       <label>Allowed Range</label>
       <p>{{ minPayAmount | currency:'INR':'symbol':'1.0-0' }} to {{ maxPayAmount | currency:'INR':'symbol':'1.0-0' }}</p>
-    </div>
+    </div> -->
   </div>
 
   <div class="section-card foreclosure-card" *ngIf="hasForeclosureQuote">
@@ -75,11 +75,11 @@
 
     <div class="foreclosure-grid">
       <div class="quote-metric highlight">
-        <label>Preclosure Amount</label>
+        <label>Preclosure Payment</label>
         <h4>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</h4>
       </div>
       <div class="quote-metric">
-        <label>Regular Due</label>
+        <label>Repayment Due</label>
         <p>{{ regularPayableAmount | currency:'INR':'symbol':'1.0-0' }}</p>
       </div>
       <div class="quote-metric">
@@ -164,12 +164,12 @@
         [class.active]="amountOption === 'FORECLOSURE'"
         (click)="selectAmountOption('FORECLOSURE')"
       >
-        <span>Foreclosure Quote</span>
+        <span>Preclosure Amount</span>
         <strong>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
         <small>Close the loan early and save {{ foreclosureSavings | currency:'INR':'symbol':'1.0-0' }}</small>
       </button>
 
-      <button
+      <!-- <button
         class="option-card"
         type="button"
         [class.active]="amountOption === 'MINIMUM'"
@@ -178,7 +178,7 @@
         <span>Minimum Due</span>
         <strong>{{ minPayAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
         <small>Partial payment</small>
-      </button>
+      </button> -->
 
       <button
         class="option-card"
@@ -229,7 +229,7 @@
       <div>
         <label>Selected Amount</label>
         <h4>{{ selectedAmount | currency:'INR':'symbol':'1.0-0' }}</h4>
-        <p>{{ amountOption === 'FORECLOSURE' ? 'Foreclosure settlement' : paymentType === 'FULL' ? 'Full payment' : 'Partial payment' }}</p>
+        <p>{{ amountOption === 'FORECLOSURE' ? 'Pre Close' : paymentType === 'FULL' ? 'Full payment' : 'Partial payment' }}</p>
       </div>
 
       <button

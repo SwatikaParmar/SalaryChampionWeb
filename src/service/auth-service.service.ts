@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiEndPoint } from '../enums/api-end-point';
 import { environment } from '../environments/environment';
@@ -10,10 +9,13 @@ import { environment } from '../environments/environment';
 })
 export class AuthServiceService {
   private readonly loginLocationKey = 'loginLocation';
+  private readonly loginFlowKeys = ['loginPhone', 'loginMobile', 'otpTimer'];
+  private locationRequestPromise: Promise<{ lat: number; long: number }> | null =
+    null;
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser$: Observable<any>;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient) {
     const userData = JSON.parse(localStorage.getItem('user') || 'null');
     this.currentUserSubject = new BehaviorSubject<any>(userData);
     this.currentUser$ = this.currentUserSubject.asObservable();
@@ -51,8 +53,8 @@ export class AuthServiceService {
     localStorage.removeItem(this.loginLocationKey);
   }
 
-  requestCurrentLocation(): Promise<{ lat: number; long: number }> {
-    return new Promise((resolve, reject) => {
+  private getCurrentPosition(options?: PositionOptions) {
+    return new Promise<{ lat: number; long: number }>((resolve, reject) => {
       if (!navigator.geolocation) {
         reject(new Error('Geolocation is not supported'));
         return;
@@ -69,13 +71,106 @@ export class AuthServiceService {
           resolve(location);
         },
         (error) => reject(error),
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        },
+        options,
       );
     });
+  }
+
+  clearLoginFlowData(preserveLocation = true) {
+    this.loginFlowKeys.forEach((key) => localStorage.removeItem(key));
+
+    if (!preserveLocation) {
+      this.clearLoginLocation();
+    }
+  }
+
+  logout(options?: { preserveLoginLocation?: boolean }) {
+    const preserveLoginLocation = options?.preserveLoginLocation ?? true;
+
+    localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    this.clearLoginFlowData(preserveLoginLocation);
+
+    sessionStorage.clear();
+
+    this.locationRequestPromise = null;
+    this.currentUserSubject.next(null);
+  }
+
+  async prefetchLocationIfAvailable() {
+    if (this.getSavedLoginLocation() || this.locationRequestPromise) {
+      return;
+    }
+
+    if (
+      typeof navigator === 'undefined' ||
+      !navigator.geolocation ||
+      !navigator.permissions?.query
+    ) {
+      return;
+    }
+
+    try {
+      const permissionStatus = await navigator.permissions.query({
+        name: 'geolocation' as PermissionName,
+      });
+
+      if (permissionStatus.state !== 'granted') {
+        return;
+      }
+
+      await this.requestCurrentLocation();
+    } catch {
+      // Silent prefetch: login flow will handle visible errors if user action needs it.
+    }
+  }
+
+  requestCurrentLocation(
+    forceRefresh = false,
+  ): Promise<{ lat: number; long: number }> {
+    const savedLocation = !forceRefresh ? this.getSavedLoginLocation() : null;
+    if (savedLocation) {
+      return Promise.resolve(savedLocation);
+    }
+
+    if (this.locationRequestPromise) {
+      return this.locationRequestPromise;
+    }
+
+    const requestPromise = new Promise<{ lat: number; long: number }>(
+      async (resolve, reject) => {
+        try {
+          const quickLocation = await this.getCurrentPosition({
+            enableHighAccuracy: false,
+            timeout: 4000,
+            maximumAge: 900000,
+          });
+          resolve(quickLocation);
+        } catch (error: any) {
+          if (error?.code === error?.PERMISSION_DENIED) {
+            reject(error);
+            return;
+          }
+
+          try {
+            const preciseLocation = await this.getCurrentPosition({
+              enableHighAccuracy: true,
+              timeout: 8000,
+              maximumAge: 300000,
+            });
+            resolve(preciseLocation);
+          } catch (fallbackError) {
+            reject(fallbackError);
+          }
+        }
+      },
+    ).finally(() => {
+      this.locationRequestPromise = null;
+    });
+
+    this.locationRequestPromise = requestPromise;
+    return requestPromise;
   }
 
   otp(data: any) {

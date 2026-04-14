@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthServiceService } from '../../../service/auth-service.service';
 import { ContentService } from '../../../service/content.service';
 
 @Component({
@@ -15,7 +16,10 @@ export class SidebarComponent {
   loanProgress: any;
   overallProgress: any;
   isProfileComplete: any;
-  constructor(private router: Router,    private contentService: ContentService,
+  constructor(
+    private router: Router,
+    private contentService: ContentService,
+    private authService: AuthServiceService,
   ) {}
 
 
@@ -46,7 +50,7 @@ export class SidebarComponent {
     });
   }
   logout(): void {
-    localStorage.clear();
+    this.authService.logout({ preserveLoginLocation: true });
     this.router.navigateByUrl('/'); // or '/login'
   }
 

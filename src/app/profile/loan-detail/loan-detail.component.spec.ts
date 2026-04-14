@@ -11,8 +11,15 @@ import { ContentService } from '../../../service/content.service';
 describe('LoanDetailComponent', () => {
   let component: LoanDetailComponent;
   let fixture: ComponentFixture<LoanDetailComponent>;
+  let contentServiceMock: {
+    getLoanDetail: jasmine.Spy;
+  };
 
   beforeEach(async () => {
+    contentServiceMock = {
+      getLoanDetail: jasmine.createSpy('getLoanDetail').and.returnValue(of({ data: {} }))
+    };
+
     await TestBed.configureTestingModule({
       declarations: [LoanDetailComponent],
       imports: [RouterTestingModule],
@@ -29,9 +36,7 @@ describe('LoanDetailComponent', () => {
         },
         {
           provide: ContentService,
-          useValue: {
-            getLoanDetail: () => of({ data: {} })
-          }
+          useValue: contentServiceMock
         },
         {
           provide: NgxSpinnerService,
@@ -57,5 +62,28 @@ describe('LoanDetailComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should prefer date-based tenure for loan detail display', () => {
+    contentServiceMock.getLoanDetail.and.returnValue(of({
+      data: {
+        loanTerms: {
+          tenureDays: 2,
+          disbursalDate: '2026-04-14',
+          repayDate: '2026-04-15'
+        },
+        applicationSnapshot: {
+          applicationBasic: {
+            tenureDays: 2
+          }
+        }
+      }
+    }));
+
+    fixture = TestBed.createComponent(LoanDetailComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.tenureDisplay).toBe('1 Day');
   });
 });
