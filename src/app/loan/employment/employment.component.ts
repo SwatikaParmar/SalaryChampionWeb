@@ -78,8 +78,7 @@ export class EmploymentComponent implements OnInit {
   // ================= SAVE =================
   save() {
     this.submitted = true;
-    debugger;
-    // 🔥 Force validation
+    // Force validation
     this.employmentForm.markAllAsTouched();
     if (this.employmentForm.invalid) return;
 

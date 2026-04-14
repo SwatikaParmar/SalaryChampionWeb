@@ -99,7 +99,6 @@ export class PanComponent {
     };
 
     this.spinner.show();
-debugger
     this.ContentService.previewPan(payload).subscribe({
       next: (res: any) => {
         this.spinner.hide();

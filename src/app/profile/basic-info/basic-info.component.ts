@@ -18,8 +18,8 @@ export class BasicInfoComponent implements OnInit {
     private fb: FormBuilder,
     private contentService: ContentService,
     private router: Router,
-       private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+       private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +81,6 @@ this.basicForm.patchValue({
 
   // 🔐 PATCH + LOCK PAN VERIFIED DATA
   patchBorrowerData(user: any) {
-    debugger
   // Ensure YYYY-MM-DD
   const formattedDob = user.dob.split('T')[0];
 
@@ -207,7 +206,6 @@ this.toastr.error(getFirstApiErrorMessage(err, 'Failed to save basic details'));
       next: (res) => {
         // ✅ STOP spinner
         this.spinner.hide();
-debugger
          this.handleEligibilityResponse(res);
 
       },
@@ -224,7 +222,6 @@ debugger
 
   handleEligibilityResponse(res: any) {
   const decision = res?.data?.decision;
-debugger
   if (decision === 'ELIGIBLE') {
     // ✅ success page
     this.router.navigate(['/dashboard/profile/success-eligibility']);

@@ -83,7 +83,6 @@ export class DisbursalComponent implements OnInit {
           this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower details'));
           return;
         }
-debugger
         this.applicationId = res.data.application?.id;
         this.userId = res.data.user.id;
         this.getDisbursalBankDetails();
@@ -150,7 +149,6 @@ const payload: any = {
   ...this.disbursalForm.getRawValue(),
   ...(this.userId ? { id: this.userId } : {}) // ✅ updated
 };
-debugger
   this.contentService.disbursalBankAccount(payload).subscribe({
     next: (res: any) => {
       if (!res?.success) {

@@ -45,7 +45,6 @@ export class LoanDetailComponent implements OnInit {
           this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load details'));
           return;
         }
-debugger
         const d = res?.data;
 
         this.data = d;
