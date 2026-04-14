@@ -58,6 +58,7 @@ hasActiveApplication: boolean = false;
   showTracker: boolean = false;
   private hasAutoTriggeredEnachRefresh = false;
   private enachWindowPollTimer: ReturnType<typeof setInterval> | null = null;
+  private videoKycWindowPollTimer: ReturnType<typeof setInterval> | null = null;
 
 showKycModal: boolean = false;
 kycUrl: string = '';
@@ -98,6 +99,7 @@ videoKycModalMessage: string = '';
 
   ngOnDestroy(): void {
     this.clearEnachWindowPollTimer();
+    this.clearVideoKycWindowPollTimer();
   }
 
   showActiveLoanCard: boolean = false;
@@ -251,7 +253,7 @@ private patchTrackerFromSnapshot() {
   const snapshotSteps = this.loanTracking?.steps || this.steps;
   if (!snapshotSteps || Object.keys(snapshotSteps).length === 0) return;
 
-  this.trackingSteps = snapshotSteps;
+  this.trackingSteps = this.buildTrackerSteps(snapshotSteps);
   this.currentTitle =
     this.loanTracking?.currentTitle ||
     this.loanTracking?.currentStage ||
@@ -297,7 +299,7 @@ private isDisbursementCompleted(): boolean {
     this.loanTracking?.steps?.disbursement ||
     this.steps?.disbursement;
 
-  return disbursementStatus === 'DONE';
+  return this.normalizeTrackerStatus(disbursementStatus) === 'DONE';
 }
 
 
@@ -376,12 +378,13 @@ private isDisbursementCompleted(): boolean {
 
 
 getStepIcon(step: string, status: string) {
+  const normalizedStatus = this.normalizeTrackerStatus(status);
 
   // ✅ DONE → green tick
-  if (status === 'DONE') return 'fa-check';
+  if (normalizedStatus === 'DONE') return 'fa-check';
 
   // 🔒 LOCKED → lock icon
-  if (status === 'LOCKED') return 'fa-lock';
+  if (normalizedStatus === 'LOCKED') return 'fa-lock';
 
   // 🟡 PENDING → step wise icon
   switch (step) {
@@ -402,46 +405,93 @@ getStepIcon(step: string, status: string) {
 
 
 getStepClass(status: string) {
-  if (status === 'DONE') return 'done';
-  if (status === 'PENDING') return 'active';
+  const normalizedStatus = this.normalizeTrackerStatus(status);
+
+  if (normalizedStatus === 'DONE') return 'done';
+  if (normalizedStatus === 'PENDING') return 'active';
   return 'locked';
 }
 
 private updateTrackerFlow(flow: any) {
-  if (!Array.isArray(flow) || flow.length === 0) {
-    this.trackerFlow = [...this.defaultTrackerFlow];
-    return;
-  }
+  const normalizedFlow = Array.isArray(flow)
+    ? flow
+        .map((step) => this.normalizeTrackerStepKey(step))
+        .filter((step): step is string => !!step)
+    : [];
 
-  const normalizedFlow = flow
-    .map((step) => this.normalizeTrackerStepKey(step))
-    .filter((step): step is string => !!step);
+  const mergedFlow = [...normalizedFlow];
 
-  this.trackerFlow = normalizedFlow.length
-    ? normalizedFlow
+  this.defaultTrackerFlow.forEach((step) => {
+    if (!mergedFlow.includes(step)) {
+      mergedFlow.push(step);
+    }
+  });
+
+  this.trackerFlow = mergedFlow.length
+    ? mergedFlow
     : [...this.defaultTrackerFlow];
 }
 
 private normalizeTrackerStepKey(step: any): string | null {
   if (typeof step !== 'string') return null;
 
-  return this.trackerFlowKeyMap[step] || step;
+  const normalizedStep = step.trim();
+  return this.trackerFlowKeyMap[normalizedStep.toUpperCase()] || normalizedStep;
+}
+
+private normalizeTrackerStatus(status: any): 'DONE' | 'PENDING' | 'LOCKED' {
+  if (typeof status !== 'string') return 'LOCKED';
+
+  switch (status.trim().toUpperCase()) {
+    case 'DONE':
+    case 'COMPLETED':
+    case 'COMPLETE':
+    case 'SUCCESS':
+      return 'DONE';
+
+    case 'PENDING':
+    case 'ACTIVE':
+    case 'IN_PROGRESS':
+    case 'INPROGRESS':
+    case 'CURRENT':
+      return 'PENDING';
+
+    default:
+      return 'LOCKED';
+  }
+}
+
+private buildTrackerSteps(steps: any): Record<string, 'DONE' | 'PENDING' | 'LOCKED'> {
+  const normalizedSteps: Record<string, 'DONE' | 'PENDING' | 'LOCKED'> = {};
+
+  if (steps && typeof steps === 'object') {
+    Object.keys(steps).forEach((stepKey) => {
+      const normalizedStepKey = this.normalizeTrackerStepKey(stepKey);
+
+      if (!normalizedStepKey) return;
+
+      normalizedSteps[normalizedStepKey] = this.normalizeTrackerStatus(steps[stepKey]);
+    });
+  }
+
+  const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
+
+  flow.forEach((stepKey) => {
+    if (!normalizedSteps[stepKey]) {
+      normalizedSteps[stepKey] = 'LOCKED';
+    }
+  });
+
+  return normalizedSteps;
 }
 
 shouldShowTrackerStep(stepKey: string): boolean {
   const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
-  const currentStepIndex = flow.indexOf(stepKey);
-
-  if (currentStepIndex === -1) return false;
-  if (currentStepIndex === 0) return true;
-
-  return flow
-    .slice(0, currentStepIndex)
-    .every((previousStepKey) => this.trackingSteps?.[previousStepKey] === 'DONE');
+  return flow.includes(stepKey);
 }
 
 canOpenTrackerStep(stepKey: string): boolean {
-  return this.shouldShowTrackerStep(stepKey) && this.trackingSteps?.[stepKey] === 'PENDING';
+  return this.shouldShowTrackerStep(stepKey) && this.normalizeTrackerStatus(this.trackingSteps?.[stepKey]) === 'PENDING';
 }
 
 
@@ -460,7 +510,7 @@ applicationStatusApi() {
 
       const data = res?.data || {};
       this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
-      this.trackingSteps = data?.steps || this.trackingSteps || {};
+      this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
       this.patchActiveLoanFromSnapshot();
       this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
       this.currentTitle =
@@ -490,7 +540,7 @@ async startVideoKyc() {
   const allowed = await this.ensureLocationAccess();
   if (!allowed) return;
 
-  await this.openVideoKycModalWithUrl();
+  this.openVideoKycInNewTab();
 }
 
 
@@ -507,14 +557,15 @@ async ensureLocationAccess(): Promise<boolean> {
 }
 
 onVideoKycClick() {
+  const videoKycStatus = this.normalizeTrackerStatus(this.trackingSteps?.videoKyc);
   // ❌ agar locked hai toh kuch mat karo
-  if (this.trackingSteps?.videoKyc === 'LOCKED') return;
+  if (videoKycStatus === 'LOCKED') return;
 
   // ✅ agar already done hai toh bhi kuch mat karo
-  if (this.trackingSteps?.videoKyc === 'DONE') return;
+  if (videoKycStatus === 'DONE') return;
 
   // ✅ sirf PENDING pe call karo
-  if (this.trackingSteps?.videoKyc === 'PENDING') {
+  if (videoKycStatus === 'PENDING') {
     this.startVideoKyc();
   }
 }
@@ -578,6 +629,37 @@ private async openVideoKycModalWithUrl() {
   this.kycUrlSafe =
     this.sanitizer.bypassSecurityTrustResourceUrl(modalUrl);
   this.showKycModal = true;
+}
+
+private openVideoKycInNewTab() {
+  const videoKycUrl = this.buildVideoKycModalUrl(this.videoKycCustomerUrl);
+  const videoKycWindow = window.open(videoKycUrl, '_blank', 'noopener');
+
+  if (!videoKycWindow) {
+    this.toastr.error('Please allow popups to continue Video KYC');
+    return;
+  }
+
+  this.toastr.info('Video KYC opened in a new tab. Complete it there and return here.');
+  this.monitorVideoKycWindow(videoKycWindow);
+}
+
+private monitorVideoKycWindow(videoKycWindow: Window) {
+  this.clearVideoKycWindowPollTimer();
+
+  this.videoKycWindowPollTimer = setInterval(() => {
+    if (!videoKycWindow.closed) return;
+
+    this.clearVideoKycWindowPollTimer();
+    this.videoKycRefresh();
+  }, 1500);
+}
+
+private clearVideoKycWindowPollTimer() {
+  if (this.videoKycWindowPollTimer) {
+    clearInterval(this.videoKycWindowPollTimer);
+    this.videoKycWindowPollTimer = null;
+  }
 }
 
 videoKycRefresh() {
@@ -875,7 +957,7 @@ private restorePendingEnachMandateRowId() {
 }
 
 private clearPendingEnachMandateIfCompleted(steps: any) {
-  if (steps?.enach !== 'DONE') return;
+  if (this.normalizeTrackerStatus(steps?.enach) !== 'DONE') return;
 
   this.mandateRowId = '';
   this.persistPendingEnachMandateRowId('');

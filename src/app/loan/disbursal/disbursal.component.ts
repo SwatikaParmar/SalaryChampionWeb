@@ -161,7 +161,7 @@ const payload: any = {
       }
 
       // ✅ STEP 1: Bank details saved
-      this.toastr.success('Bank details saved successfully ✅');
+      this.toastr.success('Bank details saved successfully');
 
       // ✅ STEP 2: Penny Drop hit
       this.hitPennyDrop();
