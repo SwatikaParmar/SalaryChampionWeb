@@ -1,6 +1,6 @@
 
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -86,6 +86,7 @@ videoKycModalMessage: string = '';
   }
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
@@ -97,6 +98,7 @@ videoKycModalMessage: string = '';
   ngOnInit(): void {
     this.restorePendingEnachMandateRowId();
     this.getBorrowerSnapshot();
+    this.triggerDashboardRefreshIfRequested();
   }
 
   ngOnDestroy(): void {
@@ -180,6 +182,23 @@ getBorrowerSnapshot() {
       this.spinner.hide();
     }
   });
+}
+
+private triggerDashboardRefreshIfRequested() {
+  if (this.route.snapshot.queryParamMap.get('refresh') !== 'true') {
+    return;
+  }
+
+  this.router.navigate([], {
+    relativeTo: this.route,
+    queryParams: { refresh: null },
+    queryParamsHandling: 'merge',
+    replaceUrl: true
+  });
+
+  setTimeout(() => {
+    this.getBorrowerSnapshot();
+  }, 1200);
 }
 
 private applyEligibilityState(offer: any, eligibility: any) {

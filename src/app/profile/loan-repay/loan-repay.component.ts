@@ -305,7 +305,7 @@ export class LoanRepayComponent implements OnInit {
       returnUrl: this.getPaymentReturnUrl(),
       orderNote: `Repayment for ${this.applicationNumber}`
     };
-
+debugger
     this.creatingOrder = true;
     this.contentService.createBorrowerRepaymentOrder(payload).subscribe({
       next: (res: any) => {
@@ -444,8 +444,9 @@ this.router.navigateByUrl('/dashboard')  }
   }
 
   private getPaymentReturnUrl(): string {
+    
     if (this.amountOption === 'FORECLOSURE') {
-      return `${this.repaymentReturnBaseUrl}/dashboard`;
+      return `${this.repaymentReturnBaseUrl}/dashboard?refresh=true`;
     }
 
     return `${this.repaymentReturnBaseUrl}/dashboard/profile/loan-repay/${this.applicationId}`;
