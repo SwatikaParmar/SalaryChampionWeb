@@ -18,7 +18,7 @@ const routes: Routes = [
     path: 'contact-us',
     component: ContactUsComponent
   },{
-    path: 'terms-condition',
+    path: 'privacy-policy',
     component: TermsConditionComponent
   }
 
