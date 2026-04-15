@@ -159,9 +159,9 @@ const payload: any = {
         );
         return;
       }
-
+debugger
       // ✅ STEP 1: Bank details saved
-      this.toastr.success('Bank details saved successfully');
+      // this.toastr.success('Bank details saved successfully');
 
       // ✅ STEP 2: Penny Drop hit
       this.hitPennyDrop();
@@ -287,7 +287,12 @@ hitPennyDrop() {
       this.spinner.hide();
       this.isSubmitting = false;
 
-      if (res?.success) {
+      const pennyDropStatus = (res?.data?.bankAccount?.pennyDropStatus || '').toUpperCase();
+      const providerReason =
+        res?.data?.provider?.reason ||
+        getFirstApiErrorMessage(res, 'Penny drop verification failed');
+
+      if (res?.success && pennyDropStatus === 'MATCHED') {
         // 🔥 OPEN SUCCESS MODAL
         const modalEl = document.getElementById('pennyDropSuccessModal');
         if (modalEl) {
@@ -298,9 +303,7 @@ hitPennyDrop() {
         //  this.router.navigate(['/dashboard/loan']);
 
       } else {
-        this.toastr.warning(
-          getFirstApiErrorMessage(res, 'Penny drop verification failed')
-        );
+        this.toastr.error(providerReason);
       }
     },
     error: (err) => {

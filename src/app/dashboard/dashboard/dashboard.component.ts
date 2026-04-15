@@ -1,3 +1,4 @@
+
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
@@ -537,7 +538,6 @@ async startVideoKyc() {
     return;
   }
 
-  // ✅ पहले permission लो
   const allowed = await this.ensureLocationAccess();
   if (!allowed) return;
 
@@ -637,7 +637,6 @@ private openVideoKycInNewTab() {
   const videoKycWindow = window.open(videoKycUrl, '_blank', 'noopener');
 
   if (!videoKycWindow) {
-    this.toastr.error('Please allow popups to continue Video KYC');
     return;
   }
 

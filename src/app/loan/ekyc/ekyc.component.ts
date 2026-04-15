@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ContentService } from '../../../service/content.service';
+import { environment } from '../../../environments/environment';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { ContentService } from '../../../service/content.service';
 @Component({
   selector: 'app-ekyc',
   templateUrl: './ekyc.component.html',
@@ -12,6 +13,7 @@ export class EkycComponent implements OnInit {
   ekycUrl: any;
   loading = false;
   errorMsg = '';
+  private readonly rootPathUrl = environment.rootPathUrl.replace(/\/+$/, '');
 
   constructor(
     private contentService: ContentService,
@@ -48,9 +50,10 @@ export class EkycComponent implements OnInit {
 
     const payload = {
       applicationId: this.applicationId,
-      successRedirectUrl:
-        'https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/loan/ekyc-verification',
-      failureRedirectUrl: 'https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/loan/ekyc-error',
+          successRedirectUrl:
+        'https://staging.d3kvvposqbz8ni.amplifyapp.com/dashboard/loan/ekyc-verification',
+      failureRedirectUrl: 'https://staging.d3kvvposqbz8ni.amplifyapp.com/dashboard/loan/ekyc-error',
+
     };
 
     this.contentService.ekycStart(payload).subscribe({

@@ -117,7 +117,7 @@ if (this.consentId) {
 
     const payload = {
       applicationId: this.applicationId,
-      redirectUrl: window.location.origin + '/dashboard/loan/bank-verification'
+    redirectUrl: 'https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/loan/bank-verification',
     };
 
     this.aaLoading = true;

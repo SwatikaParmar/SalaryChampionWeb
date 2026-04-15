@@ -17,6 +17,8 @@ export class EKYCVerificationComponent implements OnInit {
   requestId = '';
   applicationId = '';
   showSuccessModal = false;
+  isLoadingApplication = false;
+  isVerifying = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -27,7 +29,7 @@ export class EKYCVerificationComponent implements OnInit {
   ) {}
 
   private openEkycError(reason = ''): void {
-    this.router.navigate(['/dashboard/loan/e-kyc-error'], {
+    this.router.navigate(['/dashboard/loan/ekyc-error'], {
       queryParams: reason ? { reason } : undefined,
     });
   }
@@ -48,23 +50,40 @@ export class EKYCVerificationComponent implements OnInit {
   }
 
   getBorrowerSnapshot() {
+    this.isLoadingApplication = true;
+
     this.contentService.getBorrowerSnapshot().subscribe(res => {
+      this.isLoadingApplication = false;
+
       if (res?.success) {
         this.applicationId = res.data.application.id;
+        return;
       }
+
+      this.openEkycError(getFirstApiErrorMessage(res, 'Unable to load application details'));
+    }, () => {
+      this.isLoadingApplication = false;
+      this.openEkycError('Unable to load application details');
     });
   }
 
   verifyEkyc() {
+    if (!this.requestId || !this.applicationId || this.isLoadingApplication || this.isVerifying) {
+      this.toastr.warning('Please wait, verification details are still loading.');
+      return;
+    }
+
     const payload = {
       requestId: this.requestId,
       applicationId: this.applicationId
     };
 
+    this.isVerifying = true;
     this.spinner.show();
 
     this.contentService.verifyEkyc(payload).subscribe({
       next: (res: any) => {
+        this.isVerifying = false;
         this.spinner.hide();
 
         if (res?.success) {
@@ -74,6 +93,7 @@ export class EKYCVerificationComponent implements OnInit {
         }
       },
       error: (err) => {
+        this.isVerifying = false;
         this.spinner.hide();
         this.openEkycError(getFirstApiErrorMessage(err));
       }
