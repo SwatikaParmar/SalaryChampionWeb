@@ -446,8 +446,14 @@
 
         <input
           type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          pattern="[0-9]*"
           placeholder="Enter OTP"
           [(ngModel)]="enteredOtp"
+          (ngModelChange)="onSanctionOtpInput($event)"
+          (keydown)="allowOnlyOtpDigits($event)"
+          (paste)="handleSanctionOtpPaste($event)"
           class="otp-input"
         />
 

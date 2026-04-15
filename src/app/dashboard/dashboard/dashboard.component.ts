@@ -538,15 +538,29 @@ async startVideoKyc() {
     return;
   }
 
-  const allowed = await this.ensureLocationAccess();
-  if (!allowed) return;
+  this.spinner.show();
+  const videoKycWindow = this.openVideoKycInNewTab();
 
-  this.openVideoKycInNewTab();
+  try {
+    const allowed = await this.ensureLocationAccess();
+    if (!allowed) {
+      this.closeVideoKycWindow(videoKycWindow);
+      return;
+    }
+  } finally {
+    this.spinner.hide();
+  }
 }
 
 
 async ensureLocationAccess(): Promise<boolean> {
   return new Promise((resolve) => {
+    if (!navigator.geolocation) {
+      this.toastr.error('Location not supported');
+      resolve(false);
+      return;
+    }
+
     navigator.geolocation.getCurrentPosition(
       () => resolve(true),
       () => {
@@ -616,32 +630,15 @@ private buildVideoKycModalUrl(url: string): string {
   }
 }
 
-private async openVideoKycModalWithUrl() {
-  const modalUrl = this.buildVideoKycModalUrl(this.videoKycCustomerUrl);
-
-  this.showKycModal = false;
-  this.kycUrl = '';
-  this.videoKycModalMessage = '';
-  this.kycUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
-
-  await new Promise((resolve) => setTimeout(resolve, 0));
-
-  this.kycUrl = modalUrl;
-  this.kycUrlSafe =
-    this.sanitizer.bypassSecurityTrustResourceUrl(modalUrl);
-  this.showKycModal = true;
-}
-
-private openVideoKycInNewTab() {
+private openVideoKycInNewTab(): Window | null {
   const videoKycUrl = this.buildVideoKycModalUrl(this.videoKycCustomerUrl);
   const videoKycWindow = window.open(videoKycUrl, '_blank', 'noopener');
 
-  if (!videoKycWindow) {
-    return;
+  if (videoKycWindow) {
+    this.monitorVideoKycWindow(videoKycWindow);
   }
 
-  this.toastr.info('Video KYC opened in a new tab. Complete it there and return here.');
-  this.monitorVideoKycWindow(videoKycWindow);
+  return videoKycWindow;
 }
 
 private monitorVideoKycWindow(videoKycWindow: Window) {
@@ -659,6 +656,12 @@ private clearVideoKycWindowPollTimer() {
   if (this.videoKycWindowPollTimer) {
     clearInterval(this.videoKycWindowPollTimer);
     this.videoKycWindowPollTimer = null;
+  }
+}
+
+private closeVideoKycWindow(videoKycWindow?: Window | null) {
+  if (videoKycWindow && !videoKycWindow.closed) {
+    videoKycWindow.close();
   }
 }
 
@@ -689,7 +692,7 @@ sanctionUrl: string = '';
 sanctionUrlSafe!: SafeResourceUrl;
 
 otpData: any = null;
-enteredOtp: any;
+enteredOtp = '';
 
 openSanctionLetter() {
 
@@ -736,10 +739,21 @@ openSanctionLetter() {
 }
 
 acceptSanction(otp: string) {
+  const normalizedOtp = this.normalizeOtp(otp);
+
+  if (!normalizedOtp) {
+    this.toastr.error('Please enter OTP');
+    return;
+  }
+
+  if (!/^\d+$/.test(normalizedOtp)) {
+    this.toastr.error('OtpCode must be numeric digits only.');
+    return;
+  }
 
   const payload = {
     applicationId: this.applicationId,
-    otpCode: otp
+    otpCode: normalizedOtp
   };
 
   this.spinner.show();
@@ -751,16 +765,54 @@ acceptSanction(otp: string) {
       if (res?.success) {
 
         this.showSanctionModal = false;
+        this.enteredOtp = '';
 
         // 🔥 refresh tracker
         this.applicationStatusApi();
 
       }
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
+      this.toastr.error(getFirstApiErrorMessage(err, 'Failed to accept sanction'));
     }
   });
+}
+
+onSanctionOtpInput(value: string) {
+  this.enteredOtp = this.normalizeOtp(value);
+}
+
+allowOnlyOtpDigits(event: KeyboardEvent) {
+  const allowedControlKeys = [
+    'Backspace',
+    'Delete',
+    'Tab',
+    'ArrowLeft',
+    'ArrowRight',
+    'Home',
+    'End'
+  ];
+
+  if (allowedControlKeys.includes(event.key)) {
+    return;
+  }
+
+  if (!/^\d$/.test(event.key)) {
+    event.preventDefault();
+  }
+}
+
+handleSanctionOtpPaste(event: ClipboardEvent) {
+  const pastedValue = event.clipboardData?.getData('text') || '';
+  const normalizedOtp = this.normalizeOtp(pastedValue);
+
+  event.preventDefault();
+  this.enteredOtp = normalizedOtp;
+}
+
+private normalizeOtp(value: string): string {
+  return String(value || '').replace(/\D/g, '').trim();
 }
 
 

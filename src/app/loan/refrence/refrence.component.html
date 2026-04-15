@@ -41,7 +41,10 @@
                 placeholder="Enter 10-digit mobile number"
                 maxlength="10"
               />
-              <small *ngIf="submitted && ref.get('phone')?.invalid">
+              <small *ngIf="hasDuplicatePhoneError(i)">
+                Same mobile number is not allowed
+              </small>
+              <small *ngIf="submitted && ref.get('phone')?.invalid && !ref.get('phone')?.hasError('duplicatePhone')">
                 Enter valid mobile number
               </small>
             </div>

@@ -19,7 +19,6 @@ export class BankStatementComponent implements OnInit {
   password: string = '';
 
   isUploading = false;
-  uploadCompleted = false;
 
   uploadModal: any;
 
@@ -155,9 +154,8 @@ checkBankStatementStatus() {
       await this.contentService.completeUpload(fileId).toPromise();
 
       this.toastr.success('Bank statement uploaded successfully ✅');
-      this.uploadCompleted = true;
-
-      this.uploadModal.hide();
+      this.uploadModal?.hide();
+      setTimeout(() => this.continue(), 150);
     } catch (err: any) {
       this.toastr.error(getFirstApiErrorMessage(err, 'Upload failed'));
     } finally {

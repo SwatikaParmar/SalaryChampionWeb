@@ -13,6 +13,8 @@ describe('LoanRepayComponent', () => {
   let component: LoanRepayComponent;
   let fixture: ComponentFixture<LoanRepayComponent>;
   let repaymentSummaryResponse: any;
+  let contentServiceSpy: jasmine.SpyObj<ContentService>;
+  let toastrSpy: jasmine.SpyObj<ToastrService>;
 
   beforeEach(async () => {
     repaymentSummaryResponse = {
@@ -53,6 +55,21 @@ describe('LoanRepayComponent', () => {
       }
     };
 
+    contentServiceSpy = jasmine.createSpyObj<ContentService>('ContentService', [
+      'getBorrowerRepaymentSummary',
+      'refreshBorrowerRepayment',
+      'createBorrowerRepaymentOrder'
+    ]);
+    contentServiceSpy.getBorrowerRepaymentSummary.and.returnValue(of(repaymentSummaryResponse));
+    contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({ data: {} }));
+    contentServiceSpy.createBorrowerRepaymentOrder.and.returnValue(of({ data: {} }));
+
+    toastrSpy = jasmine.createSpyObj<ToastrService>('ToastrService', [
+      'error',
+      'warning',
+      'success'
+    ]);
+
     await TestBed.configureTestingModule({
       declarations: [LoanRepayComponent],
       imports: [FormsModule, RouterTestingModule],
@@ -73,11 +90,7 @@ describe('LoanRepayComponent', () => {
         },
         {
           provide: ContentService,
-          useValue: {
-            getBorrowerRepaymentSummary: () => of(repaymentSummaryResponse),
-            refreshBorrowerRepayment: () => of({ data: {} }),
-            createBorrowerRepaymentOrder: () => of({ data: {} })
-          }
+          useValue: contentServiceSpy
         },
         {
           provide: NgxSpinnerService,
@@ -88,10 +101,7 @@ describe('LoanRepayComponent', () => {
         },
         {
           provide: ToastrService,
-          useValue: {
-            error: () => undefined,
-            warning: () => undefined
-          }
+          useValue: toastrSpy
         }
       ]
     })
@@ -99,6 +109,7 @@ describe('LoanRepayComponent', () => {
 
     fixture = TestBed.createComponent(LoanRepayComponent);
     component = fixture.componentInstance;
+    sessionStorage.clear();
     fixture.detectChanges();
   });
 
@@ -158,5 +169,51 @@ describe('LoanRepayComponent', () => {
 
     component.selectAmountOption('FULL');
     expect(component.amountOption).toBe('FULL');
+  });
+
+  it('should redirect to dashboard flow only for successful full due payments', () => {
+    sessionStorage.setItem('repay-option:APP123', 'FULL');
+    const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
+    const clearStorageSpy = spyOn<any>(component, 'clearRepaymentStorage').and.callThrough();
+
+    contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({
+      data: {
+        paymentGatewayOrder: {
+          paymentStatus: 'SUCCESS'
+        },
+        repaymentSummary: {
+          payableAmount: 0
+        }
+      }
+    }));
+
+    component.refreshPaymentStatus('ORDER123');
+
+    expect(navigateSpy).toHaveBeenCalled();
+    expect(clearStorageSpy).toHaveBeenCalled();
+    expect(sessionStorage.getItem('repay-option:APP123')).toBeNull();
+    expect(toastrSpy.success).toHaveBeenCalledWith('Payment status updated successfully');
+  });
+
+  it('should stay on the repayment page for successful non-full payments', () => {
+    sessionStorage.setItem('repay-option:APP123', 'CUSTOM');
+    const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
+    const fetchSummarySpy = spyOn(component, 'fetchSummary').and.callThrough();
+
+    contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({
+      data: {
+        paymentGatewayOrder: {
+          paymentStatus: 'SUCCESS'
+        },
+        repaymentSummary: {
+          payableAmount: 100
+        }
+      }
+    }));
+
+    component.refreshPaymentStatus('ORDER123');
+
+    expect(navigateSpy).not.toHaveBeenCalled();
+    expect(fetchSummarySpy).toHaveBeenCalled();
   });
 });

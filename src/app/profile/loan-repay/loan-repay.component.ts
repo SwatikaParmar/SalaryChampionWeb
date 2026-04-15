@@ -13,6 +13,9 @@ type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM' | 'FORECLOSURE';
   styleUrls: ['./loan-repay.component.css']
 })
 export class LoanRepayComponent implements OnInit {
+  private readonly repaymentOrderStoragePrefix = 'repay-order:';
+  private readonly repaymentOptionStoragePrefix = 'repay-option:';
+  private readonly repaymentReturnBaseUrl = 'https://staging.d1ndeezlom7hf1.amplifyapp.com/';
   applicationId = '';
   summary: any = null;
   refreshResult: any = null;
@@ -299,7 +302,7 @@ export class LoanRepayComponent implements OnInit {
       applicationId: this.applicationId,
       amount: this.selectedAmount,
       paymentType: this.paymentType,
-      returnUrl: `https://staging.d3kvvposqbz8ni.amplifyapp.com/dashboard/profile/loan-repay/${this.applicationId}`,
+      returnUrl: this.getPaymentReturnUrl(),
       orderNote: `Repayment for ${this.applicationNumber}`
     };
 
@@ -322,7 +325,8 @@ export class LoanRepayComponent implements OnInit {
           '';
 
         if (orderId) {
-          sessionStorage.setItem(`repay-order:${this.applicationId}`, orderId);
+          this.setSessionValue(this.repaymentOrderStorageKey, orderId);
+          this.setSessionValue(this.repaymentOptionStorageKey, this.amountOption);
         }
 
         if (hostedPaymentUrl) {
@@ -345,7 +349,7 @@ export class LoanRepayComponent implements OnInit {
   refreshPaymentStatus(orderId?: string): void {
     const resolvedOrderId =
       orderId ||
-      sessionStorage.getItem(`repay-order:${this.applicationId}`) ||
+      this.getSessionValue(this.repaymentOrderStorageKey) ||
       '';
 
     if (!resolvedOrderId) {
@@ -373,8 +377,12 @@ export class LoanRepayComponent implements OnInit {
         );
         this.paymentResult = data?.payment || data?.paymentResult || null;
         this.orderStatus = data?.paymentGatewayOrder || data?.orderStatus || null;
+        const savedRepaymentOption = this.getSessionValue(this.repaymentOptionStorageKey);
+        const shouldRedirectToDashboard =
+          this.isSuccessfulPayment(this.orderStatus) &&
+          (savedRepaymentOption === 'FULL' || savedRepaymentOption === 'FORECLOSURE');
 
-        if (this.orderStatus?.paidAt || this.orderStatus?.paymentStatus === 'SUCCESS') {
+        if (shouldRedirectToDashboard || this.isSuccessfulPayment(this.orderStatus)) {
           this.toastr.success('Payment status updated successfully');
         } else if (this.orderStatus?.paymentStatus === 'FAILED') {
           const paymentFailureMessage =
@@ -384,6 +392,12 @@ export class LoanRepayComponent implements OnInit {
           if (paymentFailureMessage) {
             this.toastr.error(paymentFailureMessage);
           }
+        }
+
+        if (shouldRedirectToDashboard) {
+          this.clearRepaymentStorage();
+          this.navigateToDashboardWithRefresh();
+          return;
         }
 
         this.clearCallbackParams();
@@ -400,6 +414,14 @@ export class LoanRepayComponent implements OnInit {
   goBack(): void {
 this.router.navigateByUrl('/dashboard')  }
 
+  private get repaymentOrderStorageKey(): string {
+    return `${this.repaymentOrderStoragePrefix}${this.applicationId}`;
+  }
+
+  private get repaymentOptionStorageKey(): string {
+    return `${this.repaymentOptionStoragePrefix}${this.applicationId}`;
+  }
+
   private clearCallbackParams(): void {
     if (!this.callbackOrderId || !this.applicationId) {
       return;
@@ -409,6 +431,53 @@ this.router.navigateByUrl('/dashboard')  }
     this.router.navigate(['/dashboard/profile/loan-repay', this.applicationId], {
       replaceUrl: true
     });
+  }
+
+  private isSuccessfulPayment(orderStatus: any): boolean {
+    return !!(orderStatus?.paidAt || orderStatus?.paymentStatus === 'SUCCESS');
+  }
+
+  private navigateToDashboardWithRefresh(): void {
+    this.router.navigateByUrl('/dashboard', { replaceUrl: true }).then(() => {
+      window.location.reload();
+    });
+  }
+
+  private getPaymentReturnUrl(): string {
+    if (this.amountOption === 'FORECLOSURE') {
+      return `${this.repaymentReturnBaseUrl}/dashboard`;
+    }
+
+    return `${this.repaymentReturnBaseUrl}/dashboard/profile/loan-repay/${this.applicationId}`;
+  }
+
+  private clearRepaymentStorage(): void {
+    this.removeSessionValue(this.repaymentOrderStorageKey);
+    this.removeSessionValue(this.repaymentOptionStorageKey);
+  }
+
+  private getSessionValue(key: string): string {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+      return '';
+    }
+
+    return sessionStorage.getItem(key)?.trim() || '';
+  }
+
+  private setSessionValue(key: string, value: string): void {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined' || !value) {
+      return;
+    }
+
+    sessionStorage.setItem(key, value);
+  }
+
+  private removeSessionValue(key: string): void {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+      return;
+    }
+
+    sessionStorage.removeItem(key);
   }
 
   private normalizeSummary(raw: any): any {

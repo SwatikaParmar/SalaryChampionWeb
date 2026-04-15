@@ -1,5 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormBuilder,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ContentService } from '../../../service/content.service';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -37,10 +45,10 @@ export class RefrenceComponent implements OnInit {
   =============================== */
   initForm() {
     this.referenceForm = this.fb.group({
-      references: this.fb.array([
-        this.createReference(),
-        this.createReference(),
-      ])
+      references: this.fb.array(
+        [this.createReference(), this.createReference()],
+        { validators: [this.duplicateReferencePhoneValidator()] },
+      )
     });
   }
 
@@ -50,6 +58,49 @@ export class RefrenceComponent implements OnInit {
       phone: ['', [Validators.required, Validators.pattern(/^[6-9]\d{9}$/)]],
       relation: ['', Validators.required]
     });
+  }
+
+  private duplicateReferencePhoneValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const references = control as FormArray;
+
+      if (references.length < 2) {
+        return null;
+      }
+
+      const firstPhoneControl = references.at(0)?.get('phone');
+      const secondPhoneControl = references.at(1)?.get('phone');
+
+      const firstPhone = (firstPhoneControl?.value || '').trim();
+      const secondPhone = (secondPhoneControl?.value || '').trim();
+
+      if (!secondPhoneControl) {
+        return null;
+      }
+
+      const secondPhoneErrors = { ...(secondPhoneControl.errors || {}) };
+      delete secondPhoneErrors['duplicatePhone'];
+
+      if (Object.keys(secondPhoneErrors).length) {
+        secondPhoneControl.setErrors(secondPhoneErrors);
+      } else {
+        secondPhoneControl.setErrors(null);
+      }
+
+      if (
+        firstPhone &&
+        secondPhone &&
+        firstPhone === secondPhone
+      ) {
+        secondPhoneControl.setErrors({
+          ...(secondPhoneControl.errors || {}),
+          duplicatePhone: true,
+        });
+        return { duplicatePhone: true };
+      }
+
+      return null;
+    };
   }
 
   get references(): FormArray {
@@ -80,14 +131,16 @@ export class RefrenceComponent implements OnInit {
           this.references.clear();
 
           refs.slice(0, 2).forEach((r: any) => {
-            this.references.push(
-              this.fb.group({
-                name: [r.name, Validators.required],
-                phone: [r.phone, Validators.required],
-                relation: [r.relation, Validators.required]
-              })
-            );
+            const referenceGroup = this.createReference();
+            referenceGroup.patchValue({
+              name: r.name || '',
+              phone: r.phone || '',
+              relation: r.relation || '',
+            });
+            this.references.push(referenceGroup);
           });
+
+          this.references.updateValueAndValidity();
         }
       },
       error: (err) => {
@@ -139,5 +192,17 @@ export class RefrenceComponent implements OnInit {
         );
       }
     });
+  }
+
+  hasDuplicatePhoneError(index: number): boolean {
+    if (index !== 1) {
+      return false;
+    }
+
+    const phoneControl = this.references.at(index)?.get('phone');
+    return !!(
+      phoneControl?.hasError('duplicatePhone') &&
+      (phoneControl.touched || phoneControl.dirty || this.submitted)
+    );
   }
 }
