@@ -5,8 +5,8 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './terms-condition.component.html',
   styleUrl: './terms-condition.component.css'
 })
-export class TermsConditionComponent {
-isMenuOpen = false;
+export class TermsConditionComponent implements OnInit {
+  isMenuOpen = false;
 
   loanAmount = 50000;
   tenure = 15; // days
@@ -21,6 +21,10 @@ isMenuOpen = false;
   totalPayment = 0;
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+
     this.calculateLoan();
   }
 
