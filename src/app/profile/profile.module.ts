@@ -15,6 +15,7 @@ import { CheckEligibilitySuccessComponent } from './check-eligibility-success/ch
 import { LoanHistoryComponent } from './loan-history/loan-history.component';
 import { LoanDetailComponent } from './loan-detail/loan-detail.component';
 import { LoanRepayComponent } from './loan-repay/loan-repay.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { LoanRepayComponent } from './loan-repay/loan-repay.component';
     LoanHistoryComponent,
     LoanDetailComponent,
     LoanRepayComponent,
+    PrivacyComponent,
   ],
   imports: [
     CommonModule,

@@ -9,6 +9,11 @@ const routes: Routes = [
       import('./landing/landing.module').then((m) => m.LandingModule),
   },
   {
+    path: 'privacy',
+    redirectTo: 'dashboard/profile/privacy',
+    pathMatch: 'full',
+  },
+  {
     path: 'auth',
     loadChildren: () => import('./auth/auth.module').then((m) => m.AuthModule),
   },
