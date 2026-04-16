@@ -3,11 +3,15 @@
 }
 
 .internal-banner{
-    background: #244282;
+    background: #ebebeb;
 }
 .internal-banner h1{
   font-size: 48px;
+  color: #282828;
   transition: font-size 0.4s ease;
+}
+.internal-banner p{
+  color:#444;
 }
 
 .outer-box{
