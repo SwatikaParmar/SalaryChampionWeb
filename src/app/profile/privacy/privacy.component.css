@@ -3,7 +3,7 @@
 }
 
 .internal-banner{
-    background: linear-gradient(270deg, #023672 , #3b6edc);
+    background: #244282;
 }
 .internal-banner h1{
   font-size: 48px;
@@ -85,12 +85,12 @@
    Primary Button (Blue)
 ================================ */
 .policy-actions__btn--primary {
-  background: linear-gradient(135deg, #2f5fb8, #3b6edc);
+  background: linear-gradient(180deg, #244383, #37a1e1);
   color: #fff;
 }
 
 .policy-actions__btn--primary:hover {
-  background: linear-gradient(135deg, #254f9e, #2f5fb8);
+  background: linear-gradient(90deg, #244383, #37a1e1);
 }
 
 /* ================================
