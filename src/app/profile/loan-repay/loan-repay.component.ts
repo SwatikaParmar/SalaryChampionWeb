@@ -15,7 +15,6 @@ type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM' | 'FORECLOSURE';
 export class LoanRepayComponent implements OnInit {
   private readonly repaymentOrderStoragePrefix = 'repay-order:';
   private readonly repaymentOptionStoragePrefix = 'repay-option:';
-  private readonly repaymentReturnBaseUrl = 'https://staging.d1ndeezlom7hf1.amplifyapp.com/';
   applicationId = '';
   summary: any = null;
   refreshResult: any = null;
@@ -305,7 +304,7 @@ export class LoanRepayComponent implements OnInit {
       returnUrl: this.getPaymentReturnUrl(),
       orderNote: `Repayment for ${this.applicationNumber}`
     };
-debugger
+
     this.creatingOrder = true;
     this.contentService.createBorrowerRepaymentOrder(payload).subscribe({
       next: (res: any) => {
@@ -438,18 +437,23 @@ this.router.navigateByUrl('/dashboard')  }
   }
 
   private navigateToDashboardWithRefresh(): void {
-    this.router.navigateByUrl('/dashboard', { replaceUrl: true }).then(() => {
-      window.location.reload();
+    this.router.navigate(['/dashboard'], {
+      queryParams: { refresh: 'true' },
+      replaceUrl: true
     });
   }
 
   private getPaymentReturnUrl(): string {
-    
-    if (this.amountOption === 'FORECLOSURE') {
-      return `${this.repaymentReturnBaseUrl}/dashboard?refresh=true`;
-    }
+    return this.buildAbsoluteReturnUrl(`/dashboard/profile/loan-repay/${this.applicationId}`);
+  }
 
-    return `${this.repaymentReturnBaseUrl}/dashboard/profile/loan-repay/${this.applicationId}`;
+  private buildAbsoluteReturnUrl(path: string): string {
+    const origin =
+      typeof window !== 'undefined' && typeof window.location?.origin === 'string'
+        ? window.location.origin
+        : '';
+
+    return origin ? `${origin}${path}` : path;
   }
 
   private clearRepaymentStorage(): void {

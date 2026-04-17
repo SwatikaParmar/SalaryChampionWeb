@@ -64,7 +64,7 @@
 
 
     <!-- ❌ NOT ELIGIBLE CARD -->
-<div class="col-md-12" *ngIf="profileProgress === 100 && hasEvaluatedEligibility && !isEligible">
+<div class="col-md-12" *ngIf="profileProgress === 100 && hasEvaluatedEligibility && !isEligible && !showClosedLoanUnavailableCard">
 
   <div class="not-eligible-card">
 
@@ -110,11 +110,42 @@
 
 </div>
 
+<div class="col-md-12" *ngIf="showClosedLoanUnavailableCard">
+  <div class="reloan-unavailable-card">
+    <div class="reloan-unavailable-header">
+      <div>
+        <span class="reloan-unavailable-kicker">Loan Status</span>
+        <h3>Re-Loan Unavailable</h3>
+      </div>
+
+      <div class="reloan-unavailable-icon" aria-hidden="true">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+    </div>
+
+    <div class="reloan-unavailable-alert">
+      <p>
+        Your previous loan has been closed successfully, but you are currently
+        <strong>not eligible</strong>
+        for a new loan at this time.
+      </p>
+
+      <p class="reloan-unavailable-meta" *ngIf="ineligibleReason">
+        Reason: {{ ineligibleReason }}
+      </p>
+
+      <p class="reloan-unavailable-meta" *ngIf="retryDate">
+        Try again after: {{ retryDate | date:'dd-MM-yyyy' }}
+      </p>
+    </div>
+  </div>
+</div>
+
     <!-- ================= LOAN CARD ================= -->
     <!-- SHOW ONLY WHEN PROFILE IS COMPLETE -->
 <div
   class="loan-dashboard-card col-md-12"
-   *ngIf="showLoanCard">
+   *ngIf="showLoanCard && !showClosedLoanUnavailableCard">
   <!-- LEFT -->
   <div class="loan-left">
     <h3>Loan Application</h3>
@@ -174,7 +205,7 @@
   </div>
 </div>
 
-<div class="active-loan-card col-md-12" *ngIf="showActiveLoanCard && activeLoan && !showReloanActionButton">
+<div class="active-loan-card col-md-12" *ngIf="showActiveLoanCard && activeLoan && !showReloanActionButton && !showClosedLoanUnavailableCard">
   <div class="active-loan-shell">
     <div class="active-loan-hero">
       <div>
@@ -259,7 +290,7 @@
 </div>
 <!-- ✅ STATUS TRACKER -->
 <div class="tracker-card"
-     *ngIf="showTracker && !showActiveLoanCard">
+     *ngIf="showTracker && !showActiveLoanCard && !showClosedLoanUnavailableCard">
 
 <!-- 🔥 HEADER -->
 <div class="tracker-header">
@@ -620,7 +651,7 @@
 </div>
 
 <div class="credit-wrapper"
-     *ngIf="loanProgress === 100 && creditManager && !showActiveLoanCard">
+     *ngIf="loanProgress === 100 && creditManager && !showActiveLoanCard && !showClosedLoanUnavailableCard">
 
   <!-- TITLE -->
   <h2 class="section-title">
@@ -680,7 +711,7 @@
     
 
  <!-- RELOAN CTA -->
-  <div *ngIf="showReloanActionButton" class="reloan-eligibility-card">
+  <div *ngIf="showReloanActionButton && !showClosedLoanUnavailableCard" class="reloan-eligibility-card">
     <div class="reloan-eligibility-copy">
       <span class="reloan-badge">Reloan Offer</span>
       <h3>You are eligible for reloan</h3>
@@ -703,7 +734,7 @@
     Support
   </button>
 &nbsp;
-       <button class="support-btn" (click)="refreshStatus()"   *ngIf="showTracker && !showActiveLoanCard">
+       <button class="support-btn" (click)="refreshStatus()"   *ngIf="showTracker && !showActiveLoanCard && !showClosedLoanUnavailableCard">
     Refresh Status
   </button>
 

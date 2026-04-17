@@ -213,6 +213,84 @@
   width: 125px;
 }
 
+.reloan-unavailable-card {
+  margin-bottom: 20px;
+  padding: 22px 24px;
+  border-radius: 18px;
+  border: 1px solid #dbe4f2;
+  background:
+    radial-gradient(circle at top right, rgba(66, 153, 225, 0.12), transparent 28%),
+    linear-gradient(180deg, #ffffff, #f8fbff);
+  box-shadow: 0 16px 36px rgba(27, 52, 86, 0.12);
+}
+
+.reloan-unavailable-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.reloan-unavailable-kicker {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #a0adbe;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reloan-unavailable-header h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.reloan-unavailable-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, rgba(255, 180, 93, 0.25), rgba(61, 162, 230, 0.18));
+  border: 1px solid rgba(49, 165, 229, 0.18);
+  color: #5f83c4;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.reloan-unavailable-icon i {
+  font-size: 22px;
+}
+
+.reloan-unavailable-alert {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #dff3ff, #d5efff);
+  border: 1px solid #7ec8f7;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.reloan-unavailable-alert p {
+  margin: 0;
+  color: #5f6c7b;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.reloan-unavailable-alert strong {
+  color: #ff2e2e;
+}
+
+.reloan-unavailable-meta {
+  margin-top: 10px !important;
+  font-size: 14px !important;
+  color: #4d5b6b !important;
+}
+
 
 .tracker-steps {
   display: flex;
@@ -406,6 +484,12 @@
   }
   .loan-dashboard-card{
     grid-template-columns: auto;
+  }
+  .reloan-unavailable-card {
+    padding: 18px;
+  }
+  .reloan-unavailable-header {
+    align-items: center;
   }
   .preview-container{
     
@@ -1178,6 +1262,15 @@
     padding: 20px 18px;
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .reloan-unavailable-header {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+
+  .reloan-unavailable-alert {
+    padding: 16px;
   }
 
   .reloan-eligibility-copy h3 {

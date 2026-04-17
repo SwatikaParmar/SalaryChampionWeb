@@ -1,14 +1,17 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { ContentService } from '../../../service/content.service';
+import { DashboardRefreshService } from '../dashboard-refresh.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
   @Output() sidebarToggle = new EventEmitter<void>();
   user: any = null;
+  private refreshSubscription: Subscription | null = null;
   private readonly fallbackPalette = [
     { start: '#f97316', end: '#fb7185' },
     { start: '#2563eb', end: '#06b6d4' },
@@ -16,10 +19,20 @@ export class HeaderComponent implements OnInit {
     { start: '#7c3aed', end: '#ec4899' },
   ];
 
-  constructor(private contentService: ContentService) {}
+  constructor(
+    private contentService: ContentService,
+    private dashboardRefreshService: DashboardRefreshService
+  ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
+    this.refreshSubscription = this.dashboardRefreshService.refreshRequests$.subscribe(() => {
+      this.getBorrowerSnapshot();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.refreshSubscription?.unsubscribe();
   }
 
   getBorrowerSnapshot() {

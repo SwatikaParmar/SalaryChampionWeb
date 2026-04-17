@@ -171,6 +171,14 @@ describe('LoanRepayComponent', () => {
     expect(component.amountOption).toBe('FULL');
   });
 
+  it('should send repayment callback to the loan repay route on the current origin', () => {
+    component.createPayment();
+
+    const payload = contentServiceSpy.createBorrowerRepaymentOrder.calls.mostRecent().args[0];
+
+    expect(payload.returnUrl).toBe(`${window.location.origin}/dashboard/profile/loan-repay/APP123`);
+  });
+
   it('should redirect to dashboard flow only for successful full due payments', () => {
     sessionStorage.setItem('repay-option:APP123', 'FULL');
     const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');

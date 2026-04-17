@@ -1,5 +1,5 @@
 
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -7,6 +7,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 import { formatDateForDisplay } from '../../shared/date-format.util';
+import { Subscription } from 'rxjs';
+import { DashboardRefreshService } from '../dashboard-refresh.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,7 +16,22 @@ import { formatDateForDisplay } from '../../shared/date-format.util';
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit, OnDestroy {
+  private readonly closedLoanStatuses = [
+    'CLOSED',
+    'COMPLETED',
+    'PAID',
+    'REPAID',
+    'SETTLED',
+    'FORECLOSED',
+    'FORECLOSURE',
+    'LOAN_CLOSED',
+    'CLOSE_LOAN'
+  ];
   private readonly enachMandateStorageKey = 'dashboard.enachMandateRowId';
+  private readonly videoKycPendingStorageKey = 'dashboard.videoKycPending';
+  private readonly refreshRetryDelayMs = 1500;
+  private readonly refreshRetryAttempts = 3;
+  private readonly videoKycReturnRefreshCooldownMs = 1500;
   private readonly defaultTrackerFlow = [
     'applicationSubmitted',
     'applicationInReview',
@@ -61,6 +78,11 @@ hasActiveApplication: boolean = false;
   private hasAutoTriggeredEnachRefresh = false;
   private enachWindowPollTimer: ReturnType<typeof setInterval> | null = null;
   private videoKycWindowPollTimer: ReturnType<typeof setInterval> | null = null;
+  private dashboardRefreshTimeouts: ReturnType<typeof setTimeout>[] = [];
+  private queryParamSubscription: Subscription | null = null;
+  private hasPendingVideoKycRefresh = false;
+  private isVideoKycRefreshInFlight = false;
+  private lastVideoKycRefreshTriggerAt = 0;
 
 showKycModal: boolean = false;
 kycUrl: string = '';
@@ -85,25 +107,37 @@ videoKycModalMessage: string = '';
     );
   }
 
+  get showClosedLoanUnavailableCard(): boolean {
+    return (
+      this.profileProgress === 100 &&
+      this.hasClosedLoan() &&
+      this.hasExplicitReloanUnavailableFlag()
+    );
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private contentService: ContentService,
     private spinner: NgxSpinnerService,   // ✅ spinner inject
       private sanitizer: DomSanitizer,
-      private toastr : ToastrService
+      private toastr : ToastrService,
+      private dashboardRefreshService: DashboardRefreshService
 
   ) {}
 
   ngOnInit(): void {
     this.restorePendingEnachMandateRowId();
+    this.restorePendingVideoKycRefresh();
     this.getBorrowerSnapshot();
-    this.triggerDashboardRefreshIfRequested();
+    this.listenForDashboardRefreshRequests();
   }
 
   ngOnDestroy(): void {
     this.clearEnachWindowPollTimer();
     this.clearVideoKycWindowPollTimer();
+    this.clearDashboardRefreshTimeouts();
+    this.queryParamSubscription?.unsubscribe();
   }
 
   showActiveLoanCard: boolean = false;
@@ -163,6 +197,7 @@ getBorrowerSnapshot() {
 
       this.showTracker = this.loanProgress === 100;
       this.patchTrackerFromSnapshot();
+      this.syncPendingVideoKycRefresh();
       this.patchActiveLoanFromSnapshot();
       this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
 
@@ -184,21 +219,39 @@ getBorrowerSnapshot() {
   });
 }
 
-private triggerDashboardRefreshIfRequested() {
-  if (this.route.snapshot.queryParamMap.get('refresh') !== 'true') {
-    return;
-  }
+private listenForDashboardRefreshRequests() {
+  this.queryParamSubscription = this.route.queryParamMap.subscribe((params) => {
+    if (params.get('refresh') !== 'true') {
+      return;
+    }
 
-  this.router.navigate([], {
-    relativeTo: this.route,
-    queryParams: { refresh: null },
-    queryParamsHandling: 'merge',
-    replaceUrl: true
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { refresh: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
+
+    this.refreshDashboardSnapshot();
   });
+}
 
-  setTimeout(() => {
-    this.getBorrowerSnapshot();
-  }, 1200);
+private refreshDashboardSnapshot() {
+  this.clearDashboardRefreshTimeouts();
+
+  for (let attempt = 0; attempt < this.refreshRetryAttempts; attempt++) {
+    const timeout = setTimeout(() => {
+      this.dashboardRefreshService.requestRefresh();
+      this.getBorrowerSnapshot();
+    }, attempt * this.refreshRetryDelayMs);
+
+    this.dashboardRefreshTimeouts.push(timeout);
+  }
+}
+
+private clearDashboardRefreshTimeouts() {
+  this.dashboardRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
+  this.dashboardRefreshTimeouts = [];
 }
 
 private applyEligibilityState(offer: any, eligibility: any) {
@@ -321,6 +374,64 @@ private isDisbursementCompleted(): boolean {
     this.steps?.disbursement;
 
   return this.normalizeTrackerStatus(disbursementStatus) === 'DONE';
+}
+
+private hasClosedLoan(): boolean {
+  const tracking = this.loanTracking || {};
+  const activeLoan = tracking?.activeLoan || {};
+  const request = this.currentLoanRequest || {};
+  const statusCandidates = [
+    tracking?.loanStatus,
+    activeLoan?.status,
+    activeLoan?.loanStatus,
+    request?.loanStatus,
+    request?.status,
+    tracking?.repayment?.loanStatus
+  ];
+  const statusClosed = statusCandidates.some((status) => this.isClosedLoanStatus(status));
+
+  return statusClosed ||
+    tracking?.isLoanClosed === true ||
+    tracking?.loanClosed === true ||
+    activeLoan?.isClosed === true ||
+    activeLoan?.closed === true ||
+    request?.isClosed === true ||
+    request?.closed === true;
+}
+
+private hasExplicitReloanUnavailableFlag(): boolean {
+  const tracking = this.loanTracking || {};
+  const request = this.currentLoanRequest || {};
+
+  const booleanCandidates = [
+    tracking?.showReloanCard,
+    tracking?.isReloanEligible,
+    tracking?.reloanEligible,
+    tracking?.isReloanAvailable,
+    tracking?.reloanAvailable,
+    request?.showReloanCard,
+    request?.isReloanEligible,
+    request?.reloanEligible,
+    request?.isReloanAvailable,
+    request?.reloanAvailable
+  ];
+
+  const hasExplicitFalseFlag = booleanCandidates.some((value) => value === false);
+
+  return hasExplicitFalseFlag || (
+    this.hasEvaluatedEligibility &&
+    !this.isEligible &&
+    !this.showReloanActionButton
+  );
+}
+
+private isClosedLoanStatus(status: any): boolean {
+  if (typeof status !== 'string') {
+    return false;
+  }
+
+  const normalizedStatus = status.trim().toUpperCase().replace(/\s+/g, '_');
+  return this.closedLoanStatuses.includes(normalizedStatus);
 }
 
 
@@ -532,6 +643,7 @@ applicationStatusApi() {
       const data = res?.data || {};
       this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
       this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
+      this.syncPendingVideoKycRefresh();
       this.patchActiveLoanFromSnapshot();
       this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
       this.currentTitle =
@@ -558,17 +670,38 @@ async startVideoKyc() {
   }
 
   this.spinner.show();
+  this.markPendingVideoKycRefresh();
   const videoKycWindow = this.openVideoKycInNewTab();
+  if (!videoKycWindow) {
+    this.clearPendingVideoKycRefresh();
+    this.spinner.hide();
+    return;
+  }
 
   try {
     const allowed = await this.ensureLocationAccess();
     if (!allowed) {
       this.closeVideoKycWindow(videoKycWindow);
+      this.clearPendingVideoKycRefresh();
       return;
     }
   } finally {
     this.spinner.hide();
   }
+}
+
+@HostListener('window:focus')
+onWindowFocus() {
+  this.tryRefreshVideoKycOnReturn();
+}
+
+@HostListener('document:visibilitychange')
+onDocumentVisibilityChange() {
+  if (typeof document === 'undefined' || document.visibilityState !== 'visible') {
+    return;
+  }
+
+  this.tryRefreshVideoKycOnReturn();
 }
 
 
@@ -651,10 +784,17 @@ private buildVideoKycModalUrl(url: string): string {
 
 private openVideoKycInNewTab(): Window | null {
   const videoKycUrl = this.buildVideoKycModalUrl(this.videoKycCustomerUrl);
-  const videoKycWindow = window.open(videoKycUrl, '_blank', 'noopener');
+  const videoKycWindow = window.open(videoKycUrl, '_blank');
 
   if (videoKycWindow) {
+    try {
+      videoKycWindow.opener = null;
+    } catch {
+      // Ignore browser restrictions while still continuing the KYC flow.
+    }
     this.monitorVideoKycWindow(videoKycWindow);
+  } else {
+    this.toastr.error('Please allow popups to continue Video KYC');
   }
 
   return videoKycWindow;
@@ -685,11 +825,13 @@ private closeVideoKycWindow(videoKycWindow?: Window | null) {
 }
 
 videoKycRefresh() {
-  if (!this.applicationId) return;
+  if (!this.applicationId || this.isVideoKycRefreshInFlight) return;
 
   const payload = {
     applicationId: this.applicationId
   };
+
+  this.isVideoKycRefreshInFlight = true;
 
   this.contentService.videoRefresh(payload).subscribe({
     next: (res: any) => {
@@ -697,11 +839,58 @@ videoKycRefresh() {
 
       // 🔥 TRACKER UPDATE AGAIN
       this.applicationStatusApi();
+      this.isVideoKycRefreshInFlight = false;
     },
     error: () => {
+      this.isVideoKycRefreshInFlight = false;
       console.error('Refresh failed');
     }
   });
+}
+
+private tryRefreshVideoKycOnReturn() {
+  if (!this.hasPendingVideoKycRefresh || !this.applicationId) {
+    return;
+  }
+
+  const now = Date.now();
+  if (now - this.lastVideoKycRefreshTriggerAt < this.videoKycReturnRefreshCooldownMs) {
+    return;
+  }
+
+  this.lastVideoKycRefreshTriggerAt = now;
+  this.videoKycRefresh();
+}
+
+private markPendingVideoKycRefresh() {
+  this.hasPendingVideoKycRefresh = true;
+
+  if (!this.canUseSessionStorage()) return;
+
+  sessionStorage.setItem(this.videoKycPendingStorageKey, 'true');
+}
+
+private restorePendingVideoKycRefresh() {
+  if (!this.canUseSessionStorage()) return;
+
+  this.hasPendingVideoKycRefresh =
+    sessionStorage.getItem(this.videoKycPendingStorageKey) === 'true';
+}
+
+private clearPendingVideoKycRefresh() {
+  this.hasPendingVideoKycRefresh = false;
+
+  if (!this.canUseSessionStorage()) return;
+
+  sessionStorage.removeItem(this.videoKycPendingStorageKey);
+}
+
+private syncPendingVideoKycRefresh() {
+  const videoKycStatus = this.normalizeTrackerStatus(this.trackingSteps?.videoKyc);
+
+  if (videoKycStatus !== 'PENDING') {
+    this.clearPendingVideoKycRefresh();
+  }
 }
 
 
