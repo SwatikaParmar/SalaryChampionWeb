@@ -395,7 +395,7 @@ export class LoanRepayComponent implements OnInit {
 
         if (shouldRedirectToDashboard) {
           this.clearRepaymentStorage();
-          this.navigateToDashboardWithRefresh();
+          this.navigateToDashboardWithRefresh(true);
           return;
         }
 
@@ -411,7 +411,8 @@ export class LoanRepayComponent implements OnInit {
   }
 
   goBack(): void {
-this.router.navigateByUrl('/dashboard')  }
+    this.navigateToDashboardWithRefresh();
+  }
 
   private get repaymentOrderStorageKey(): string {
     return `${this.repaymentOrderStoragePrefix}${this.applicationId}`;
@@ -436,11 +437,18 @@ this.router.navigateByUrl('/dashboard')  }
     return !!(orderStatus?.paidAt || orderStatus?.paymentStatus === 'SUCCESS');
   }
 
-  private navigateToDashboardWithRefresh(): void {
-    this.router.navigate(['/dashboard'], {
-      queryParams: { refresh: 'true' },
-      replaceUrl: true
-    });
+  private navigateToDashboardWithRefresh(shouldSyncRepaymentState = false): void {
+    const dashboardPath = shouldSyncRepaymentState
+      ? '/dashboard?refresh=true'
+      : '/dashboard';
+    const dashboardUrl = this.buildAbsoluteReturnUrl(dashboardPath);
+
+    if (typeof window !== 'undefined') {
+      window.location.replace(dashboardUrl);
+      return;
+    }
+
+    this.router.navigateByUrl('/dashboard', { replaceUrl: true });
   }
 
   private getPaymentReturnUrl(): string {

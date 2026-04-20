@@ -1,4 +1,9 @@
-<div class="dashboard-home">
+<div class="dashboard-home" [class.dashboard-home--refreshing]="isRepaymentRefreshInProgress">
+  <div
+    class="dashboard-refresh-blanket"
+    *ngIf="isRepaymentRefreshInProgress"
+    aria-hidden="true"
+  ></div>
 
   <!-- TOP BANNER -->
   <img
@@ -115,7 +120,7 @@
     <div class="reloan-unavailable-header">
       <div>
         <span class="reloan-unavailable-kicker">Loan Status</span>
-        <h3>Re-Loan Unavailable</h3>
+        <h3>{{ reloanUnavailableTitle }}</h3>
       </div>
 
       <div class="reloan-unavailable-icon" aria-hidden="true">
@@ -124,19 +129,61 @@
     </div>
 
     <div class="reloan-unavailable-alert">
-      <p>
-        Your previous loan has been closed successfully, but you are currently
-        <strong>not eligible</strong>
-        for a new loan at this time.
+      <p *ngIf="isPendingReloanDecision; else reloanIneligibleMessage">
+        Your previous loan has been closed successfully. Your re-loan eligibility
+        decision is currently pending and will be updated shortly.
       </p>
 
-      <p class="reloan-unavailable-meta" *ngIf="ineligibleReason">
+      <ng-template #reloanIneligibleMessage>
+        <p>
+          Your previous loan has been closed successfully, but you are currently
+          <strong>not eligible</strong>
+          for a new loan at this time.
+        </p>
+      </ng-template>
+
+      <p class="reloan-unavailable-meta" *ngIf="showReloanUnavailableReason">
         Reason: {{ ineligibleReason }}
       </p>
 
-      <p class="reloan-unavailable-meta" *ngIf="retryDate">
+      <p class="reloan-unavailable-meta" *ngIf="showReloanUnavailableRetryDate">
         Try again after: {{ retryDate | date:'dd-MM-yyyy' }}
       </p>
+    </div>
+
+    <div class="reloan-closed-summary" *ngIf="closedLoanSummary as closedLoan">
+      <div class="reloan-closed-stat" *ngIf="closedLoan.loanNumber">
+        <label>Loan ID</label>
+        <strong>{{ closedLoan.loanNumber }}</strong>
+      </div>
+
+      <div class="reloan-closed-stat">
+        <label>Loan Amount</label>
+        <strong>
+          {{ closedLoan.loanAmount !== null ? (closedLoan.loanAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="reloan-closed-stat">
+        <label>Interest Paid</label>
+        <strong>
+          {{ closedLoan.interestPaidAmount !== null ? (closedLoan.interestPaidAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="reloan-closed-stat">
+        <label>Closed On</label>
+        <strong>{{ closedLoan.closedDateDisplay || closedLoan.statusLabel || '--' }}</strong>
+      </div>
+
+      <div class="reloan-closed-note" *ngIf="closedLoan.disbursedAmount !== null || closedLoan.totalPaidAmount !== null">
+        <span *ngIf="closedLoan.disbursedAmount !== null">
+          Disbursed: {{ closedLoan.disbursedAmount | currency:'INR':'symbol':'1.0-0' }}
+        </span>
+        <span *ngIf="closedLoan.totalPaidAmount !== null">
+          Total repaid: {{ closedLoan.totalPaidAmount | currency:'INR':'symbol':'1.0-0' }}
+        </span>
+      </div>
     </div>
   </div>
 </div>
@@ -719,10 +766,13 @@
         Your previous loan journey is complete. You can now continue with a new
         reloan application.
       </p>
+      <p class="reloan-eligibility-hint" *ngIf="!canApplyReloan">
+        Your reloan link is being prepared. Please refresh once it is available.
+      </p>
     </div>
 
     <div class="reloan-eligibility-action">
-      <button class="btn-start" (click)="applyReloan()">
+      <button class="btn-start" (click)="applyReloan()" [disabled]="!canApplyReloan || isReloanActionBusy">
         Apply For Reloan
       </button>
     </div>

@@ -203,6 +203,30 @@ describe('LoanRepayComponent', () => {
     expect(toastrSpy.success).toHaveBeenCalledWith('Payment status updated successfully');
   });
 
+  it('should redirect to dashboard flow for successful foreclosure payments', () => {
+    sessionStorage.setItem('repay-option:APP123', 'FORECLOSURE');
+    const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
+    const clearStorageSpy = spyOn<any>(component, 'clearRepaymentStorage').and.callThrough();
+
+    contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({
+      data: {
+        paymentGatewayOrder: {
+          paymentStatus: 'SUCCESS'
+        },
+        repaymentSummary: {
+          payableAmount: 0
+        }
+      }
+    }));
+
+    component.refreshPaymentStatus('ORDER123');
+
+    expect(navigateSpy).toHaveBeenCalled();
+    expect(clearStorageSpy).toHaveBeenCalled();
+    expect(sessionStorage.getItem('repay-option:APP123')).toBeNull();
+    expect(toastrSpy.success).toHaveBeenCalledWith('Payment status updated successfully');
+  });
+
   it('should stay on the repayment page for successful non-full payments', () => {
     sessionStorage.setItem('repay-option:APP123', 'CUSTOM');
     const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
@@ -223,5 +247,21 @@ describe('LoanRepayComponent', () => {
 
     expect(navigateSpy).not.toHaveBeenCalled();
     expect(fetchSummarySpy).toHaveBeenCalled();
+  });
+
+  it('should use the dashboard refresh flow when going back', () => {
+    const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
+
+    component.goBack();
+
+    expect(navigateSpy).toHaveBeenCalled();
+  });
+
+  it('should hard redirect repayment success to dashboard refresh route', () => {
+    const replaceSpy = spyOn(window.location, 'replace');
+
+    component['navigateToDashboardWithRefresh'](true);
+
+    expect(replaceSpy).toHaveBeenCalledWith(`${window.location.origin}/dashboard?refresh=true`);
   });
 });

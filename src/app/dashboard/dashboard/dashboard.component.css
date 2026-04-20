@@ -3,6 +3,18 @@
 .dashboard-home {
   padding: 30px;  
 }
+
+.dashboard-home--refreshing {
+  pointer-events: none;
+}
+
+.dashboard-refresh-blanket {
+  position: fixed;
+  inset: 0;
+  background: #ffffff;
+  z-index: 1040;
+}
+
 .mini-banner{
     height: 30vh;
     width: 100%;
@@ -291,6 +303,51 @@
   color: #4d5b6b !important;
 }
 
+.reloan-closed-summary {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.reloan-closed-stat {
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #dbe5f2;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+}
+
+.reloan-closed-stat label {
+  display: block;
+  margin-bottom: 8px;
+  color: #8a98aa;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.reloan-closed-stat strong {
+  display: block;
+  color: #11233a;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.reloan-closed-note {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 18px;
+  margin: 0;
+  padding: 0 4px;
+  color: #5e6e81;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 
 .tracker-steps {
   display: flex;
@@ -490,6 +547,9 @@
   }
   .reloan-unavailable-header {
     align-items: center;
+  }
+  .reloan-closed-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .preview-container{
     
@@ -941,6 +1001,10 @@
     font-size: 18px;
   }
 
+  .reloan-closed-summary {
+    grid-template-columns: 1fr;
+  }
+
   .credit-card {
     padding: 14px;
   }
@@ -1029,6 +1093,12 @@
   color: rgba(255, 255, 255, 0.92);
 }
 
+.reloan-eligibility-hint {
+  margin-top: 10px !important;
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
 .reloan-eligibility-action {
   display: flex;
   align-items: center;
@@ -1047,6 +1117,12 @@
 
 .reloan-eligibility-action .btn-start:hover {
   transform: translateY(-1px);
+}
+
+.reloan-eligibility-action .btn-start[disabled] {
+  cursor: not-allowed;
+  opacity: 0.72;
+  box-shadow: none;
 }
 
 

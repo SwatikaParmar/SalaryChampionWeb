@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ApiEndPoint } from '../enums/api-end-point';
 import { environment } from '../environments/environment';
@@ -10,6 +10,22 @@ export class ContentService {
 
   constructor(private http: HttpClient, private handler: HttpBackend) {
     this.noAuthHttp = new HttpClient(handler);
+  }
+
+  private withFreshParams(params: Record<string, any> = {}): { params: HttpParams } {
+    let httpParams = new HttpParams().set('_ts', Date.now().toString());
+
+    Object.keys(params).forEach((key) => {
+      const value = params[key];
+
+      if (value === null || value === undefined || value === '') {
+        return;
+      }
+
+      httpParams = httpParams.set(key, String(value));
+    });
+
+    return { params: httpParams };
   }
 
   previewPan(data: any) {
@@ -35,7 +51,8 @@ export class ContentService {
 
   getBorrowerSnapshot() {
     return this.http.get<any>(
-      environment.apiUrl + ApiEndPoint.borrowerSnapshot
+      environment.apiUrl + ApiEndPoint.borrowerSnapshot,
+      this.withFreshParams()
     );
   }
 
@@ -268,7 +285,8 @@ refreshBorrowerRepayment(data: any) {
 
 applicationStatus(applicationId: any) {
   return this.http.get<any>(
-    environment.apiUrl + ApiEndPoint.applicationStatus + '?applicationId=' + applicationId
+    environment.apiUrl + ApiEndPoint.applicationStatus,
+    this.withFreshParams({ applicationId })
   );
 }
 

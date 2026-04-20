@@ -1,5 +1,5 @@
 
-import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -28,10 +28,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     'CLOSE_LOAN'
   ];
   private readonly enachMandateStorageKey = 'dashboard.enachMandateRowId';
-  private readonly videoKycPendingStorageKey = 'dashboard.videoKycPending';
-  private readonly refreshRetryDelayMs = 1500;
-  private readonly refreshRetryAttempts = 3;
-  private readonly videoKycReturnRefreshCooldownMs = 1500;
+  private readonly enachReturnRefreshStorageKey = 'dashboard.enachReturnRefreshPending';
+  private readonly repaymentRefreshPollDelayMs = 1000;
+  private readonly repaymentRefreshSafetyTimeoutMs = 30000;
+  private readonly reloanTokenRefreshDelayMs = 1000;
+  private readonly reloanTokenRefreshTimeoutMs = 15000;
   private readonly defaultTrackerFlow = [
     'applicationSubmitted',
     'applicationInReview',
@@ -75,14 +76,24 @@ hasActiveApplication: boolean = false;
 
   showLoanCard: boolean = false;
   showTracker: boolean = false;
-  private hasAutoTriggeredEnachRefresh = false;
-  private enachWindowPollTimer: ReturnType<typeof setInterval> | null = null;
-  private videoKycWindowPollTimer: ReturnType<typeof setInterval> | null = null;
+  isRepaymentRefreshInProgress = false;
+  isReloanActionBusy = false;
   private dashboardRefreshTimeouts: ReturnType<typeof setTimeout>[] = [];
+  private reloanRefreshTimeouts: ReturnType<typeof setTimeout>[] = [];
   private queryParamSubscription: Subscription | null = null;
-  private hasPendingVideoKycRefresh = false;
+  private wasDocumentHidden = false;
+  private shouldDeferInitialSnapshotRefresh = false;
+  private isRepaymentRefreshContext = false;
+  private repaymentRefreshStartedAt = 0;
+  private reloanTokenRefreshStartedAt = 0;
+  private readonly visibilityChangeHandler = () => this.handleDocumentVisibilityChange();
+  private readonly windowFocusHandler = () => this.handleWindowFocus();
+  private lastTabReturnRefreshAt = 0;
+  private readonly tabReturnRefreshCooldownMs = 1000;
+  private isApplicationStatusInFlight = false;
+  private shouldRefreshEnachOnReturn = false;
+  private isEnachRefreshInFlight = false;
   private isVideoKycRefreshInFlight = false;
-  private lastVideoKycRefreshTriggerAt = 0;
 
 showKycModal: boolean = false;
 kycUrl: string = '';
@@ -94,25 +105,185 @@ videoKycModalMessage: string = '';
 
 
     isReloanJourney = false;
-  steps: any = {};
+ steps: any = {};
   currentLoanRequest: any;
 
   loanTracking: any;
+  reloanDecision: any = null;
   applicationId: string = '';
 
   get showReloanActionButton(): boolean {
+    const reloanDecisionState = this.getReloanDecisionState();
+
+    if (reloanDecisionState !== 'none') {
+      return reloanDecisionState === 'eligible';
+    }
+
     return (
       this.loanTracking?.showReloanCard === true &&
-      !!this.loanTracking?.nextAction?.url
+      this.canApplyReloan
     );
   }
 
   get showClosedLoanUnavailableCard(): boolean {
-    return (
-      this.profileProgress === 100 &&
-      this.hasClosedLoan() &&
-      this.hasExplicitReloanUnavailableFlag()
+    if (this.profileProgress !== 100 || !this.hasClosedLoanOrPendingClosureSync()) {
+      return false;
+    }
+
+    const reloanDecisionState = this.getReloanDecisionState();
+
+    if (reloanDecisionState !== 'none') {
+      return reloanDecisionState === 'pending' || reloanDecisionState === 'not_eligible';
+    }
+
+    return this.hasExplicitReloanUnavailableFlag();
+  }
+
+  get canApplyReloan(): boolean {
+    return !!this.getResolvedReloanActionParams();
+  }
+
+  get isPendingReloanDecision(): boolean {
+    return this.getReloanDecisionState() === 'pending';
+  }
+
+  get isRejectedReloanDecision(): boolean {
+    return this.getReloanDecisionState() === 'not_eligible';
+  }
+
+  get reloanUnavailableTitle(): string {
+    return this.isPendingReloanDecision
+      ? 'Loan Closed Successfully'
+      : 'Re-Loan Unavailable';
+  }
+
+  get showReloanUnavailableReason(): boolean {
+    return this.isRejectedReloanDecision && !!this.ineligibleReason;
+  }
+
+  get showReloanUnavailableRetryDate(): boolean {
+    return this.isRejectedReloanDecision && !!this.retryDate;
+  }
+
+  get closedLoanSummary(): any | null {
+    if (!this.hasClosedLoanOrPendingClosureSync()) {
+      return null;
+    }
+
+    const tracking = this.loanTracking || {};
+    const activeLoan = tracking?.activeLoan || {};
+    const repayment = tracking?.repayment || {};
+    const request = this.currentLoanRequest || {};
+
+    const loanAmount = this.pickFirstAmount(
+      activeLoan?.approvedAmount,
+      tracking?.approvedAmount,
+      activeLoan?.principal,
+      request?.approvedAmount,
+      request?.requestedAmount,
+      request?.loanAmount,
+      request?.principal
     );
+    const disbursedAmount = this.pickFirstAmount(
+      activeLoan?.netDisbursalAmount,
+      tracking?.netDisbursalAmount,
+      activeLoan?.disbursalAmount,
+      tracking?.disbursalAmount,
+      request?.netDisbursalAmount,
+      request?.disbursalAmount
+    );
+    const totalPaidAmount = this.pickFirstAmount(
+      repayment?.totalPaidAmount,
+      repayment?.paidAmount,
+      repayment?.repaidAmount,
+      repayment?.totalRepaymentAmount,
+      tracking?.totalPaidAmount,
+      tracking?.paidAmount,
+      tracking?.repaidAmount,
+      activeLoan?.totalPaidAmount,
+      activeLoan?.paidAmount,
+      activeLoan?.repayAmount,
+      tracking?.repayAmount,
+      request?.totalPaidAmount,
+      request?.paidAmount,
+      request?.totalRepaymentAmount,
+      request?.repayAmount
+    );
+    const explicitInterestPaidAmount = this.pickFirstAmount(
+      repayment?.interestPaid,
+      repayment?.totalInterestPaid,
+      repayment?.interestAmount,
+      repayment?.interestAccrued,
+      tracking?.interestPaid,
+      tracking?.totalInterestPaid,
+      tracking?.interestAmount,
+      tracking?.totalInterest,
+      activeLoan?.interestPaid,
+      activeLoan?.totalInterestPaid,
+      activeLoan?.interestAmount,
+      activeLoan?.totalInterest,
+      request?.interestPaid,
+      request?.totalInterestPaid,
+      request?.interestAmount,
+      request?.totalInterest
+    );
+    const interestBaseAmount =
+      disbursedAmount !== null
+        ? disbursedAmount
+        : loanAmount;
+    const interestPaidAmount =
+      explicitInterestPaidAmount !== null
+        ? explicitInterestPaidAmount
+        : totalPaidAmount !== null && interestBaseAmount !== null
+          ? Math.max(totalPaidAmount - interestBaseAmount, 0)
+          : null;
+
+    return {
+      loanNumber: this.pickFirstString(
+        tracking?.applicationNumber,
+        tracking?.loanAccountNo,
+        tracking?.loanId,
+        activeLoan?.loanNumber,
+        activeLoan?.loanAccountNo,
+        request?.applicationNumber,
+        request?.loanAccountNo,
+        this.applicationId
+      ),
+      statusLabel:
+        this.pickFirstString(
+          tracking?.loanStatus,
+          activeLoan?.status,
+          activeLoan?.loanStatus,
+          request?.loanStatus,
+          request?.status,
+          repayment?.loanStatus
+        ) || 'Closed',
+      loanAmount,
+      disbursedAmount,
+      totalPaidAmount,
+      interestPaidAmount,
+      closedDateDisplay: this.formatSnapshotDateForDisplay(
+        tracking?.closedAt,
+        tracking?.closedOn,
+        tracking?.closedDate,
+        activeLoan?.closedAt,
+        activeLoan?.closedOn,
+        activeLoan?.closedDate,
+        request?.closedAt,
+        request?.closedOn,
+        request?.closedDate,
+        repayment?.closedAt,
+        repayment?.closedOn,
+        repayment?.paidAt,
+        repayment?.repaidAt,
+        tracking?.repaidAt,
+        tracking?.repayDate,
+        activeLoan?.repayDate,
+        activeLoan?.maturityDate,
+        request?.repayDate,
+        request?.maturityDate
+      )
+    };
   }
 
   constructor(
@@ -128,95 +299,119 @@ videoKycModalMessage: string = '';
 
   ngOnInit(): void {
     this.restorePendingEnachMandateRowId();
-    this.restorePendingVideoKycRefresh();
-    this.getBorrowerSnapshot();
+    this.restorePendingEnachReturnRefresh();
     this.listenForDashboardRefreshRequests();
+    if (!this.shouldDeferInitialSnapshotRefresh) {
+      this.getBorrowerSnapshot();
+    }
+    this.registerTabChangeRefresh();
   }
 
   ngOnDestroy(): void {
-    this.clearEnachWindowPollTimer();
-    this.clearVideoKycWindowPollTimer();
     this.clearDashboardRefreshTimeouts();
+    this.clearReloanRefreshTimeouts();
+    this.isRepaymentRefreshInProgress = false;
+    this.isReloanActionBusy = false;
     this.queryParamSubscription?.unsubscribe();
+    this.unregisterTabChangeRefresh();
   }
 
   showActiveLoanCard: boolean = false;
   activeLoan: any = null;
 
 getBorrowerSnapshot() {
-  this.spinner.show();
+  this.getBorrowerSnapshotWithOptions(true);
+}
+
+private getBorrowerSnapshotWithOptions(showLoader = true, onComplete?: () => void) {
+  if (showLoader) {
+    this.spinner.show();
+  }
 
   this.contentService.getBorrowerSnapshot().subscribe({
     next: (res: any) => {
-      this.spinner.hide();
+      if (showLoader) {
+        this.spinner.hide();
+      }
 
-      if (!res?.success) return;
+      if (!res?.success) {
+        onComplete?.();
+        return;
+      }
 
       const data = res?.data || {};
-      const offer = data?.offer || {};
-      const eligibility = data?.eligibility || {};
-
-      this.applicationId = data?.application?.id || '';
-      this.profileProgress = data?.basicFlow?.percent || 0;
-      this.loanProgress = data?.applicationFlow?.percent || 0;
-      this.overallProgress = data?.progressPercent || 0;
-      this.loanTracking = data?.loanTracking || null;
-      this.videoKycCustomerUrl =
-        data?.videoKycCustomerUrl ||
-        data?.journeyLinks?.videoKycCustomerUrl ||
-        data?.journey?.links?.videoKycCustomerUrl ||
-        data?.journey?.journeyLinks?.videoKycCustomerUrl ||
-        this.loanTracking?.videoKycCustomerUrl ||
-        this.loanTracking?.journeyLinks?.videoKycCustomerUrl ||
-        this.loanTracking?.journey?.links?.videoKycCustomerUrl ||
-        this.loanTracking?.journey?.journeyLinks?.videoKycCustomerUrl ||
-        this.loanTracking?.nextAction?.url ||
-        this.loanTracking?.videoKyc?.customerUrl ||
-        '';
-      this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
-      this.steps = data?.applicationFlow?.steps || {};
-      this.updateTrackerFlow(
-        this.loanTracking?.statusFlow ||
-        data?.applicationFlow?.statusFlow ||
-        data?.statusFlow
-      );
-      this.currentLoanRequest = data?.currentLoanRequest || null;
-      this.applyEligibilityState(offer, eligibility);
-
-      const creditManagerDetail =
-        this.loanTracking?.creditManagerDetail ||
-        this.loanTracking?.assignedRoleDetails?.find((role: any) => role?.roleCode === 'CREDIT_MANAGER') ||
-        this.loanTracking?.assignedRoleDetails?.[0];
-
-      this.creditManager = creditManagerDetail ? {
-        name: creditManagerDetail?.name,
-        mobile: creditManagerDetail?.phone || creditManagerDetail?.contact,
-        email: creditManagerDetail?.email,
-        role: creditManagerDetail?.roleName
-      } : null;
-
-      this.showTracker = this.loanProgress === 100;
-      this.patchTrackerFromSnapshot();
-      this.syncPendingVideoKycRefresh();
-      this.patchActiveLoanFromSnapshot();
-      this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
-
-      this.showLoanCard =
-        !this.showActiveLoanCard &&
-        this.isEligible &&
-        this.profileProgress === 100 &&
-        this.loanProgress < 100;
-
-      if (this.showTracker) {
-        if (!this.tryAutoRefreshEnachStatus()) {
-          this.applicationStatusApi();
-        }
-      }
+      this.applyBorrowerSnapshotData(data, showLoader, onComplete);
     },
     error: () => {
-      this.spinner.hide();
+      if (showLoader) {
+        this.spinner.hide();
+      }
+      onComplete?.();
     }
   });
+}
+
+private applyBorrowerSnapshotData(data: any, showLoader = true, onComplete?: () => void) {
+  const offer = data?.offer || {};
+  const eligibility = data?.eligibility || {};
+
+  this.applicationId = data?.application?.id || '';
+  this.profileProgress = data?.basicFlow?.percent || 0;
+  this.loanProgress = data?.applicationFlow?.percent || 0;
+  this.overallProgress = data?.progressPercent || 0;
+  this.loanTracking = data?.loanTracking || null;
+  this.reloanDecision = this.extractReloanDecision(data);
+  this.videoKycCustomerUrl =
+    data?.videoKycCustomerUrl ||
+    data?.journeyLinks?.videoKycCustomerUrl ||
+    data?.journey?.links?.videoKycCustomerUrl ||
+    data?.journey?.journeyLinks?.videoKycCustomerUrl ||
+    this.loanTracking?.videoKycCustomerUrl ||
+    this.loanTracking?.journeyLinks?.videoKycCustomerUrl ||
+    this.loanTracking?.journey?.links?.videoKycCustomerUrl ||
+    this.loanTracking?.journey?.journeyLinks?.videoKycCustomerUrl ||
+    this.loanTracking?.nextAction?.url ||
+    this.loanTracking?.videoKyc?.customerUrl ||
+    '';
+  this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
+  this.steps = data?.applicationFlow?.steps || {};
+  this.updateTrackerFlow(
+    this.loanTracking?.statusFlow ||
+    data?.applicationFlow?.statusFlow ||
+    data?.statusFlow
+  );
+  this.currentLoanRequest = data?.currentLoanRequest || null;
+  this.applyEligibilityState(offer, eligibility);
+
+  const creditManagerDetail =
+    this.loanTracking?.creditManagerDetail ||
+    this.loanTracking?.assignedRoleDetails?.find((role: any) => role?.roleCode === 'CREDIT_MANAGER') ||
+    this.loanTracking?.assignedRoleDetails?.[0];
+
+  this.creditManager = creditManagerDetail ? {
+    name: creditManagerDetail?.name,
+    mobile: creditManagerDetail?.phone || creditManagerDetail?.contact,
+    email: creditManagerDetail?.email,
+    role: creditManagerDetail?.roleName
+  } : null;
+
+  this.showTracker = this.loanProgress === 100;
+  this.patchTrackerFromSnapshot();
+  this.patchActiveLoanFromSnapshot();
+  this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
+
+  this.showLoanCard =
+    !this.showActiveLoanCard &&
+    this.isEligible &&
+    this.profileProgress === 100 &&
+    this.loanProgress < 100;
+
+  if (this.showTracker) {
+    this.applicationStatusApi(showLoader, onComplete);
+    return;
+  }
+
+  onComplete?.();
 }
 
 private listenForDashboardRefreshRequests() {
@@ -224,6 +419,9 @@ private listenForDashboardRefreshRequests() {
     if (params.get('refresh') !== 'true') {
       return;
     }
+
+    this.shouldDeferInitialSnapshotRefresh = true;
+    this.isRepaymentRefreshContext = true;
 
     this.router.navigate([], {
       relativeTo: this.route,
@@ -238,20 +436,111 @@ private listenForDashboardRefreshRequests() {
 
 private refreshDashboardSnapshot() {
   this.clearDashboardRefreshTimeouts();
+  this.repaymentRefreshStartedAt = Date.now();
+  this.isRepaymentRefreshInProgress = true;
+  this.spinner.show();
+  this.runDashboardRefreshAttempt();
+}
 
-  for (let attempt = 0; attempt < this.refreshRetryAttempts; attempt++) {
-    const timeout = setTimeout(() => {
-      this.dashboardRefreshService.requestRefresh();
-      this.getBorrowerSnapshot();
-    }, attempt * this.refreshRetryDelayMs);
+private runDashboardRefreshAttempt(delayMs = 0) {
+  const timeout = setTimeout(() => {
+    this.getBorrowerSnapshotWithOptions(false, () => {
+      if (this.hasReachedRepaymentRefreshTarget() || this.hasExceededRepaymentRefreshSafetyTimeout()) {
+        this.finishDashboardRefresh();
+        return;
+      }
 
-    this.dashboardRefreshTimeouts.push(timeout);
-  }
+      this.runDashboardRefreshAttempt(this.repaymentRefreshPollDelayMs);
+    });
+  }, delayMs);
+
+  this.dashboardRefreshTimeouts.push(timeout);
 }
 
 private clearDashboardRefreshTimeouts() {
   this.dashboardRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
   this.dashboardRefreshTimeouts = [];
+}
+
+private finishDashboardRefresh() {
+  this.clearDashboardRefreshTimeouts();
+  this.repaymentRefreshStartedAt = 0;
+  this.isRepaymentRefreshInProgress = false;
+  this.dashboardRefreshService.requestRefresh();
+  this.spinner.hide();
+}
+
+private hasExceededRepaymentRefreshSafetyTimeout(): boolean {
+  return this.repaymentRefreshStartedAt > 0 &&
+    Date.now() - this.repaymentRefreshStartedAt >= this.repaymentRefreshSafetyTimeoutMs;
+}
+
+private registerTabChangeRefresh() {
+  if (typeof document === 'undefined') return;
+
+  this.wasDocumentHidden = document.hidden;
+  document.addEventListener('visibilitychange', this.visibilityChangeHandler);
+  if (typeof window !== 'undefined') {
+    window.addEventListener('focus', this.windowFocusHandler);
+  }
+}
+
+private unregisterTabChangeRefresh() {
+  if (typeof document === 'undefined') return;
+
+  document.removeEventListener('visibilitychange', this.visibilityChangeHandler);
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('focus', this.windowFocusHandler);
+  }
+}
+
+private handleDocumentVisibilityChange() {
+  if (typeof document === 'undefined') return;
+
+  if (document.hidden) {
+    this.wasDocumentHidden = true;
+    return;
+  }
+
+  if (!this.wasDocumentHidden) return;
+
+  this.wasDocumentHidden = false;
+  this.refreshStatusOnTabReturn();
+}
+
+private handleWindowFocus() {
+  if (typeof document !== 'undefined' && document.hidden) {
+    return;
+  }
+
+  this.refreshStatusOnTabReturn();
+}
+
+private refreshStatusOnTabReturn() {
+  const now = Date.now();
+
+  if (now - this.lastTabReturnRefreshAt < this.tabReturnRefreshCooldownMs) {
+    return;
+  }
+
+  this.lastTabReturnRefreshAt = now;
+  if (this.tryRefreshEnachOnReturn()) {
+    return;
+  }
+
+  this.refreshStatus();
+}
+
+private tryRefreshEnachOnReturn(refreshApplicationStatusAfterSuccess = true): boolean {
+  this.restorePendingEnachMandateRowId();
+  this.restorePendingEnachReturnRefresh();
+
+  if (!this.mandateRowId) {
+    return false;
+  }
+
+  this.verifyEnach(refreshApplicationStatusAfterSuccess);
+  return true;
 }
 
 private applyEligibilityState(offer: any, eligibility: any) {
@@ -337,15 +626,55 @@ private patchTrackerFromSnapshot() {
     this.currentMessage;
 }
 
+private syncTrackerRuntimeState(statusData: any) {
+  if (!statusData || typeof statusData !== 'object') return;
+
+  const existingTracking = this.loanTracking || {};
+  const incomingTracking = statusData?.loanTracking || {};
+  const incomingVideoKyc = statusData?.videoKyc || incomingTracking?.videoKyc || {};
+  const incomingNextAction = statusData?.nextAction || incomingTracking?.nextAction;
+  const mergedTracking = {
+    ...existingTracking,
+    ...incomingTracking,
+    videoKyc: {
+      ...(existingTracking?.videoKyc || {}),
+      ...(incomingVideoKyc || {})
+    },
+    nextAction: this.resolveNextAction(existingTracking?.nextAction, incomingNextAction)
+  };
+
+  this.loanTracking = mergedTracking;
+  this.reloanDecision =
+    this.extractReloanDecision(statusData) ||
+    this.extractReloanDecision({ loanTracking: mergedTracking, currentLoanRequest: this.currentLoanRequest }) ||
+    this.reloanDecision;
+  this.videoKycCustomerUrl =
+    statusData?.videoKycCustomerUrl ||
+    statusData?.journeyLinks?.videoKycCustomerUrl ||
+    statusData?.journey?.links?.videoKycCustomerUrl ||
+    statusData?.journey?.journeyLinks?.videoKycCustomerUrl ||
+    incomingTracking?.videoKycCustomerUrl ||
+    incomingTracking?.journeyLinks?.videoKycCustomerUrl ||
+    incomingTracking?.journey?.links?.videoKycCustomerUrl ||
+    incomingTracking?.journey?.journeyLinks?.videoKycCustomerUrl ||
+    incomingNextAction?.url ||
+    incomingVideoKyc?.customerUrl ||
+    incomingVideoKyc?.url ||
+    this.videoKycCustomerUrl ||
+    '';
+}
+
 private patchActiveLoanFromSnapshot() {
   const tracking = this.loanTracking || {};
   const activeLoan = tracking?.activeLoan || {};
   const repayment = tracking?.repayment || {};
   const isDisbursementDone = this.isDisbursementCompleted();
+  const shouldSuppressActiveLoanCard = this.isPendingLoanClosureSync(tracking);
 
   this.showActiveLoanCard =
     tracking?.showActiveLoanCard === true &&
-    isDisbursementDone;
+    isDisbursementDone &&
+    !shouldSuppressActiveLoanCard;
 
   if (!this.showActiveLoanCard) {
     this.activeLoan = null;
@@ -399,6 +728,44 @@ private hasClosedLoan(): boolean {
     request?.closed === true;
 }
 
+private hasClosedLoanOrPendingClosureSync(): boolean {
+  return this.hasClosedLoan() || this.isPendingLoanClosureSync();
+}
+
+private isPendingLoanClosureSync(trackingSource?: any): boolean {
+  const tracking = trackingSource || this.loanTracking || {};
+
+  if (!this.isRepaymentRefreshContext || tracking?.showActiveLoanCard !== true) {
+    return false;
+  }
+
+  return this.hasClearedLoanBalance(tracking);
+}
+
+private hasClearedLoanBalance(trackingSource?: any): boolean {
+  const tracking = trackingSource || this.loanTracking || {};
+  const repayment = tracking?.repayment || {};
+  const activeLoan = tracking?.activeLoan || {};
+  const dueAmounts = [
+    repayment?.outstandingAmount,
+    tracking?.outstandingAmount,
+    activeLoan?.outstandingAmount,
+    repayment?.principalOutstanding,
+    tracking?.principalOutstanding,
+    repayment?.nextDueAmount,
+    tracking?.nextDueAmount,
+    activeLoan?.nextDueAmount,
+    repayment?.minimumDueAmount,
+    tracking?.minimumDueAmount,
+    repayment?.payableAmount,
+    tracking?.payableAmount
+  ]
+    .map((amount) => this.pickFirstAmount(amount))
+    .filter((amount): amount is number => amount !== null);
+
+  return dueAmounts.length > 0 && dueAmounts.every((amount) => amount <= 0);
+}
+
 private hasExplicitReloanUnavailableFlag(): boolean {
   const tracking = this.loanTracking || {};
   const request = this.currentLoanRequest || {};
@@ -425,6 +792,160 @@ private hasExplicitReloanUnavailableFlag(): boolean {
   );
 }
 
+private getReloanDecisionState(): 'pending' | 'not_eligible' | 'eligible' | 'none' {
+  const hasPendingClosureSync = this.isPendingLoanClosureSync();
+
+  if (!this.hasClosedLoan() && !hasPendingClosureSync) {
+    return 'none';
+  }
+
+  const reloanDecision = this.reloanDecision;
+
+  if (!reloanDecision || typeof reloanDecision !== 'object') {
+    return hasPendingClosureSync ? 'pending' : 'none';
+  }
+
+  if (!this.isReloanDecisionSaved(reloanDecision)) {
+    return 'pending';
+  }
+
+  return reloanDecision?.eligible === true ? 'eligible' : 'not_eligible';
+}
+
+private isReloanDecisionSaved(reloanDecision: any): boolean {
+  return reloanDecision?.saved === true || reloanDecision?.isSaved === true;
+}
+
+private extractReloanDecision(source: any): any {
+  const reloanDecision =
+    source?.reloanDecision ||
+    source?.loanTracking?.reloanDecision ||
+    source?.currentLoanRequest?.reloanDecision ||
+    null;
+
+  return reloanDecision && typeof reloanDecision === 'object'
+    ? reloanDecision
+    : null;
+}
+
+private resolveNextAction(existingNextAction: any, incomingNextAction: any): any {
+  if (!incomingNextAction) {
+    return existingNextAction;
+  }
+
+  if (!existingNextAction) {
+    return incomingNextAction;
+  }
+
+  const existingReloanParams = this.getResolvedReloanActionParams(existingNextAction);
+  const incomingReloanParams = this.getResolvedReloanActionParams(incomingNextAction);
+
+  if (existingReloanParams && !incomingReloanParams) {
+    return existingNextAction;
+  }
+
+  return incomingNextAction;
+}
+
+private getResolvedReloanActionParams(nextActionSource?: any): { applicationId: string; token: string } | null {
+  const actionUrl = this.getNextActionUrl(nextActionSource);
+
+  if (!actionUrl) {
+    return null;
+  }
+
+  const parsedUrl = this.parseActionUrl(actionUrl);
+  if (!parsedUrl) {
+    return null;
+  }
+
+  const token = parsedUrl.searchParams.get('token')?.trim() || '';
+  const applicationId =
+    parsedUrl.searchParams.get('applicationId')?.trim() ||
+    this.applicationId ||
+    '';
+
+  if (!token || !applicationId) {
+    return null;
+  }
+
+  return {
+    applicationId,
+    token
+  };
+}
+
+private getNextActionUrl(nextActionSource?: any): string {
+  const nextAction = nextActionSource ?? this.loanTracking?.nextAction;
+  const url = nextAction?.url;
+
+  return typeof url === 'string' ? url.trim() : '';
+}
+
+private parseActionUrl(url: string): URL | null {
+  if (!url) {
+    return null;
+  }
+
+  const baseOrigin =
+    typeof window !== 'undefined' && typeof window.location?.origin === 'string'
+      ? window.location.origin
+      : 'http://localhost';
+
+  try {
+    return new URL(url, baseOrigin);
+  } catch {
+    return null;
+  }
+}
+
+private pickFirstAmount(...candidates: any[]): number | null {
+  for (const candidate of candidates) {
+    const numericValue = Number(candidate);
+
+    if (Number.isFinite(numericValue) && numericValue >= 0) {
+      return numericValue;
+    }
+  }
+
+  return null;
+}
+
+private pickFirstString(...candidates: any[]): string {
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') {
+      continue;
+    }
+
+    const trimmedValue = candidate.trim();
+    if (trimmedValue) {
+      return trimmedValue;
+    }
+  }
+
+  return '';
+}
+
+private formatSnapshotDateForDisplay(...candidates: any[]): string {
+  for (const candidate of candidates) {
+    if (typeof candidate !== 'string') {
+      continue;
+    }
+
+    const formattedDate = formatDateForDisplay(candidate);
+    if (formattedDate) {
+      return formattedDate;
+    }
+
+    const trimmedValue = candidate.trim();
+    if (trimmedValue) {
+      return trimmedValue;
+    }
+  }
+
+  return '';
+}
+
 private isClosedLoanStatus(status: any): boolean {
   if (typeof status !== 'string') {
     return false;
@@ -438,27 +959,21 @@ private isClosedLoanStatus(status: any): boolean {
 
   // ================= RELOAN CLICK =================
   applyReloan() {
-    const url = this.loanTracking?.nextAction?.url;
+    const reloanActionParams = this.getResolvedReloanActionParams();
 
-    if (!url) {
-      this.toastr.error('Reloan link missing');
+    if (!reloanActionParams) {
+      this.toastr.info('We are refreshing your reloan link. Please wait a moment.');
+      this.refreshReloanActionAndRetry();
       return;
     }
 
     // 🔥 TOKEN EXTRACT
-    const token = this.getQueryParam(url, 'token');
-    const applicationId = this.getQueryParam(url, 'applicationId');
-
-    if (!token || !applicationId) {
-      this.toastr.error('Invalid reloan URL');
-      return;
-    }
-
-    this.consumeReloan(applicationId, token);
+    this.consumeReloan(reloanActionParams.applicationId, reloanActionParams.token);
   }
 
   // ================= CONSUME API =================
-  consumeReloan(applicationId: string, token: string) {
+  consumeReloan(applicationId: string, token: string, allowRefreshRetry = true) {
+    this.isReloanActionBusy = true;
     this.spinner.show();
 
     const payload = {
@@ -468,9 +983,8 @@ private isClosedLoanStatus(status: any): boolean {
 
     this.contentService.reloanConsume(payload).subscribe({
       next: (res: any) => {
-        this.spinner.hide();
-
         if (res?.success) {
+          this.finishReloanRefreshFlow();
           this.toastr.success('Reloan started 🚀');
 
           // 🔥 REFRESH SNAPSHOT
@@ -479,13 +993,24 @@ private isClosedLoanStatus(status: any): boolean {
         }
 
         const errorMessage = getFirstApiErrorMessage(res);
+        if (allowRefreshRetry && this.shouldRetryReloanToken(errorMessage)) {
+          this.refreshReloanActionAndRetry(token);
+          return;
+        }
+
+        this.finishReloanRefreshFlow();
         if (errorMessage) {
           this.toastr.error(errorMessage);
         }
       },
       error: (err) => {
-        this.spinner.hide();
         const errorMessage = getFirstApiErrorMessage(err);
+        if (allowRefreshRetry && this.shouldRetryReloanToken(errorMessage)) {
+          this.refreshReloanActionAndRetry(token);
+          return;
+        }
+
+        this.finishReloanRefreshFlow();
         if (errorMessage) {
           this.toastr.error(errorMessage);
         }
@@ -493,10 +1018,77 @@ private isClosedLoanStatus(status: any): boolean {
     });
   }
 
+  private refreshReloanActionAndRetry(previousToken = '') {
+    this.clearReloanRefreshTimeouts();
+    this.reloanTokenRefreshStartedAt = Date.now();
+    this.isReloanActionBusy = true;
+    this.spinner.show();
+    this.runReloanRefreshAttempt(previousToken);
+  }
+
+  private runReloanRefreshAttempt(previousToken: string, delayMs = 0) {
+    const timeout = setTimeout(() => {
+      this.getBorrowerSnapshotWithOptions(false, () => {
+        const refreshedReloanActionParams = this.getResolvedReloanActionParams();
+        const hasFreshToken = !!(
+          refreshedReloanActionParams &&
+          refreshedReloanActionParams.token &&
+          refreshedReloanActionParams.token !== previousToken
+        );
+        const canConsumeCurrentToken = !!(refreshedReloanActionParams && !previousToken);
+
+        if (hasFreshToken || canConsumeCurrentToken) {
+          this.clearReloanRefreshTimeouts();
+          this.consumeReloan(
+            refreshedReloanActionParams!.applicationId,
+            refreshedReloanActionParams!.token,
+            false
+          );
+          return;
+        }
+
+        if (this.hasExceededReloanRefreshTimeout()) {
+          this.finishReloanRefreshFlow();
+          this.toastr.error('We could not refresh your reloan link yet. Please try again in a moment.');
+          return;
+        }
+
+        this.runReloanRefreshAttempt(previousToken, this.reloanTokenRefreshDelayMs);
+      });
+    }, delayMs);
+
+    this.reloanRefreshTimeouts.push(timeout);
+  }
+
+  private clearReloanRefreshTimeouts() {
+    this.reloanRefreshTimeouts.forEach((timeout) => clearTimeout(timeout));
+    this.reloanRefreshTimeouts = [];
+  }
+
+  private finishReloanRefreshFlow() {
+    this.clearReloanRefreshTimeouts();
+    this.reloanTokenRefreshStartedAt = 0;
+    this.isReloanActionBusy = false;
+    this.spinner.hide();
+  }
+
+  private hasExceededReloanRefreshTimeout(): boolean {
+    return this.reloanTokenRefreshStartedAt > 0 &&
+      Date.now() - this.reloanTokenRefreshStartedAt >= this.reloanTokenRefreshTimeoutMs;
+  }
+
+  private shouldRetryReloanToken(errorMessage: string): boolean {
+    const normalizedMessage = (errorMessage || '').trim().toLowerCase();
+
+    return normalizedMessage.includes('invalid reloan token') ||
+      normalizedMessage.includes('invalid reloantoken') ||
+      normalizedMessage.includes('reloan token');
+  }
+
   // ================= HELPERS =================
   getQueryParam(url: string, key: string): string | null {
-    const params = new URL(url).searchParams;
-    return params.get(key);
+    const parsedUrl = this.parseActionUrl(url);
+    return parsedUrl?.searchParams.get(key) || null;
   }
 
   // ================= RELOAN STEPS =================
@@ -629,39 +1221,74 @@ canOpenTrackerStep(stepKey: string): boolean {
 
 videoKycData: any = null;
 
-applicationStatusApi() {
-  if (!this.applicationId) return;
+applicationStatusApi(showLoader = true, onComplete?: () => void) {
+  if (!this.applicationId || this.isApplicationStatusInFlight) {
+    onComplete?.();
+    return;
+  }
 
-  this.spinner.show();
+  if (showLoader) {
+    this.spinner.show();
+  }
+  this.isApplicationStatusInFlight = true;
 
   this.contentService.applicationStatus(this.applicationId).subscribe({
     next: (res: any) => {
-      this.spinner.hide();
+      if (showLoader) {
+        this.spinner.hide();
+      }
+      this.isApplicationStatusInFlight = false;
 
-      if (!res?.success) return;
+      if (!res?.success) {
+        onComplete?.();
+        return;
+      }
 
       const data = res?.data || {};
-      this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
-      this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
-      this.syncPendingVideoKycRefresh();
-      this.patchActiveLoanFromSnapshot();
-      this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
-      this.currentTitle =
-        data?.borrowerGuidance?.title ||
-        this.loanTracking?.currentTitle ||
-        this.loanTracking?.currentStage ||
-        '';
-      this.currentMessage =
-        data?.borrowerGuidance?.message ||
-        this.loanTracking?.currentMessage ||
-        '';
-      this.videoKycData = data?.videoKyc;
+      this.applyApplicationStatusData(data);
+      onComplete?.();
     },
     error: () => {
-      this.spinner.hide();
+      if (showLoader) {
+        this.spinner.hide();
+      }
+      this.isApplicationStatusInFlight = false;
       console.error('Application status failed');
+      onComplete?.();
     }
   });
+}
+
+private applyApplicationStatusData(data: any) {
+  this.syncTrackerRuntimeState(data);
+  this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
+  this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
+  this.patchActiveLoanFromSnapshot();
+  this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
+  this.currentTitle =
+    data?.borrowerGuidance?.title ||
+    this.loanTracking?.currentTitle ||
+    this.loanTracking?.currentStage ||
+    '';
+  this.currentMessage =
+    data?.borrowerGuidance?.message ||
+    this.loanTracking?.currentMessage ||
+    '';
+  this.videoKycData = data?.videoKyc;
+}
+
+private hasReachedRepaymentRefreshTarget(): boolean {
+  if (this.showClosedLoanUnavailableCard) {
+    return true;
+  }
+
+  if (this.getReloanDecisionState() === 'eligible') {
+    return this.canApplyReloan;
+  }
+
+  return this.hasClosedLoanOrPendingClosureSync() &&
+    !this.showActiveLoanCard &&
+    this.getReloanDecisionState() !== 'none';
 }
 async startVideoKyc() {
   if (!this.videoKycCustomerUrl) {
@@ -670,10 +1297,8 @@ async startVideoKyc() {
   }
 
   this.spinner.show();
-  this.markPendingVideoKycRefresh();
   const videoKycWindow = this.openVideoKycInNewTab();
   if (!videoKycWindow) {
-    this.clearPendingVideoKycRefresh();
     this.spinner.hide();
     return;
   }
@@ -682,26 +1307,11 @@ async startVideoKyc() {
     const allowed = await this.ensureLocationAccess();
     if (!allowed) {
       this.closeVideoKycWindow(videoKycWindow);
-      this.clearPendingVideoKycRefresh();
       return;
     }
   } finally {
     this.spinner.hide();
   }
-}
-
-@HostListener('window:focus')
-onWindowFocus() {
-  this.tryRefreshVideoKycOnReturn();
-}
-
-@HostListener('document:visibilitychange')
-onDocumentVisibilityChange() {
-  if (typeof document === 'undefined' || document.visibilityState !== 'visible') {
-    return;
-  }
-
-  this.tryRefreshVideoKycOnReturn();
 }
 
 
@@ -792,30 +1402,12 @@ private openVideoKycInNewTab(): Window | null {
     } catch {
       // Ignore browser restrictions while still continuing the KYC flow.
     }
-    this.monitorVideoKycWindow(videoKycWindow);
+    this.toastr.info('Complete Video KYC in the new tab, then come back and click Refresh Status.');
   } else {
     this.toastr.error('Please allow popups to continue Video KYC');
   }
 
   return videoKycWindow;
-}
-
-private monitorVideoKycWindow(videoKycWindow: Window) {
-  this.clearVideoKycWindowPollTimer();
-
-  this.videoKycWindowPollTimer = setInterval(() => {
-    if (!videoKycWindow.closed) return;
-
-    this.clearVideoKycWindowPollTimer();
-    this.videoKycRefresh();
-  }, 1500);
-}
-
-private clearVideoKycWindowPollTimer() {
-  if (this.videoKycWindowPollTimer) {
-    clearInterval(this.videoKycWindowPollTimer);
-    this.videoKycWindowPollTimer = null;
-  }
 }
 
 private closeVideoKycWindow(videoKycWindow?: Window | null) {
@@ -846,51 +1438,6 @@ videoKycRefresh() {
       console.error('Refresh failed');
     }
   });
-}
-
-private tryRefreshVideoKycOnReturn() {
-  if (!this.hasPendingVideoKycRefresh || !this.applicationId) {
-    return;
-  }
-
-  const now = Date.now();
-  if (now - this.lastVideoKycRefreshTriggerAt < this.videoKycReturnRefreshCooldownMs) {
-    return;
-  }
-
-  this.lastVideoKycRefreshTriggerAt = now;
-  this.videoKycRefresh();
-}
-
-private markPendingVideoKycRefresh() {
-  this.hasPendingVideoKycRefresh = true;
-
-  if (!this.canUseSessionStorage()) return;
-
-  sessionStorage.setItem(this.videoKycPendingStorageKey, 'true');
-}
-
-private restorePendingVideoKycRefresh() {
-  if (!this.canUseSessionStorage()) return;
-
-  this.hasPendingVideoKycRefresh =
-    sessionStorage.getItem(this.videoKycPendingStorageKey) === 'true';
-}
-
-private clearPendingVideoKycRefresh() {
-  this.hasPendingVideoKycRefresh = false;
-
-  if (!this.canUseSessionStorage()) return;
-
-  sessionStorage.removeItem(this.videoKycPendingStorageKey);
-}
-
-private syncPendingVideoKycRefresh() {
-  const videoKycStatus = this.normalizeTrackerStatus(this.trackingSteps?.videoKyc);
-
-  if (videoKycStatus !== 'PENDING') {
-    this.clearPendingVideoKycRefresh();
-  }
 }
 
 
@@ -1118,8 +1665,12 @@ openEnach() {
 }
 
 
-verifyEnach() {
+verifyEnach(refreshApplicationStatusAfterSuccess = true) {
   this.restorePendingEnachMandateRowId();
+
+  if (this.isEnachRefreshInFlight) {
+    return;
+  }
 
   if (!this.mandateRowId) {
     console.error('Mandate ID missing');
@@ -1131,21 +1682,26 @@ verifyEnach() {
   };
 
   this.spinner.show();
+  this.isEnachRefreshInFlight = true;
 
   this.contentService.mendateRefresh(payload).subscribe({
     next: (res: any) => {
       this.spinner.hide();
+      this.isEnachRefreshInFlight = false;
 
       if (!res?.success) return;
 
-      // ✅ modal close
+      this.shouldRefreshEnachOnReturn = true;
+      this.persistPendingEnachReturnRefresh(true);
 
-      // 🔥 tracker refresh
-      this.applicationStatusApi();
+      if (refreshApplicationStatusAfterSuccess) {
+        this.applicationStatusApi();
+      }
 
     },
     error: () => {
       this.spinner.hide();
+      this.isEnachRefreshInFlight = false;
       console.error('Mandate refresh failed');
     }
   });
@@ -1162,40 +1718,10 @@ openEnachInNewTab() {
       return;
     }
 
-    this.toastr.info('eNACH opened in a new tab. Complete it there and return here.');
-    this.monitorEnachWindow(enachWindow);
+    this.shouldRefreshEnachOnReturn = true;
+    this.persistPendingEnachReturnRefresh(true);
+    this.toastr.info('eNACH opened in a new tab. Complete it there, then return to this app.');
   }
-}
-
-private monitorEnachWindow(enachWindow: Window) {
-  this.clearEnachWindowPollTimer();
-
-  this.enachWindowPollTimer = setInterval(() => {
-    if (!enachWindow.closed) return;
-
-    this.clearEnachWindowPollTimer();
-
-    if (this.mandateRowId) {
-      this.verifyEnach();
-    }
-  }, 1500);
-}
-
-private clearEnachWindowPollTimer() {
-  if (this.enachWindowPollTimer) {
-    clearInterval(this.enachWindowPollTimer);
-    this.enachWindowPollTimer = null;
-  }
-}
-
-private tryAutoRefreshEnachStatus(): boolean {
-  if (this.hasAutoTriggeredEnachRefresh || !this.mandateRowId) {
-    return false;
-  }
-
-  this.hasAutoTriggeredEnachRefresh = true;
-  this.verifyEnach();
-  return true;
 }
 
 private persistPendingEnachMandateRowId(mandateRowId: string) {
@@ -1209,6 +1735,17 @@ private persistPendingEnachMandateRowId(mandateRowId: string) {
   sessionStorage.removeItem(this.enachMandateStorageKey);
 }
 
+private persistPendingEnachReturnRefresh(shouldRefresh: boolean) {
+  if (!this.canUseSessionStorage()) return;
+
+  if (shouldRefresh) {
+    sessionStorage.setItem(this.enachReturnRefreshStorageKey, 'true');
+    return;
+  }
+
+  sessionStorage.removeItem(this.enachReturnRefreshStorageKey);
+}
+
 private restorePendingEnachMandateRowId() {
   if (this.mandateRowId || !this.canUseSessionStorage()) return;
 
@@ -1216,11 +1753,20 @@ private restorePendingEnachMandateRowId() {
     sessionStorage.getItem(this.enachMandateStorageKey)?.trim() || '';
 }
 
+private restorePendingEnachReturnRefresh() {
+  if (!this.canUseSessionStorage()) return;
+
+  this.shouldRefreshEnachOnReturn =
+    sessionStorage.getItem(this.enachReturnRefreshStorageKey) === 'true';
+}
+
 private clearPendingEnachMandateIfCompleted(steps: any) {
   if (this.normalizeTrackerStatus(steps?.enach) !== 'DONE') return;
 
   this.mandateRowId = '';
+  this.shouldRefreshEnachOnReturn = false;
   this.persistPendingEnachMandateRowId('');
+  this.persistPendingEnachReturnRefresh(false);
 }
 
 private canUseSessionStorage(): boolean {
@@ -1239,7 +1785,12 @@ setDashboardFlags(data: any) {
 
 
 refreshStatus() {
-  window.location.reload();
+  if (this.applicationId) {
+    this.applicationStatusApi();
+    return;
+  }
+
+  this.getBorrowerSnapshot();
 }
 
 openRepayment(): void {
