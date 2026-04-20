@@ -369,6 +369,20 @@ buildUrl(url: string): string {
   return `${base}/${clean}`;
 }
 
+resolveApiUrl(url: string): string {
+  const normalizedUrl = String(url || '').trim();
+
+  if (/^https?:\/\//i.test(normalizedUrl)) {
+    return normalizedUrl;
+  }
+
+  return this.buildUrl(normalizedUrl);
+}
+
+postToEndpoint(url: string, payload: any) {
+  return this.http.post<any>(this.resolveApiUrl(url), payload);
+}
+
 // ================= CONSENT =================
 createConsent(payload: any) {
   return this.http.post(this.buildUrl('kyc/aa/consents'), payload);

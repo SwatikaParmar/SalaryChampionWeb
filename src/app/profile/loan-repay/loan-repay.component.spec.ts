@@ -19,38 +19,33 @@ describe('LoanRepayComponent', () => {
   beforeEach(async () => {
     repaymentSummaryResponse = {
       data: {
-        application: {
-          applicationNumber: 'AP2026000128'
-        },
         borrower: {
           name: 'SAJAD PARVAIZ PARVAIZ RATHER'
+        },
+        application: {
+          applicationId: 'APP123',
+          applicationNumber: 'AP2026000128'
         },
         loan: {
           status: 'ACTIVE'
         },
         summary: {
           nextDueDate: '2026-04-17',
-          nextDueAmount: '19550.00'
-        },
-        dues: {
-          overdueAmount: '0.00',
-          payableAmount: '19550.00',
-          foreclosureQuote: {
-            eligible: true,
-            asOfDate: '2026-04-03',
-            maturityDate: '2026-04-17',
-            totalDays: 15,
-            elapsedDays: 1,
-            interestAccruedTillDate: '170.00',
-            interestWaived: '2380.00',
-            regularPayableAmount: '19550.00',
-            payableAmount: '17170.00'
-          }
+          dpd: 6,
+          finalDueAmount: '8425.20',
+          nextDueAmount: '7140.00',
+          penaltyAmount: '1285.20',
+          totalPaid: '0.00'
         },
         paymentOptions: {
-          minPayAmount: 1,
-          maxPayAmount: 19550,
-          suggestedAmounts: [17170, 19550]
+          allowPartialPayment: true,
+          allowFullPayment: true,
+          minPayAmount: 1000,
+          maxPayAmount: 8425.2,
+          suggestedAmounts: [7140, 8425.2]
+        },
+        actions: {
+          createOrderEndpoint: '/loan/borrower/repay/cashfree/order'
         }
       }
     };
@@ -58,11 +53,13 @@ describe('LoanRepayComponent', () => {
     contentServiceSpy = jasmine.createSpyObj<ContentService>('ContentService', [
       'getBorrowerRepaymentSummary',
       'refreshBorrowerRepayment',
-      'createBorrowerRepaymentOrder'
+      'createBorrowerRepaymentOrder',
+      'postToEndpoint'
     ]);
     contentServiceSpy.getBorrowerRepaymentSummary.and.returnValue(of(repaymentSummaryResponse));
     contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({ data: {} }));
     contentServiceSpy.createBorrowerRepaymentOrder.and.returnValue(of({ data: {} }));
+    contentServiceSpy.postToEndpoint.and.returnValue(of({ data: {} }));
 
     toastrSpy = jasmine.createSpyObj<ToastrService>('ToastrService', [
       'error',
@@ -104,8 +101,7 @@ describe('LoanRepayComponent', () => {
           useValue: toastrSpy
         }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(LoanRepayComponent);
     component = fixture.componentInstance;
@@ -117,69 +113,57 @@ describe('LoanRepayComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should default to foreclosure quote when eligible', () => {
-    expect(component.hasForeclosureQuote).toBeTrue();
-    expect(component.amountOption).toBe('FORECLOSURE');
-    expect(component.payableAmount).toBe(17170);
-    expect(component.regularPayableAmount).toBe(19550);
-    expect(component.selectedAmount).toBe(17170);
-    expect(component.paymentType).toBe('FULL');
+  it('should map the repay summary handoff fields for the screen', () => {
+    expect(component.borrowerName).toBe('SAJAD PARVAIZ PARVAIZ RATHER');
+    expect(component.applicationNumber).toBe('AP2026000128');
+    expect(component.loanStatus).toBe('ACTIVE');
+    expect(component.dueDateDisplay).toBe('17-04-2026');
+    expect(component.delayDays).toBe(6);
+    expect(component.payableNow).toBe(8425.2);
+    expect(component.scheduledDue).toBe(7140);
+    expect(component.penaltyAmount).toBe(1285.2);
+    expect(component.totalPaid).toBe(0);
+    expect(component.amountOption).toBe('FULL');
+    expect(component.selectedAmount).toBe(8425.2);
   });
 
-  it('should preserve both foreclosure and regular quick amounts', () => {
-    expect(component.quickAmounts).toEqual([17170, 19550]);
-  });
-
-  it('should keep minimum and custom selections as partial', () => {
+  it('should compute CTA amount from minimum, full and custom selections', () => {
     component.selectAmountOption('MINIMUM');
-    expect(component.paymentType).toBe('PARTIAL');
+    expect(component.selectedAmount).toBe(7140);
+
+    component.selectAmountOption('FULL');
+    expect(component.selectedAmount).toBe(8425.2);
 
     component.selectAmountOption('CUSTOM');
-    component.customAmount = 500;
-    expect(component.paymentType).toBe('PARTIAL');
+    component.customAmount = 2500;
+    expect(component.selectedAmount).toBe(2500);
   });
 
-  it('should disable full due before maturity date', () => {
-    expect(component.isFullDueEnabled).toBeFalse();
+  it('should create order using the dynamic createOrderEndpoint', () => {
+    const assignSpy = spyOn(window.location, 'assign');
 
-    component.selectAmountOption('FULL');
-    expect(component.amountOption).not.toBe('FULL');
-    expect(component.canPay).toBeTrue();
-  });
+    contentServiceSpy.postToEndpoint.and.returnValue(of({
+      data: {
+        orderId: 'ORDER123',
+        hostedPaymentUrl: 'https://payments.example.com/pay'
+      }
+    }));
 
-  it('should enable full due when maturity date matches current date', () => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = `${today.getMonth() + 1}`.padStart(2, '0');
-    const day = `${today.getDate()}`.padStart(2, '0');
-    const dateOnly = `${year}-${month}-${day}`;
-
-    component.summary.foreclosureMaturityDate = dateOnly;
-    component.selectAmountOption('FULL');
-
-    expect(component.isFullDueEnabled).toBeTrue();
-    expect(component.amountOption).toBe('FULL');
-    expect(component.paymentType).toBe('FULL');
-  });
-
-  it('should keep full due enabled after maturity date', () => {
-    component.summary.foreclosureMaturityDate = '2020-01-01';
-
-    expect(component.isFullDueEnabled).toBeTrue();
-
-    component.selectAmountOption('FULL');
-    expect(component.amountOption).toBe('FULL');
-  });
-
-  it('should send repayment callback to the loan repay route on the current origin', () => {
     component.createPayment();
 
-    const payload = contentServiceSpy.createBorrowerRepaymentOrder.calls.mostRecent().args[0];
-
-    expect(payload.returnUrl).toBe(`${window.location.origin}/dashboard/profile/loan-repay/APP123`);
+    expect(contentServiceSpy.postToEndpoint).toHaveBeenCalledWith(
+      '/loan/borrower/repay/cashfree/order',
+      {
+        applicationId: 'APP123',
+        amount: 8425.2
+      }
+    );
+    expect(assignSpy).toHaveBeenCalledWith('https://payments.example.com/pay');
+    expect(sessionStorage.getItem('repay-order:APP123')).toBe('ORDER123');
+    expect(sessionStorage.getItem('repay-option:APP123')).toBe('FULL');
   });
 
-  it('should redirect to dashboard flow only for successful full due payments', () => {
+  it('should redirect to dashboard flow only for successful full payable payments', () => {
     sessionStorage.setItem('repay-option:APP123', 'FULL');
     const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
     const clearStorageSpy = spyOn<any>(component, 'clearRepaymentStorage').and.callThrough();
@@ -190,7 +174,11 @@ describe('LoanRepayComponent', () => {
           paymentStatus: 'SUCCESS'
         },
         repaymentSummary: {
-          payableAmount: 0
+          summary: {
+            finalDueAmount: 0,
+            nextDueAmount: 0,
+            nextDueDate: '2026-04-17'
+          }
         }
       }
     }));
@@ -201,52 +189,6 @@ describe('LoanRepayComponent', () => {
     expect(clearStorageSpy).toHaveBeenCalled();
     expect(sessionStorage.getItem('repay-option:APP123')).toBeNull();
     expect(toastrSpy.success).toHaveBeenCalledWith('Payment status updated successfully');
-  });
-
-  it('should redirect to dashboard flow for successful foreclosure payments', () => {
-    sessionStorage.setItem('repay-option:APP123', 'FORECLOSURE');
-    const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
-    const clearStorageSpy = spyOn<any>(component, 'clearRepaymentStorage').and.callThrough();
-
-    contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({
-      data: {
-        paymentGatewayOrder: {
-          paymentStatus: 'SUCCESS'
-        },
-        repaymentSummary: {
-          payableAmount: 0
-        }
-      }
-    }));
-
-    component.refreshPaymentStatus('ORDER123');
-
-    expect(navigateSpy).toHaveBeenCalled();
-    expect(clearStorageSpy).toHaveBeenCalled();
-    expect(sessionStorage.getItem('repay-option:APP123')).toBeNull();
-    expect(toastrSpy.success).toHaveBeenCalledWith('Payment status updated successfully');
-  });
-
-  it('should stay on the repayment page for successful non-full payments', () => {
-    sessionStorage.setItem('repay-option:APP123', 'CUSTOM');
-    const navigateSpy = spyOn<any>(component, 'navigateToDashboardWithRefresh');
-    const fetchSummarySpy = spyOn(component, 'fetchSummary').and.callThrough();
-
-    contentServiceSpy.refreshBorrowerRepayment.and.returnValue(of({
-      data: {
-        paymentGatewayOrder: {
-          paymentStatus: 'SUCCESS'
-        },
-        repaymentSummary: {
-          payableAmount: 100
-        }
-      }
-    }));
-
-    component.refreshPaymentStatus('ORDER123');
-
-    expect(navigateSpy).not.toHaveBeenCalled();
-    expect(fetchSummarySpy).toHaveBeenCalled();
   });
 
   it('should use the dashboard refresh flow when going back', () => {

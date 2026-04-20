@@ -2,10 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+
 import { ContentService } from '../../../service/content.service';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay } from '../../shared/date-format.util';
 
-type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM' | 'FORECLOSURE';
+type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM';
 
 @Component({
   selector: 'app-loan-repay',
@@ -15,6 +17,7 @@ type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM' | 'FORECLOSURE';
 export class LoanRepayComponent implements OnInit {
   private readonly repaymentOrderStoragePrefix = 'repay-order:';
   private readonly repaymentOptionStoragePrefix = 'repay-option:';
+
   applicationId = '';
   summary: any = null;
   refreshResult: any = null;
@@ -77,122 +80,104 @@ export class LoanRepayComponent implements OnInit {
     return this.summary?.loanStatus || '--';
   }
 
-  get payableAmount(): number {
-    return this.toNumber(this.summary?.payableAmount);
+  get dueDateDisplay(): string {
+    return this.summary?.dueDateDisplay || '--';
   }
 
-  get regularPayableAmount(): number {
-    return this.toNumber(this.summary?.regularPayableAmount || this.summary?.payableAmount);
+  get delayDays(): number {
+    return this.toNumber(this.summary?.delayDays);
   }
 
-  get nextDueAmount(): number {
-    return this.toNumber(this.summary?.nextDueAmount);
+  get payableNow(): number {
+    return this.toNumber(this.summary?.payableNow);
   }
 
-  get overdueAmount(): number {
-    return this.toNumber(this.summary?.overdueAmount);
+  get scheduledDue(): number {
+    return this.toNumber(this.summary?.scheduledDue);
+  }
+
+  get penaltyAmount(): number {
+    return this.toNumber(this.summary?.penaltyAmount);
+  }
+
+  get totalPaid(): number {
+    return this.toNumber(this.summary?.totalPaid);
+  }
+
+  get allowPartialPayment(): boolean {
+    return !!this.summary?.paymentOptions?.allowPartialPayment;
+  }
+
+  get allowFullPayment(): boolean {
+    return !!this.summary?.paymentOptions?.allowFullPayment;
   }
 
   get minPayAmount(): number {
-    return this.toNumber(this.summary?.minPayAmount);
+    return this.toNumber(this.summary?.paymentOptions?.minPayAmount);
   }
 
   get maxPayAmount(): number {
-    return this.toNumber(this.summary?.maxPayAmount);
+    return this.toNumber(this.summary?.paymentOptions?.maxPayAmount);
+  }
+
+  get suggestedAmounts(): number[] {
+    const rawSuggestedAmounts = Array.isArray(this.summary?.paymentOptions?.suggestedAmounts)
+      ? this.summary.paymentOptions.suggestedAmounts
+      : [];
+
+    return Array.from(
+      new Set(
+        rawSuggestedAmounts
+          .map((amount: any) => this.toNumber(amount))
+          .filter((amount: number) => amount > 0)
+          .filter((amount: number) => this.maxPayAmount <= 0 || amount <= this.maxPayAmount)
+          .filter((amount: number) => this.minPayAmount <= 0 || amount >= this.minPayAmount)
+      )
+    );
+  }
+
+  get canShowMinimumOption(): boolean {
+    return this.allowPartialPayment && this.scheduledDue > 0;
+  }
+
+  get canShowFullOption(): boolean {
+    return this.allowFullPayment && this.payableNow > 0;
+  }
+
+  get canShowCustomOption(): boolean {
+    return this.allowPartialPayment && this.maxPayAmount > 0;
   }
 
   get selectedAmount(): number {
     if (this.amountOption === 'FULL') {
-      return this.regularPayableAmount;
-    }
-
-    if (this.amountOption === 'FORECLOSURE') {
-      return this.payableAmount;
+      return this.payableNow;
     }
 
     if (this.amountOption === 'MINIMUM') {
-      return this.minPayAmount;
+      return this.scheduledDue;
     }
 
     return this.toNumber(this.customAmount);
   }
 
-  get paymentType(): 'FULL' | 'PARTIAL' {
-    return this.amountOption === 'FULL' || this.amountOption === 'FORECLOSURE'
-      ? 'FULL'
-      : 'PARTIAL';
-  }
-
-  get hasForeclosureQuote(): boolean {
-    return !!this.summary?.foreclosureEligible;
-  }
-
-  get foreclosureSavings(): number {
-    return this.toNumber(this.summary?.foreclosureWaivedAmount);
-  }
-
-  get foreclosureInterestAccrued(): number {
-    return this.toNumber(this.summary?.foreclosureInterestAccrued);
-  }
-
-  get amountHeadlineLabel(): string {
-    return 'Precolsure Payable';
-  }
-
-  get amountHeadlineHint(): string {
-    if (this.maxPayAmount <= 0) {
-      return 'No payment is due for this loan right now.';
+  get selectedAmountLabel(): string {
+    switch (this.amountOption) {
+      case 'MINIMUM':
+        return 'Minimum Due';
+      case 'CUSTOM':
+        return 'Custom Amount';
+      default:
+        return 'Full Payable';
     }
-
-    if (this.hasForeclosureQuote) {
-      return `Close early and save ${this.formatCurrency(this.foreclosureSavings)} on future charges.`;
-    }
-
-    return '';
-  }
-
-  get isFullDueEnabled(): boolean {
-    const maturityDate = this.summary?.foreclosureMaturityDate || this.summary?.nextDueDate;
-
-    if (!maturityDate) {
-      return true;
-    }
-
-    const maturityDateValue = this.toDateValue(maturityDate);
-    const todayValue = this.toDateValue(new Date());
-
-    if (maturityDateValue === null || todayValue === null) {
-      return true;
-    }
-
-    return todayValue >= maturityDateValue;
-  }
-
-  get quickAmounts(): number[] {
-    const summaryAmounts = Array.isArray(this.summary?.suggestedAmounts)
-      ? this.summary.suggestedAmounts
-      : [];
-
-    const normalized = summaryAmounts
-      .map((amount: any) => this.toNumber(amount))
-      .filter((amount: number) => amount > 0)
-      .filter((amount: number) => this.maxPayAmount <= 0 || amount <= this.maxPayAmount)
-      .filter((amount: number) => this.minPayAmount <= 0 || amount >= this.minPayAmount);
-
-    const deduped = Array.from(new Set<number>(normalized));
-
-    if (this.maxPayAmount > 0 && !deduped.includes(this.maxPayAmount)) {
-      deduped.push(this.maxPayAmount);
-    }
-
-    return deduped.slice(0, 5);
   }
 
   get canPay(): boolean {
-    return this.maxPayAmount > 0 &&
+    return !!this.summary &&
+      this.selectedAmount > 0 &&
       !this.creatingOrder &&
       !this.refreshingStatus &&
-      !(this.amountOption === 'FULL' && !this.isFullDueEnabled);
+      !this.loadingSummary &&
+      !this.amountError;
   }
 
   get amountError(): string {
@@ -204,11 +189,11 @@ export class LoanRepayComponent implements OnInit {
       return 'Enter an amount to continue.';
     }
 
-    if (this.selectedAmount < this.minPayAmount) {
+    if (this.minPayAmount > 0 && this.selectedAmount < this.minPayAmount) {
       return `Amount cannot be below ${this.formatCurrency(this.minPayAmount)}.`;
     }
 
-    if (this.selectedAmount > this.maxPayAmount) {
+    if (this.maxPayAmount > 0 && this.selectedAmount > this.maxPayAmount) {
       return `Amount cannot exceed ${this.formatCurrency(this.maxPayAmount)}.`;
     }
 
@@ -231,23 +216,8 @@ export class LoanRepayComponent implements OnInit {
         }
 
         const raw = res?.data || res;
-        this.summary = this.normalizeSummary(raw);
-
-        if (this.maxPayAmount <= 0) {
-          this.amountOption = 'FULL';
-          this.customAmount = null;
-          return;
-        }
-
-        if (this.hasForeclosureQuote && this.payableAmount > 0) {
-          this.amountOption = 'FORECLOSURE';
-        } else if (this.regularPayableAmount > 0 && this.isFullDueEnabled) {
-          this.amountOption = 'FULL';
-        } else if (this.minPayAmount > 0) {
-          this.amountOption = 'MINIMUM';
-        } else {
-          this.amountOption = 'CUSTOM';
-        }
+        this.summary = this.normalizeSummary(raw, this.summary);
+        this.syncAmountOptionState();
       },
       error: (err) => {
         this.spinner.hide();
@@ -259,32 +229,43 @@ export class LoanRepayComponent implements OnInit {
   }
 
   selectAmountOption(option: AmountOption): void {
-    if (option === 'FULL' && !this.isFullDueEnabled) {
+    if (
+      (option === 'FULL' && !this.canShowFullOption) ||
+      (option === 'MINIMUM' && !this.canShowMinimumOption) ||
+      (option === 'CUSTOM' && !this.canShowCustomOption)
+    ) {
       return;
     }
 
     this.amountOption = option;
 
-    if (option !== 'CUSTOM') {
-      this.customAmount = null;
+    if (option === 'CUSTOM') {
+      if (!this.customAmount) {
+        this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
+      }
+      return;
     }
+
+    this.customAmount = null;
   }
 
-  applyQuickAmount(amount: number): void {
-    if (this.hasForeclosureQuote && amount === this.payableAmount) {
-      this.amountOption = 'FORECLOSURE';
-      this.customAmount = null;
+  applySuggestedAmount(amount: number): void {
+    if (this.canShowFullOption && amount === this.payableNow) {
+      this.selectAmountOption('FULL');
       return;
     }
 
-    if (amount === this.regularPayableAmount && !this.isFullDueEnabled) {
-      this.amountOption = 'CUSTOM';
-      this.customAmount = amount;
+    if (this.canShowMinimumOption && amount === this.scheduledDue) {
+      this.selectAmountOption('MINIMUM');
       return;
     }
 
-    this.amountOption = amount === this.regularPayableAmount ? 'FULL' : 'CUSTOM';
-    this.customAmount = amount === this.regularPayableAmount ? null : amount;
+    if (!this.canShowCustomOption) {
+      return;
+    }
+
+    this.amountOption = 'CUSTOM';
+    this.customAmount = amount;
   }
 
   createPayment(): void {
@@ -292,21 +273,23 @@ export class LoanRepayComponent implements OnInit {
       return;
     }
 
-    if (this.paymentType === 'PARTIAL' && this.amountError) {
+    if (this.amountError) {
       this.toastr.warning(this.amountError);
       return;
     }
 
     const payload = {
-      applicationId: this.applicationId,
-      amount: this.selectedAmount,
-      paymentType: this.paymentType,
-      returnUrl: this.getPaymentReturnUrl(),
-      orderNote: `Repayment for ${this.applicationNumber}`
+      applicationId: this.summary?.applicationId || this.applicationId,
+      amount: this.selectedAmount
     };
+    const createOrderEndpoint = this.summary?.createOrderEndpoint;
+    const request$ = createOrderEndpoint
+      ? this.contentService.postToEndpoint(createOrderEndpoint, payload)
+      : this.contentService.createBorrowerRepaymentOrder(payload);
 
     this.creatingOrder = true;
-    this.contentService.createBorrowerRepaymentOrder(payload).subscribe({
+
+    request$.subscribe({
       next: (res: any) => {
         this.creatingOrder = false;
 
@@ -316,11 +299,16 @@ export class LoanRepayComponent implements OnInit {
         }
 
         const data = res?.data || res;
-        const orderId = data?.cashfreeOrderId || data?.orderId || data?.paymentGatewayOrder?.orderId || '';
+        const orderId =
+          data?.cashfreeOrderId ||
+          data?.orderId ||
+          data?.paymentGatewayOrder?.orderId ||
+          '';
         const hostedPaymentUrl =
           data?.cashfree?.hostedPaymentUrl ||
           data?.paymentGatewayOrder?.hostedPaymentUrl ||
           data?.hostedPaymentUrl ||
+          data?.redirectUrl ||
           '';
 
         if (orderId) {
@@ -333,10 +321,8 @@ export class LoanRepayComponent implements OnInit {
           return;
         }
 
-        const paymentLinkMessage = getFirstApiErrorMessage(res);
-        if (paymentLinkMessage) {
-          this.toastr.error(paymentLinkMessage);
-        }
+        const paymentLinkMessage = getFirstApiErrorMessage(res, 'Payment link is unavailable right now');
+        this.toastr.error(paymentLinkMessage);
       },
       error: (err) => {
         this.creatingOrder = false;
@@ -372,16 +358,18 @@ export class LoanRepayComponent implements OnInit {
 
         const data = res?.data || res;
         this.refreshResult = this.normalizeSummary(
-          data?.repaymentSummary || data?.repayment || data?.summary || data
+          data?.repaymentSummary || data?.repayment || data?.summary || data,
+          this.summary
         );
         this.paymentResult = data?.payment || data?.paymentResult || null;
         this.orderStatus = data?.paymentGatewayOrder || data?.orderStatus || null;
+
         const savedRepaymentOption = this.getSessionValue(this.repaymentOptionStorageKey);
         const shouldRedirectToDashboard =
           this.isSuccessfulPayment(this.orderStatus) &&
-          (savedRepaymentOption === 'FULL' || savedRepaymentOption === 'FORECLOSURE');
+          savedRepaymentOption === 'FULL';
 
-        if (shouldRedirectToDashboard || this.isSuccessfulPayment(this.orderStatus)) {
+        if (this.isSuccessfulPayment(this.orderStatus)) {
           this.toastr.success('Payment status updated successfully');
         } else if (this.orderStatus?.paymentStatus === 'FAILED') {
           const paymentFailureMessage =
@@ -441,7 +429,7 @@ export class LoanRepayComponent implements OnInit {
     const dashboardPath = shouldSyncRepaymentState
       ? '/dashboard?refresh=true'
       : '/dashboard';
-    const dashboardUrl = this.buildAbsoluteReturnUrl(dashboardPath);
+    const dashboardUrl = this.buildAbsoluteUrl(dashboardPath);
 
     if (typeof window !== 'undefined') {
       window.location.replace(dashboardUrl);
@@ -451,11 +439,7 @@ export class LoanRepayComponent implements OnInit {
     this.router.navigateByUrl('/dashboard', { replaceUrl: true });
   }
 
-  private getPaymentReturnUrl(): string {
-    return this.buildAbsoluteReturnUrl(`/dashboard/profile/loan-repay/${this.applicationId}`);
-  }
-
-  private buildAbsoluteReturnUrl(path: string): string {
+  private buildAbsoluteUrl(path: string): string {
     const origin =
       typeof window !== 'undefined' && typeof window.location?.origin === 'string'
         ? window.location.origin
@@ -493,107 +477,146 @@ export class LoanRepayComponent implements OnInit {
     sessionStorage.removeItem(key);
   }
 
-  private normalizeSummary(raw: any): any {
+  private normalizeSummary(raw: any, fallback?: any): any {
+    const base = fallback || {};
     const borrower = raw?.borrower || {};
     const application = raw?.application || {};
-    const dues = raw?.dues || {};
-    const summary = raw?.summary || {};
     const loan = raw?.loan || {};
+    const summary = raw?.summary || raw;
     const paymentOptions = raw?.paymentOptions || {};
-    const foreclosureQuote = dues?.foreclosureQuote || raw?.foreclosureQuote || {};
-    const foreclosurePayableAmount = foreclosureQuote?.eligible
-      ? this.toNumber(foreclosureQuote?.payableAmount)
-      : 0;
-    const regularPayableAmount = this.toNumber(
-      foreclosureQuote?.regularPayableAmount ??
-      raw?.regularPayableAmount ??
-      dues?.regularPayableAmount ??
-      dues?.payableAmount ??
-      summary?.payableAmount ??
-      raw?.payableAmount ??
-      0
+    const dueDateRaw = this.pickFirstString(
+      summary?.nextDueDate,
+      raw?.nextDueDate,
+      base?.dueDateRaw
     );
-    const summaryPayableAmount = foreclosurePayableAmount > 0
-      ? foreclosurePayableAmount
-      : regularPayableAmount;
+    const fallbackPaymentOptions = base?.paymentOptions || {};
+    const suggestedAmountsSource = Array.isArray(paymentOptions?.suggestedAmounts)
+      ? paymentOptions.suggestedAmounts
+      : Array.isArray(fallbackPaymentOptions?.suggestedAmounts)
+        ? fallbackPaymentOptions.suggestedAmounts
+        : [];
 
     return {
-      borrowerName:
-        raw?.borrowerName ||
-        borrower?.name ||
-        borrower?.fullName ||
-        [borrower?.firstName, borrower?.lastName].filter(Boolean).join(' ') ||
-        '--',
-      applicationNumber:
-        raw?.applicationNumber ||
-        application?.applicationNumber ||
-        summary?.applicationNumber ||
-        '--',
-      loanStatus:
-        raw?.loanStatus ||
-        raw?.status ||
-        loan?.status ||
-        application?.status ||
-        application?.applicationStatus ||
-        summary?.applicationStatus ||
-        '--',
-      payableAmount:
-        summaryPayableAmount,
-      regularPayableAmount,
-      nextDueAmount:
-        raw?.nextDueAmount ??
-        summary?.nextDueAmount ??
-        dues?.nextDue?.dueAmount ??
-        dues?.nextDueAmount ??
-        0,
-      nextDueDate:
-        raw?.nextDueDate ||
-        dues?.nextDue?.dueDate ||
-        dues?.nextDueDate ||
-        summary?.nextDueDate ||
-        null,
-      overdueAmount:
-        raw?.overdueAmount ??
-        dues?.overdueAmount ??
-        summary?.overdueAmount ??
-        0,
-      minPayAmount:
-        raw?.minPayAmount ??
-        raw?.minPayableAmount ??
-        paymentOptions?.minPayAmount ??
-        dues?.minPayAmount ??
-        dues?.minimumDueAmount ??
-        summary?.minPayAmount ??
-        0,
-      maxPayAmount:
-        raw?.maxPayAmount ??
-        raw?.maxPayableAmount ??
-        paymentOptions?.maxPayAmount ??
-        dues?.maxPayAmount ??
-        regularPayableAmount ??
-        dues?.payableAmount ??
-        summary?.maxPayAmount ??
-        0,
-      suggestedAmounts:
-        raw?.suggestedAmounts ||
-        paymentOptions?.suggestedAmounts ||
-        dues?.suggestedAmounts ||
-        summary?.suggestedAmounts ||
-        [],
-      foreclosureEligible: !!foreclosureQuote?.eligible,
-      foreclosureReason: foreclosureQuote?.reason || null,
-      foreclosureAsOfDate: foreclosureQuote?.asOfDate || null,
-      foreclosureMaturityDate: foreclosureQuote?.maturityDate || null,
-      foreclosureElapsedDays: this.toNumber(foreclosureQuote?.elapsedDays),
-      foreclosureTotalDays: this.toNumber(foreclosureQuote?.totalDays),
-      foreclosureInterestAccrued: foreclosureQuote?.interestAccruedTillDate ?? 0,
-      foreclosureWaivedAmount:
-        foreclosureQuote?.waivedAmount ??
-        foreclosureQuote?.interestWaived ??
-        0,
-      allowPartialPayment: paymentOptions?.allowPartialPayment !== false,
-      allowFullPayment: paymentOptions?.allowFullPayment !== false
+      applicationId: this.pickFirstString(
+        application?.applicationId,
+        raw?.applicationId,
+        base?.applicationId,
+        this.applicationId
+      ),
+      borrowerName: this.pickFirstString(
+        borrower?.name,
+        raw?.borrowerName,
+        base?.borrowerName,
+        '--'
+      ),
+      applicationNumber: this.pickFirstString(
+        application?.applicationNumber,
+        raw?.applicationNumber,
+        base?.applicationNumber,
+        '--'
+      ),
+      loanStatus: this.pickFirstString(
+        loan?.status,
+        raw?.loanStatus,
+        base?.loanStatus,
+        '--'
+      ),
+      dueDateRaw,
+      dueDateDisplay: this.formatDisplayDate(dueDateRaw),
+      delayDays: this.toNumber(summary?.dpd ?? raw?.dpd ?? base?.delayDays),
+      payableNow: this.toNumber(summary?.finalDueAmount ?? raw?.finalDueAmount ?? base?.payableNow),
+      scheduledDue: this.toNumber(summary?.nextDueAmount ?? raw?.nextDueAmount ?? base?.scheduledDue),
+      penaltyAmount: this.toNumber(summary?.penaltyAmount ?? raw?.penaltyAmount ?? base?.penaltyAmount),
+      totalPaid: this.toNumber(summary?.totalPaid ?? raw?.totalPaid ?? base?.totalPaid),
+      paymentOptions: {
+        allowPartialPayment:
+          paymentOptions?.allowPartialPayment !== undefined
+            ? !!paymentOptions.allowPartialPayment
+            : fallbackPaymentOptions?.allowPartialPayment !== undefined
+              ? !!fallbackPaymentOptions.allowPartialPayment
+              : true,
+        allowFullPayment:
+          paymentOptions?.allowFullPayment !== undefined
+            ? !!paymentOptions.allowFullPayment
+            : fallbackPaymentOptions?.allowFullPayment !== undefined
+              ? !!fallbackPaymentOptions.allowFullPayment
+              : true,
+        minPayAmount: this.toNumber(
+          paymentOptions?.minPayAmount ??
+          fallbackPaymentOptions?.minPayAmount
+        ),
+        maxPayAmount: this.toNumber(
+          paymentOptions?.maxPayAmount ??
+          fallbackPaymentOptions?.maxPayAmount ??
+          summary?.finalDueAmount ??
+          raw?.finalDueAmount
+        ),
+        suggestedAmounts: suggestedAmountsSource
+      },
+      createOrderEndpoint: this.pickFirstString(
+        raw?.actions?.createOrderEndpoint,
+        base?.createOrderEndpoint
+      )
     };
+  }
+
+  private syncAmountOptionState(): void {
+    if (this.canShowFullOption && this.amountOption === 'FULL') {
+      this.customAmount = null;
+      return;
+    }
+
+    if (this.canShowMinimumOption && this.amountOption === 'MINIMUM') {
+      this.customAmount = null;
+      return;
+    }
+
+    if (this.canShowCustomOption && this.amountOption === 'CUSTOM') {
+      if (!this.customAmount || this.customAmount < this.minPayAmount) {
+        this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
+      }
+      return;
+    }
+
+    if (this.canShowFullOption) {
+      this.amountOption = 'FULL';
+      this.customAmount = null;
+      return;
+    }
+
+    if (this.canShowMinimumOption) {
+      this.amountOption = 'MINIMUM';
+      this.customAmount = null;
+      return;
+    }
+
+    this.amountOption = 'CUSTOM';
+    this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
+  }
+
+  private pickFirstString(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const trimmed = candidate.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+
+    return '';
+  }
+
+  private formatDisplayDate(value: any): string {
+    const rawValue = this.pickFirstString(value);
+
+    if (!rawValue) {
+      return '--';
+    }
+
+    return formatDateForDisplay(rawValue) || rawValue;
   }
 
   private toNumber(value: any): number {
@@ -601,35 +624,12 @@ export class LoanRepayComponent implements OnInit {
     return Number.isFinite(parsed) ? parsed : 0;
   }
 
-  private toDateOnly(value: string | Date): string {
-    const date = value instanceof Date ? value : new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return '';
-    }
-
-    const year = date.getUTCFullYear();
-    const month = `${date.getUTCMonth() + 1}`.padStart(2, '0');
-    const day = `${date.getUTCDate()}`.padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-  }
-
-  private toDateValue(value: string | Date): number | null {
-    const normalized = this.toDateOnly(value);
-
-    if (!normalized) {
-      return null;
-    }
-
-    return Number(normalized.replace(/-/g, ''));
-  }
-
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     }).format(this.toNumber(value));
   }
 }

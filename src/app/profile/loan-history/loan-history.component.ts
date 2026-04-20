@@ -53,6 +53,136 @@ export class LoanHistoryComponent implements OnInit {
     };
   }
 
+  private pickFirstAmount(...candidates: any[]): number | null {
+    for (const candidate of candidates) {
+      const numericValue = Number(candidate);
+
+      if (Number.isFinite(numericValue) && numericValue >= 0) {
+        return numericValue;
+      }
+    }
+
+    return null;
+  }
+
+  private pickPositiveAmount(...candidates: any[]): number | null {
+    for (const candidate of candidates) {
+      const numericValue = Number(candidate);
+
+      if (Number.isFinite(numericValue) && numericValue > 0) {
+        return numericValue;
+      }
+    }
+
+    return null;
+  }
+
+  private pickFirstString(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const trimmedValue = candidate.trim();
+      if (trimmedValue) {
+        return trimmedValue;
+      }
+    }
+
+    return '';
+  }
+
+  private formatHistoryDate(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const formattedDate = formatDateForDisplay(candidate);
+      if (formattedDate) {
+        return formattedDate;
+      }
+
+      const trimmedValue = candidate.trim();
+      if (trimmedValue) {
+        return trimmedValue;
+      }
+    }
+
+    return '';
+  }
+
+  private buildHistoryFinancials(item: any) {
+    const overview = item?.overview || {};
+    const status = item?.status || {};
+    const closure = item?.closure || {};
+    const repayment = item?.repayment || {};
+    const settlement = item?.settlement || {};
+
+    return {
+      totalPaidAmount: this.pickFirstAmount(
+        item?.totalPaidAmount,
+        overview?.totalPaidAmount,
+        status?.totalPaidAmount,
+        closure?.totalPaidAmount,
+        repayment?.totalPaidAmount,
+        settlement?.totalPaidAmount,
+        item?.paidAmount,
+        overview?.paidAmount,
+        repayment?.paidAmount
+      ),
+      interestAmount: this.pickFirstAmount(
+        item?.interestAmount,
+        overview?.interestAmount,
+        status?.interestAmount,
+        closure?.interestAmount,
+        repayment?.interestAmount,
+        settlement?.interestAmount
+      ),
+      penaltyAmount: this.pickPositiveAmount(
+        item?.penaltyAmount,
+        overview?.penaltyAmount,
+        status?.penaltyAmount,
+        closure?.penaltyAmount,
+        repayment?.penaltyAmount,
+        settlement?.penaltyAmount
+      ),
+      paidOnDisplay: this.formatHistoryDate(
+        item?.paidOnDisplay,
+        item?.paidOn,
+        overview?.paidOnDisplay,
+        overview?.paidOn,
+        closure?.paidOnDisplay,
+        closure?.paidOn,
+        repayment?.paidOnDisplay,
+        repayment?.paidOn,
+        settlement?.paidOnDisplay,
+        settlement?.paidOn,
+        status?.paidOnDisplay,
+        status?.paidOn,
+        closure?.closedOn,
+        closure?.closedDate
+      )
+    };
+  }
+
+  getHistoryBucketClass(bucket: any): string {
+    const normalizedBucket = typeof bucket === 'string'
+      ? bucket.trim().toUpperCase()
+      : '';
+
+    switch (normalizedBucket) {
+      case 'ACTIVE':
+        return 'history-pill--active';
+      case 'CLOSED':
+        return 'history-pill--closed';
+      case 'IN_PROGRESS':
+        return 'history-pill--progress';
+      default:
+        return 'history-pill--neutral';
+    }
+  }
+
   // 🔥 OVERVIEW CARDS
   get overviewCards() {
     const source = this.overview || this.allSummary;
@@ -100,11 +230,35 @@ export class LoanHistoryComponent implements OnInit {
         // 🔥 LIST
         this.loanList = (data.items || []).map((item: any) => ({
           ...item,
+          financials: this.buildHistoryFinancials(item),
+          statusLabel: this.pickFirstString(
+            item?.status?.loanStatus,
+            item?.status?.displayStatus,
+            item?.overview?.historyBucket
+          ) || '--',
+          sanctionedAmount:
+            this.pickFirstAmount(
+              item?.overview?.approvedAmount,
+              item?.approvedAmount,
+              item?.overview?.requestedAmount,
+              item?.requestedAmount
+            ) || 0,
           overview: {
             ...item?.overview,
+            repayDateDisplay:
+              this.formatHistoryDate(
+                item?.overview?.repayDateDisplay,
+                item?.overview?.repayDate,
+                item?.overview?.maturityDateDisplay,
+                item?.overview?.maturityDate,
+                item?.overview?.nextDueDateDisplay,
+                item?.overview?.nextDueDate
+              ) || '',
             nextDueDateDisplay:
               formatDateForDisplay(item?.overview?.nextDueDateDisplay) ||
+              formatDateForDisplay(item?.overview?.nextDueDate) ||
               item?.overview?.nextDueDateDisplay ||
+              item?.overview?.nextDueDate ||
               ''
           }
         }));

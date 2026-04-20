@@ -165,9 +165,9 @@
       </div>
 
       <div class="reloan-closed-stat">
-        <label>Interest Paid</label>
+        <label>Total Paid</label>
         <strong>
-          {{ closedLoan.interestPaidAmount !== null ? (closedLoan.interestPaidAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+          {{ closedLoan.totalPaidAmount !== null ? (closedLoan.totalPaidAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
       </div>
 
@@ -176,12 +176,15 @@
         <strong>{{ closedLoan.closedDateDisplay || closedLoan.statusLabel || '--' }}</strong>
       </div>
 
-      <div class="reloan-closed-note" *ngIf="closedLoan.disbursedAmount !== null || closedLoan.totalPaidAmount !== null">
+      <div class="reloan-closed-note" *ngIf="closedLoan.disbursedAmount !== null || closedLoan.interestPaidAmount !== null || closedLoan.penaltyInterestPaidAmount !== null">
         <span *ngIf="closedLoan.disbursedAmount !== null">
           Disbursed: {{ closedLoan.disbursedAmount | currency:'INR':'symbol':'1.0-0' }}
         </span>
-        <span *ngIf="closedLoan.totalPaidAmount !== null">
-          Total repaid: {{ closedLoan.totalPaidAmount | currency:'INR':'symbol':'1.0-0' }}
+        <span *ngIf="closedLoan.interestPaidAmount !== null">
+          Interest paid: {{ closedLoan.interestPaidAmount | currency:'INR':'symbol':'1.0-0' }}
+        </span>
+        <span *ngIf="closedLoan.penaltyInterestPaidAmount !== null">
+          Penalty interest paid: {{ closedLoan.penaltyInterestPaidAmount | currency:'INR':'symbol':'1.0-0' }}
         </span>
       </div>
     </div>
@@ -261,20 +264,16 @@
         <p>
           <span class="loan-chip">{{ activeLoan?.status || 'ACTIVE' }}</span>
           <span *ngIf="activeLoan?.loanNumber" class="loan-reference">
-            Loan ID: {{ activeLoan?.loanNumber }}
+            Loan Number: {{ activeLoan?.loanNumber }}
           </span>
         </p>
       </div>
 
       <div class="active-loan-highlight">
-        <span>Approved Amount</span>
+        <span>Loan Amount</span>
         <strong>
-          {{ activeLoan?.approvedAmount ? (activeLoan?.approvedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+          {{ activeLoan?.approvedAmount !== null && activeLoan?.approvedAmount !== undefined ? (activeLoan?.approvedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
-        <small>
-          Disbursed:
-          {{ activeLoan?.netDisbursalAmount ? (activeLoan?.netDisbursalAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </small>
       </div>
     </div>
 
@@ -291,44 +290,23 @@
 
     <div class="active-loan-grid">
       <div class="active-loan-stat">
-        <label>Current Outstanding</label>
-        <strong>
-          {{ activeLoan?.outstandingAmount ? (activeLoan?.outstandingAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Total Repayment</label>
-        <strong>
-          {{ activeLoan?.repayAmount ? (activeLoan?.repayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Total Due Amount</label>
-        <strong>
-          {{ activeLoan?.nextDueAmount ? (activeLoan?.nextDueAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Due Date</label>
-        <strong>
-          {{ activeLoan?.nextDueDateDisplay || '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Auto Debit</label>
-        <strong [class.success-text]="activeLoan?.autoDebitStatus">
-          {{ activeLoan?.autoDebitStatus || '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Repay By</label>
+        <label>Repay Date</label>
         <strong>
           {{ activeLoan?.repayDateDisplay || '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Current Outstanding</label>
+        <strong>
+          {{ activeLoan?.payableNowAmount !== null && activeLoan?.payableNowAmount !== undefined ? (activeLoan?.payableNowAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat" *ngIf="activeLoan?.delayDays > 0">
+        <label>Delay Days</label>
+        <strong>
+          {{ activeLoan?.delayDays !== null && activeLoan?.delayDays !== undefined ? activeLoan?.delayDays : '--' }}
         </strong>
       </div>
     </div>

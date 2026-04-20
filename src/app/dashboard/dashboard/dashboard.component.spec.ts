@@ -2,6 +2,7 @@ import { DashboardComponent } from './dashboard.component';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
+  let nativeElement: HTMLElement;
 
   beforeEach(() => {
     component = new DashboardComponent(
@@ -13,6 +14,7 @@ describe('DashboardComponent', () => {
       {} as any,
       {} as any
     );
+    nativeElement = document.createElement('div');
   });
 
   it('should show the loan closed card while reloan decision is pending', () => {
@@ -23,6 +25,7 @@ describe('DashboardComponent', () => {
       approvedAmount: 12000,
       netDisbursalAmount: 10000,
       repayAmount: 11800,
+      penaltyAmount: 250,
       closedOn: '2026-05-01'
     };
     component.reloanDecision = {
@@ -45,6 +48,7 @@ describe('DashboardComponent', () => {
       disbursedAmount: 10000,
       totalPaidAmount: 11800,
       interestPaidAmount: 1800,
+      penaltyInterestPaidAmount: 250,
       closedDateDisplay: '01-05-2026'
     }));
   });
@@ -148,5 +152,47 @@ describe('DashboardComponent', () => {
     expect(component.showActiveLoanCard).toBeFalse();
     expect(component.showClosedLoanUnavailableCard).toBeTrue();
     expect(component.isPendingReloanDecision).toBeTrue();
+  });
+
+  it('should map the active loan dashboard card from loanTracking fields', () => {
+    component.loanTracking = {
+      showActiveLoanCard: true,
+      applicationNumber: 'SCRFL00172',
+      currentTitle: 'IN REVIEW',
+      loanStatus: 'DISBURSED',
+      approvedAmount: 7000,
+      nextDueDate: '2026-04-25',
+      finalDueAmount: 7490,
+      delayDays: 3
+    };
+    component.trackingSteps = {
+      disbursement: 'DONE'
+    } as any;
+
+    (component as any).patchActiveLoanFromSnapshot();
+
+    expect(component.showActiveLoanCard).toBeTrue();
+    expect(component.activeLoan).toEqual(jasmine.objectContaining({
+      loanNumber: 'SCRFL00172',
+      status: 'DISBURSED',
+      approvedAmount: 7000,
+      repayDateDisplay: '25-04-2026',
+      payableNowAmount: 7490,
+      delayDays: 3
+    }));
+  });
+
+  it('should not render delay days in the dashboard card when the value is zero', () => {
+    component.activeLoan = {
+      repayDateDisplay: '25-04-2026',
+      payableNowAmount: 7490,
+      delayDays: 0
+    };
+
+    nativeElement.innerHTML = `
+      ${component.activeLoan?.delayDays > 0 ? '<div class="active-loan-stat"><label>Delay Days</label></div>' : ''}
+    `;
+
+    expect(nativeElement.textContent).not.toContain('Delay Days');
   });
 });

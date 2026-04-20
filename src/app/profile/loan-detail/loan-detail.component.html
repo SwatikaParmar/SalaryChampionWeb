@@ -1,87 +1,176 @@
-<div class="loan-detail-page" *ngIf="summary">
+<div class="loan-detail-page" *ngIf="hasDetail">
+  <div class="loan-top-card">
+    <div class="loan-top-header">
+      <div class="loan-top-left">
+        <button class="back-btn" (click)="goBack()">Back</button>
 
-  <!-- 🔥 HEADER -->
-  <div class="header-card">
+        <div class="loan-title-block">
+          <span class="loan-kicker">Borrower Loan Detail</span>
+          <h1>{{ applicationNumber }}</h1>
+          <div class="loan-status-row">
+            <span class="status-pill">{{ loanStatus }}</span>
+            <button class="noc-btn" *ngIf="hasNocButton" (click)="openNoc()">View NOC</button>
+          </div>
+        </div>
+      </div>
 
-    <!-- LEFT -->
-    <div class="left">
-      <button class="back-btn" (click)="goBack()">
-        ← Back
-      </button>
-
-      <div class="title">
-        <h2>{{ summary.applicationNumber }}</h2>
-        <p class="sub">
-          {{ summary.historyBucket }} • {{ summary.applicationStatus }}
-        </p>
+      <div class="loan-approved-panel">
+        <label>Approved Loan Amount</label>
+        <strong>
+          {{ approvedAmount !== null ? (approvedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
       </div>
     </div>
 
-    <!-- RIGHT -->
-    <div class="amount">
-      ₹ {{ summary.approvedAmount }}
-    </div>
+    <div class="loan-top-stats">
+      <div class="top-stat">
+        <label>Total Repay Amount</label>
+        <strong>
+          {{ totalPayableAmount !== null ? (totalPayableAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
 
+      <div class="top-stat">
+        <label>Total Paid</label>
+        <strong>
+          {{ totalPaidAmount !== null ? (totalPaidAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="top-stat">
+        <label>Outstanding Amount</label>
+        <strong>
+          {{ outstandingAmount !== null ? (outstandingAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+    </div>
   </div>
 
-  <!-- BORROWER -->
-  <div class="card compact">
-
-    <h3>Borrower</h3>
-
-    <div class="grid">
-      <div>
-        <label>Name</label>
-        <p>{{ borrower?.firstName }} {{ borrower?.lastName }}</p>
-      </div>
-
-      <div>
-        <label>Mobile</label>
-        <p>{{ borrower?.mobile }}</p>
-      </div>
-
-      <div>
-        <label>Email</label>
-        <p>{{ borrower?.email }}</p>
-      </div>
-
-      <div>
-        <label>DOB</label>
-        <p>{{ borrower?.dateOfBirth ? (borrower?.dateOfBirth | date:'dd-MM-yyyy') : '--' }}</p>
-      </div>
+  <div class="detail-card">
+    <div class="section-head">
+      <h2>Loan Summary</h2>
     </div>
 
-  </div>
-
-  <!-- LOAN -->
-  <div class="card compact">
-
-    <h3>Loan Amount</h3>
-
-    <div class="grid">
-      <div>
-        <label>Amount</label>
-        <p>₹ {{ borrower?.approvedAmount }}</p>
+    <div class="detail-grid">
+      <div class="detail-stat">
+        <label>Loan Amount</label>
+        <strong>
+          {{ principalAmount !== null ? (principalAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
       </div>
 
-      <div>
+      <div class="detail-stat">
+        <label>Interest Amount</label>
+        <strong>
+          {{ interestAmount !== null ? (interestAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Penal Interest</label>
+        <strong>
+          {{ penalInterestAmount !== null ? (penalInterestAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Total Repay Amount</label>
+        <strong>
+          {{ totalRepayAmount !== null ? (totalRepayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Repayment Mode</label>
+        <strong>{{ repaymentMode }}</strong>
+      </div>
+
+      <div class="detail-stat">
         <label>Tenure</label>
-        <p>{{ loanTerms?.tenureDays }} Days</p>
+        <strong>{{ tenureDisplay }}</strong>
       </div>
 
-      <div>
-        <label>Repayment</label>
-        <p>{{ borrower?.repaymentMode }}</p>
+      <div class="detail-stat">
+        <label>ROI Per Day</label>
+        <strong>{{ roiPerDayDisplay }}</strong>
       </div>
 
-      <div>
-        <label>Status</label>
-        <p class="status">{{ summary?.loanStatus }}</p>
+      <div class="detail-stat">
+        <label>Delay Days</label>
+        <strong>{{ delayDaysDisplay }}</strong>
       </div>
     </div>
+  </div>
 
+  <div class="detail-card">
+    <div class="section-head">
+      <h2>Important Dates</h2>
+    </div>
+
+    <div class="detail-grid detail-grid--dates">
+
+      <div class="detail-stat">
+        <label>Applied Date</label>
+        <strong>{{ appliedDateDisplay }}</strong>
+      </div>
+
+
+      <div class="detail-stat">
+        <label>Disbursed On</label>
+        <strong>{{ disbursedOnDisplay }}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Due Date</label>
+        <strong>{{ dueDateDisplay }}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Paid On</label>
+        <strong>{{ paidOnDisplay }}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Closed On</label>
+        <strong>{{ closedOnDisplay }}</strong>
+      </div>
+    </div>
   </div>
 
 
 
+  <div class="detail-card">
+    <div class="section-head">
+      <h2>Payment History</h2>
+    </div>
+
+    <div class="table-wrap" *ngIf="hasPaymentRecords; else emptyPaymentHistory">
+      <table class="detail-table">
+        <thead>
+          <tr>
+            <th>Payment Date</th>
+            <th>Amount</th>
+            <th>Mode</th>
+            <th>Reference No</th>
+            <th>Status</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let payment of paymentRecords">
+            <td>{{ payment?.paidAtDisplay || '--' }}</td>
+            <td>{{ payment?.amount !== null && payment?.amount !== undefined ? (payment.amount | currency:'INR':'symbol':'1.0-0') : '--' }}</td>
+            <td>{{ payment?.paymentMode || '--' }}</td>
+            <td>{{ payment?.referenceNo || '--' }}</td>
+            <td>{{ payment?.verificationStatus || '--' }}</td>
+            <td>{{ payment?.remarks || '--' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ng-template #emptyPaymentHistory>
+      <div class="empty-card-state">Payment history not available.</div>
+    </ng-template>
+  </div>
 </div>

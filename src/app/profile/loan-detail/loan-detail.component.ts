@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+
+import { ContentService } from '../../../service/content.service';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay } from '../../shared/date-format.util';
 
 @Component({
   selector: 'app-loan-detail',
@@ -11,14 +13,18 @@ import { getFirstApiErrorMessage } from '../../../service/api-error.util';
   styleUrls: ['./loan-detail.component.css']
 })
 export class LoanDetailComponent implements OnInit {
+  applicationId: string | null = null;
+  loanId = '';
+  repaymentScheduleEndpoint = '';
+  outstandingLedgerEndpoint = '';
 
-  applicationId: any;
-  data: any;
-  summary: any;
-  journey: any;
-  statement: any;
-  borrower: any;
-  loanTerms: any;
+  data: any = null;
+  status: any = {};
+  overview: any = {};
+  dates: any = {};
+  noc: any = {};
+  repaymentRows: any[] = [];
+  paymentRecords: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -45,15 +51,29 @@ export class LoanDetailComponent implements OnInit {
           this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load details'));
           return;
         }
-        const d = res?.data;
 
-        this.data = d;
-        this.summary = d?.summary;
-        this.journey = d?.journey?.status;
-        this.statement = d?.statementVerification;
-        this.borrower = d?.applicationSnapshot?.applicationBasic;
-        this.loanTerms = d?.loanTerms || d?.summary?.loanTerms;
+        const detail = res?.data || {};
 
+        this.data = detail;
+        this.applicationId = detail?.applicationId || this.applicationId;
+        this.loanId = this.readText(detail?.loan?.loanId);
+        this.status = detail?.status || {};
+        this.overview = detail?.overview || {};
+        this.dates = detail?.dates || {};
+        this.noc = detail?.noc || {};
+        this.repaymentRows = Array.isArray(detail?.repayment?.rows) ? detail.repayment.rows : [];
+        this.paymentRecords = Array.isArray(detail?.paymentRecords)
+          ? detail.paymentRecords.map((payment: any) => ({
+              ...payment,
+              paidAtDisplay: this.formatDisplayDate(
+                payment?.paidAtDisplay ||
+                payment?.paidAt ||
+                payment?.paymentDate
+              )
+            }))
+          : [];
+        this.repaymentScheduleEndpoint = this.readText(detail?.actions?.repaymentScheduleEndpoint);
+        this.outstandingLedgerEndpoint = this.readText(detail?.actions?.outstandingLedgerEndpoint);
       },
       error: (err) => {
         this.spinner.hide();
@@ -66,59 +86,146 @@ export class LoanDetailComponent implements OnInit {
     window.history.back();
   }
 
-  get tenureDisplay(): string {
-    const computedTenureDays = this.getDateDiffInDays(
-      this.loanTerms?.disbursalDate,
-      this.loanTerms?.repayDate || this.loanTerms?.maturityDate
-    );
-    const fallbackTenureDays =
-      this.toPositiveNumber(this.loanTerms?.tenureDays) ??
-      this.toPositiveNumber(this.summary?.overview?.tenureDays) ??
-      this.toPositiveNumber(this.borrower?.tenureDays);
-    const tenureDays = computedTenureDays ?? fallbackTenureDays;
+  openNoc() {
+    if (!this.nocUrl) {
+      this.toastr.warning('NOC not available');
+      return;
+    }
 
-    if (tenureDays === null) {
+    window.open(this.nocUrl, '_blank', 'noopener');
+  }
+
+  get hasDetail(): boolean {
+    return !!this.data;
+  }
+
+  get applicationNumber(): string {
+    return this.readText(this.data?.applicationNumber) || '--';
+  }
+
+  get loanStatus(): string {
+    return this.readText(this.status?.loanStatus) || '--';
+  }
+
+  get approvedAmount(): number | null {
+    return this.toNumber(this.overview?.approvedAmount);
+  }
+
+  get totalPayableAmount(): number | null {
+    return this.toNumber(this.overview?.totalPayableAmount);
+  }
+
+  get totalPaidAmount(): number | null {
+    return this.toNumber(this.overview?.totalPaidAmount);
+  }
+
+  get outstandingAmount(): number | null {
+    return this.toNumber(this.overview?.finalDueAmount);
+  }
+
+  get principalAmount(): number | null {
+    return this.toNumber(this.overview?.principalAmount);
+  }
+
+  get interestAmount(): number | null {
+    return this.toNumber(this.overview?.interestAmount);
+  }
+
+  get penalInterestAmount(): number | null {
+    return this.toNumber(this.overview?.penalInterestAmount);
+  }
+
+  get totalRepayAmount(): number | null {
+    return this.toNumber(this.overview?.totalRepayAmount);
+  }
+
+  get repaymentMode(): string {
+    return this.readText(this.overview?.repaymentMode) || '--';
+  }
+
+  get tenureDisplay(): string {
+    const tenureDays = this.toNumber(this.overview?.tenureDays);
+    const tenureMode = this.readText(this.overview?.tenureMode);
+
+    if (tenureDays === null && !tenureMode) {
       return '--';
     }
 
-    return `${tenureDays} Day${tenureDays === 1 ? '' : 's'}`;
+    if (tenureDays === null) {
+      return tenureMode;
+    }
+
+    return tenureMode ? `${tenureDays} ${tenureMode}` : `${tenureDays}`;
   }
 
-  private getDateDiffInDays(startDate: string | null | undefined, endDate: string | null | undefined): number | null {
-    const start = this.parseDateOnly(startDate);
-    const end = this.parseDateOnly(endDate);
-
-    if (!start || !end) {
-      return null;
-    }
-
-    const millisecondsPerDay = 24 * 60 * 60 * 1000;
-    const diffInDays = Math.round((end.getTime() - start.getTime()) / millisecondsPerDay);
-
-    if (diffInDays < 0) {
-      return null;
-    }
-
-    return diffInDays;
+  get roiPerDayDisplay(): string {
+    const roiPerDay = this.toNumber(this.overview?.roiPerDay);
+    return roiPerDay === null ? '--' : `${roiPerDay}`;
   }
 
-  private parseDateOnly(value: string | null | undefined): Date | null {
-    if (!value || typeof value !== 'string') {
-      return null;
-    }
-
-    const [year, month, day] = value.split('-').map((part) => Number(part));
-
-    if (!year || !month || !day) {
-      return null;
-    }
-
-    return new Date(Date.UTC(year, month - 1, day));
+  get delayDaysDisplay(): string {
+    const delayDays = this.toNumber(this.overview?.delayDays);
+    return delayDays === null ? '--' : `${delayDays}`;
   }
 
-  private toPositiveNumber(value: any): number | null {
+  get disbursedOnDisplay(): string {
+    return this.formatDisplayDate(this.overview?.disbursalDateDisplay);
+  }
+
+  get dueDateDisplay(): string {
+    return this.formatDisplayDate(this.overview?.repayDateDisplay);
+  }
+
+  get appliedDateDisplay(): string {
+    return this.formatDisplayDate(
+      this.dates?.createdAtDisplay ||
+      this.dates?.createdOnDisplay ||
+      this.dates?.createdAt ||
+      this.data?.createdAtDisplay ||
+      this.data?.createdAt
+    );
+  }
+
+  get paidOnDisplay(): string {
+    return this.formatDisplayDate(this.dates?.paidOnDisplay);
+  }
+
+  get closedOnDisplay(): string {
+    return this.formatDisplayDate(this.dates?.closedOnDisplay);
+  }
+
+  get hasNocButton(): boolean {
+    return !!this.noc?.available && !!this.nocUrl;
+  }
+
+  get nocUrl(): string {
+    return this.readText(this.noc?.viewUrl) || this.readText(this.noc?.url) || '';
+  }
+
+  get hasRepaymentRows(): boolean {
+    return this.repaymentRows.length > 0;
+  }
+
+  get hasPaymentRecords(): boolean {
+    return this.paymentRecords.length > 0;
+  }
+
+  private toNumber(value: any): number | null {
     const parsedValue = Number(value);
-    return Number.isFinite(parsedValue) && parsedValue >= 0 ? parsedValue : null;
+    return Number.isFinite(parsedValue) ? parsedValue : null;
   }
 
+  private readText(value: any): string {
+    return typeof value === 'string' ? value.trim() : '';
+  }
+
+  private formatDisplayDate(value: any): string {
+    const rawValue = this.readText(value);
+
+    if (!rawValue) {
+      return '--';
+    }
+
+    return formatDateForDisplay(rawValue) || rawValue;
+  }
 }

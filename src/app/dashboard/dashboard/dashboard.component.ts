@@ -237,6 +237,7 @@ videoKycModalMessage: string = '';
         : totalPaidAmount !== null && interestBaseAmount !== null
           ? Math.max(totalPaidAmount - interestBaseAmount, 0)
           : null;
+    const penaltyInterestPaidAmount = this.pickPositiveAmount(tracking?.penaltyAmount);
 
     return {
       loanNumber: this.pickFirstString(
@@ -262,6 +263,7 @@ videoKycModalMessage: string = '';
       disbursedAmount,
       totalPaidAmount,
       interestPaidAmount,
+      penaltyInterestPaidAmount,
       closedDateDisplay: this.formatSnapshotDateForDisplay(
         tracking?.closedAt,
         tracking?.closedOn,
@@ -682,17 +684,38 @@ private patchActiveLoanFromSnapshot() {
   }
 
   this.activeLoan = {
-    loanNumber: tracking?.applicationNumber || tracking?.loanAccountNo || tracking?.loanId,
-    status: tracking?.loanStatus || activeLoan?.status || 'ACTIVE',
-    approvedAmount: activeLoan?.approvedAmount || tracking?.approvedAmount || activeLoan?.principal,
-    netDisbursalAmount: activeLoan?.netDisbursalAmount || tracking?.netDisbursalAmount,
-    outstandingAmount: repayment?.outstandingAmount || tracking?.outstandingAmount || repayment?.principalOutstanding,
-    repayAmount: repayment?.repayAmount || activeLoan?.repayAmount || tracking?.repayAmount,
-    nextDueAmount: repayment?.nextDueAmount || tracking?.nextDueAmount || repayment?.minimumDueAmount,
-    nextDueDateDisplay: formatDateForDisplay(repayment?.nextDueDate || tracking?.nextDueDate || activeLoan?.repayDate),
-    repayDateDisplay: formatDateForDisplay(activeLoan?.repayDate || tracking?.repayDate || activeLoan?.maturityDate),
-    disbursalDateDisplay: formatDateForDisplay(activeLoan?.disbursalDate || tracking?.disbursalDate || activeLoan?.startedOn),
-    autoDebitStatus: repayment?.autoDebitStatus || tracking?.autoDebitStatus || tracking?.mandateStatus
+    loanNumber: this.pickFirstString(
+      tracking?.applicationNumber,
+      tracking?.loanAccountNo,
+      tracking?.loanId
+    ),
+    status: this.pickFirstString(
+      tracking?.loanStatus,
+      activeLoan?.loanStatus,
+      tracking?.currentTitle,
+      activeLoan?.status
+    ) || 'ACTIVE',
+    approvedAmount: this.pickFirstAmount(
+      tracking?.approvedAmount,
+      activeLoan?.approvedAmount,
+      activeLoan?.principal
+    ),
+    repayDateDisplay: this.formatSnapshotDateForDisplay(
+      tracking?.nextDueDate,
+      tracking?.repayDate,
+      activeLoan?.repayDate,
+      activeLoan?.maturityDate
+    ),
+    payableNowAmount: this.pickFirstAmount(
+      tracking?.finalDueAmount,
+      repayment?.finalDueAmount,
+      repayment?.outstandingAmount,
+      tracking?.outstandingAmount
+    ),
+    delayDays: this.pickFirstAmount(
+      tracking?.delayDays,
+      repayment?.delayDays
+    )
   };
 }
 
@@ -924,6 +947,14 @@ private pickFirstString(...candidates: any[]): string {
   }
 
   return '';
+}
+
+private pickPositiveAmount(candidate: any): number | null {
+  const numericValue = Number(candidate);
+
+  return Number.isFinite(numericValue) && numericValue > 0
+    ? numericValue
+    : null;
 }
 
 private formatSnapshotDateForDisplay(...candidates: any[]): string {
