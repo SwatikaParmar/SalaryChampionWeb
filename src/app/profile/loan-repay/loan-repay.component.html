@@ -152,18 +152,6 @@
 
     <div class="option-grid">
       <button
-        class="option-card"
-        type="button"
-        *ngIf="canShowMinimumOption"
-        [class.active]="amountOption === 'MINIMUM'"
-        (click)="selectAmountOption('MINIMUM')"
-      >
-        <span>Minimum Due</span>
-        <strong>{{ scheduledDue | currency:'INR':'symbol':'1.2-2' }}</strong>
-        <small>Uses `nextDueAmount` from the repay summary.</small>
-      </button>
-
-      <button
         class="option-card option-card--primary"
         type="button"
         *ngIf="canShowFullOption"

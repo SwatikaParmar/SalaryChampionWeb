@@ -94,6 +94,7 @@ hasActiveApplication: boolean = false;
   private shouldRefreshEnachOnReturn = false;
   private isEnachRefreshInFlight = false;
   private isVideoKycRefreshInFlight = false;
+  private hasTriggeredReloanSnapshotRefresh = false;
 
 showKycModal: boolean = false;
 kycUrl: string = '';
@@ -325,7 +326,11 @@ getBorrowerSnapshot() {
   this.getBorrowerSnapshotWithOptions(true);
 }
 
-private getBorrowerSnapshotWithOptions(showLoader = true, onComplete?: () => void) {
+private getBorrowerSnapshotWithOptions(
+  showLoader = true,
+  onComplete?: () => void,
+  skipApplicationStatusRefresh = false
+) {
   if (showLoader) {
     this.spinner.show();
   }
@@ -342,7 +347,7 @@ private getBorrowerSnapshotWithOptions(showLoader = true, onComplete?: () => voi
       }
 
       const data = res?.data || {};
-      this.applyBorrowerSnapshotData(data, showLoader, onComplete);
+      this.applyBorrowerSnapshotData(data, showLoader, onComplete, skipApplicationStatusRefresh);
     },
     error: () => {
       if (showLoader) {
@@ -353,7 +358,13 @@ private getBorrowerSnapshotWithOptions(showLoader = true, onComplete?: () => voi
   });
 }
 
-private applyBorrowerSnapshotData(data: any, showLoader = true, onComplete?: () => void) {
+private applyBorrowerSnapshotData(
+  data: any,
+  showLoader = true,
+  onComplete?: () => void,
+  skipApplicationStatusRefresh = false
+) {
+  const wasReloanCardVisible = this.showReloanActionButton;
   const offer = data?.offer || {};
   const eligibility = data?.eligibility || {};
 
@@ -408,7 +419,9 @@ private applyBorrowerSnapshotData(data: any, showLoader = true, onComplete?: () 
     this.profileProgress === 100 &&
     this.loanProgress < 100;
 
-  if (this.showTracker) {
+  this.triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible);
+
+  if (this.showTracker && !skipApplicationStatusRefresh) {
     this.applicationStatusApi(showLoader, onComplete);
     return;
   }
@@ -1371,6 +1384,7 @@ applicationStatusApi(showLoader = true, onComplete?: () => void) {
 }
 
 private applyApplicationStatusData(data: any) {
+  const wasReloanCardVisible = this.showReloanActionButton;
   const wasDisbursementCompleted = this.isDisbursementCompleted();
 
   this.syncTrackerRuntimeState(data);
@@ -1389,9 +1403,30 @@ private applyApplicationStatusData(data: any) {
     '';
   this.videoKycData = data?.videoKyc;
 
+  this.triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible);
+
   if (!wasDisbursementCompleted && this.isDisbursementCompleted()) {
     this.getBorrowerSnapshotWithOptions(false);
   }
+}
+
+private triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible: boolean) {
+  if (!this.showReloanActionButton) {
+    this.hasTriggeredReloanSnapshotRefresh = false;
+    return;
+  }
+
+  if (this.canApplyReloan) {
+    this.hasTriggeredReloanSnapshotRefresh = false;
+    return;
+  }
+
+  if (wasReloanCardVisible || this.hasTriggeredReloanSnapshotRefresh) {
+    return;
+  }
+
+  this.hasTriggeredReloanSnapshotRefresh = true;
+  this.getBorrowerSnapshotWithOptions(false, undefined, true);
 }
 
 private hasReachedRepaymentRefreshTarget(): boolean {

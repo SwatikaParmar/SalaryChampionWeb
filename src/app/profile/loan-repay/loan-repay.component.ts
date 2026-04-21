@@ -7,7 +7,7 @@ import { ContentService } from '../../../service/content.service';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 import { formatDateForDisplay } from '../../shared/date-format.util';
 
-type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM';
+type AmountOption = 'FULL' | 'CUSTOM';
 type RepaymentPaymentType = 'PARTIAL' | 'FULL';
 
 @Component({
@@ -137,10 +137,6 @@ export class LoanRepayComponent implements OnInit {
     );
   }
 
-  get canShowMinimumOption(): boolean {
-    return this.allowPartialPayment && this.scheduledDue > 0;
-  }
-
   get canShowFullOption(): boolean {
     return this.allowFullPayment && this.payableNow > 0;
   }
@@ -154,17 +150,11 @@ export class LoanRepayComponent implements OnInit {
       return this.payableNow;
     }
 
-    if (this.amountOption === 'MINIMUM') {
-      return this.scheduledDue;
-    }
-
     return this.toNumber(this.customAmount);
   }
 
   get selectedAmountLabel(): string {
     switch (this.amountOption) {
-      case 'MINIMUM':
-        return 'Minimum Due';
       case 'CUSTOM':
         return 'Custom Amount';
       default:
@@ -232,7 +222,6 @@ export class LoanRepayComponent implements OnInit {
   selectAmountOption(option: AmountOption): void {
     if (
       (option === 'FULL' && !this.canShowFullOption) ||
-      (option === 'MINIMUM' && !this.canShowMinimumOption) ||
       (option === 'CUSTOM' && !this.canShowCustomOption)
     ) {
       return;
@@ -253,11 +242,6 @@ export class LoanRepayComponent implements OnInit {
   applySuggestedAmount(amount: number): void {
     if (this.canShowFullOption && amount === this.payableNow) {
       this.selectAmountOption('FULL');
-      return;
-    }
-
-    if (this.canShowMinimumOption && amount === this.scheduledDue) {
-      this.selectAmountOption('MINIMUM');
       return;
     }
 
@@ -589,11 +573,6 @@ export class LoanRepayComponent implements OnInit {
       return;
     }
 
-    if (this.canShowMinimumOption && this.amountOption === 'MINIMUM') {
-      this.customAmount = null;
-      return;
-    }
-
     if (this.canShowCustomOption && this.amountOption === 'CUSTOM') {
       if (!this.customAmount || this.customAmount < this.minPayAmount) {
         this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
@@ -603,12 +582,6 @@ export class LoanRepayComponent implements OnInit {
 
     if (this.canShowFullOption) {
       this.amountOption = 'FULL';
-      this.customAmount = null;
-      return;
-    }
-
-    if (this.canShowMinimumOption) {
-      this.amountOption = 'MINIMUM';
       this.customAmount = null;
       return;
     }

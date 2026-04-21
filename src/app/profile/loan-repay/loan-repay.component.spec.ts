@@ -127,10 +127,7 @@ describe('LoanRepayComponent', () => {
     expect(component.selectedAmount).toBe(8425.2);
   });
 
-  it('should compute CTA amount from minimum, full and custom selections', () => {
-    component.selectAmountOption('MINIMUM');
-    expect(component.selectedAmount).toBe(7140);
-
+  it('should compute CTA amount from full and custom selections', () => {
     component.selectAmountOption('FULL');
     expect(component.selectedAmount).toBe(8425.2);
 
