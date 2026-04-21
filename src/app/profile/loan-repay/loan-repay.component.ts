@@ -8,6 +8,7 @@ import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 import { formatDateForDisplay } from '../../shared/date-format.util';
 
 type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM';
+type RepaymentPaymentType = 'PARTIAL' | 'FULL';
 
 @Component({
   selector: 'app-loan-repay',
@@ -280,7 +281,10 @@ export class LoanRepayComponent implements OnInit {
 
     const payload = {
       applicationId: this.summary?.applicationId || this.applicationId,
-      amount: this.selectedAmount
+      amount: this.gatewayAmount,
+      paymentType: this.gatewayPaymentType,
+      returnUrl: this.buildPaymentReturnUrl(),
+      orderNote: 'Loan repayment'
     };
     const createOrderEndpoint = this.summary?.createOrderEndpoint;
     const request$ = createOrderEndpoint
@@ -446,6 +450,25 @@ export class LoanRepayComponent implements OnInit {
         : '';
 
     return origin ? `${origin}${path}` : path;
+  }
+
+  private get gatewayAmount(): number {
+    return this.selectedAmount;
+  }
+
+  private get gatewayPaymentType(): RepaymentPaymentType {
+    return this.amountOption === 'FULL' ? 'FULL' : 'PARTIAL';
+  }
+
+  private buildPaymentReturnUrl(): string {
+    return this.amountOption === 'FULL'
+      ? this.buildAbsoluteUrl('/dashboard?refresh=true')
+      : this.buildRepaymentReturnUrl();
+  }
+
+  private buildRepaymentReturnUrl(): string {
+    const targetApplicationId = encodeURIComponent(this.summary?.applicationId || this.applicationId);
+    return this.buildAbsoluteUrl(`/dashboard/profile/loan-repay/${targetApplicationId}`);
   }
 
   private clearRepaymentStorage(): void {

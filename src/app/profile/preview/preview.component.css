@@ -88,6 +88,18 @@
     color: #555;
     font-size: 15px;
 }
+
+.profile-card__text--email {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.profile-card__value {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.4;
+}
 .profile-card p strong {
     font-weight: 500;
     color: #31a5e5;

@@ -30,7 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private readonly enachMandateStorageKey = 'dashboard.enachMandateRowId';
   private readonly enachReturnRefreshStorageKey = 'dashboard.enachReturnRefreshPending';
   private readonly repaymentRefreshPollDelayMs = 1000;
-  private readonly repaymentRefreshSafetyTimeoutMs = 30000;
+  private readonly repaymentRefreshSafetyTimeoutMs = 60000;
   private readonly reloanTokenRefreshDelayMs = 1000;
   private readonly reloanTokenRefreshTimeoutMs = 15000;
   private readonly defaultTrackerFlow = [
@@ -635,9 +635,31 @@ private syncTrackerRuntimeState(statusData: any) {
   const incomingTracking = statusData?.loanTracking || {};
   const incomingVideoKyc = statusData?.videoKyc || incomingTracking?.videoKyc || {};
   const incomingNextAction = statusData?.nextAction || incomingTracking?.nextAction;
+  const shouldPreserveRepaymentRefreshTracking =
+    this.shouldPreserveRepaymentRefreshTracking(existingTracking, incomingTracking);
+  const mergedRepayment = shouldPreserveRepaymentRefreshTracking
+    ? {
+        ...(incomingTracking?.repayment || {}),
+        ...(existingTracking?.repayment || {})
+      }
+    : {
+        ...(existingTracking?.repayment || {}),
+        ...(incomingTracking?.repayment || {})
+      };
+  const mergedActiveLoan = shouldPreserveRepaymentRefreshTracking
+    ? {
+        ...(incomingTracking?.activeLoan || {}),
+        ...(existingTracking?.activeLoan || {})
+      }
+    : {
+        ...(existingTracking?.activeLoan || {}),
+        ...(incomingTracking?.activeLoan || {})
+      };
   const mergedTracking = {
-    ...existingTracking,
-    ...incomingTracking,
+    ...(shouldPreserveRepaymentRefreshTracking ? incomingTracking : existingTracking),
+    ...(shouldPreserveRepaymentRefreshTracking ? existingTracking : incomingTracking),
+    repayment: mergedRepayment,
+    activeLoan: mergedActiveLoan,
     videoKyc: {
       ...(existingTracking?.videoKyc || {}),
       ...(incomingVideoKyc || {})
@@ -730,25 +752,13 @@ private isDisbursementCompleted(): boolean {
 
 private hasClosedLoan(): boolean {
   const tracking = this.loanTracking || {};
-  const activeLoan = tracking?.activeLoan || {};
   const request = this.currentLoanRequest || {};
-  const statusCandidates = [
-    tracking?.loanStatus,
-    activeLoan?.status,
-    activeLoan?.loanStatus,
-    request?.loanStatus,
-    request?.status,
-    tracking?.repayment?.loanStatus
-  ];
-  const statusClosed = statusCandidates.some((status) => this.isClosedLoanStatus(status));
 
-  return statusClosed ||
-    tracking?.isLoanClosed === true ||
-    tracking?.loanClosed === true ||
-    activeLoan?.isClosed === true ||
-    activeLoan?.closed === true ||
+  return this.hasClosedLoanTracking(tracking) ||
     request?.isClosed === true ||
-    request?.closed === true;
+    request?.closed === true ||
+    this.isClosedLoanStatus(request?.loanStatus) ||
+    this.isClosedLoanStatus(request?.status);
 }
 
 private hasClosedLoanOrPendingClosureSync(): boolean {
@@ -825,7 +835,9 @@ private getReloanDecisionState(): 'pending' | 'not_eligible' | 'eligible' | 'non
   const reloanDecision = this.reloanDecision;
 
   if (!reloanDecision || typeof reloanDecision !== 'object') {
-    return hasPendingClosureSync ? 'pending' : 'none';
+    return hasPendingClosureSync || this.shouldTreatClosedLoanAsPendingDuringRefresh()
+      ? 'pending'
+      : 'none';
   }
 
   if (!this.isReloanDecisionSaved(reloanDecision)) {
@@ -837,6 +849,74 @@ private getReloanDecisionState(): 'pending' | 'not_eligible' | 'eligible' | 'non
 
 private isReloanDecisionSaved(reloanDecision: any): boolean {
   return reloanDecision?.saved === true || reloanDecision?.isSaved === true;
+}
+
+private shouldPreserveRepaymentRefreshTracking(existingTracking: any, incomingTracking: any): boolean {
+  if (!this.isRepaymentRefreshContext) {
+    return false;
+  }
+
+  const existingSignalsClosed =
+    this.hasClosedLoanTracking(existingTracking) ||
+    this.hasClearedLoanBalance(existingTracking);
+  const incomingSignalsClosed =
+    this.hasClosedLoanTracking(incomingTracking) ||
+    this.hasClearedLoanBalance(incomingTracking);
+
+  if (!existingSignalsClosed || incomingSignalsClosed) {
+    return false;
+  }
+
+  return incomingTracking?.showActiveLoanCard === true ||
+    this.hasOpenRepaymentBalance(incomingTracking);
+}
+
+private hasClosedLoanTracking(trackingSource?: any): boolean {
+  const tracking = trackingSource || {};
+  const activeLoan = tracking?.activeLoan || {};
+  const statusCandidates = [
+    tracking?.loanStatus,
+    activeLoan?.status,
+    activeLoan?.loanStatus,
+    tracking?.repayment?.loanStatus
+  ];
+  const statusClosed = statusCandidates.some((status) => this.isClosedLoanStatus(status));
+
+  return statusClosed ||
+    tracking?.isLoanClosed === true ||
+    tracking?.loanClosed === true ||
+    activeLoan?.isClosed === true ||
+    activeLoan?.closed === true;
+}
+
+private hasOpenRepaymentBalance(trackingSource?: any): boolean {
+  const tracking = trackingSource || {};
+  const repayment = tracking?.repayment || {};
+  const activeLoan = tracking?.activeLoan || {};
+  const dueAmounts = [
+    repayment?.outstandingAmount,
+    tracking?.outstandingAmount,
+    activeLoan?.outstandingAmount,
+    repayment?.principalOutstanding,
+    tracking?.principalOutstanding,
+    repayment?.nextDueAmount,
+    tracking?.nextDueAmount,
+    activeLoan?.nextDueAmount,
+    repayment?.minimumDueAmount,
+    tracking?.minimumDueAmount,
+    repayment?.payableAmount,
+    tracking?.payableAmount
+  ]
+    .map((amount) => this.pickFirstAmount(amount))
+    .filter((amount): amount is number => amount !== null);
+
+  return dueAmounts.some((amount) => amount > 0);
+}
+
+private shouldTreatClosedLoanAsPendingDuringRefresh(): boolean {
+  return this.isRepaymentRefreshContext &&
+    this.hasClosedLoanOrPendingClosureSync() &&
+    !this.showActiveLoanCard;
 }
 
 private extractReloanDecision(source: any): any {
@@ -1291,6 +1371,8 @@ applicationStatusApi(showLoader = true, onComplete?: () => void) {
 }
 
 private applyApplicationStatusData(data: any) {
+  const wasDisbursementCompleted = this.isDisbursementCompleted();
+
   this.syncTrackerRuntimeState(data);
   this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
   this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
@@ -1306,20 +1388,18 @@ private applyApplicationStatusData(data: any) {
     this.loanTracking?.currentMessage ||
     '';
   this.videoKycData = data?.videoKyc;
+
+  if (!wasDisbursementCompleted && this.isDisbursementCompleted()) {
+    this.getBorrowerSnapshotWithOptions(false);
+  }
 }
 
 private hasReachedRepaymentRefreshTarget(): boolean {
-  if (this.showClosedLoanUnavailableCard) {
-    return true;
-  }
+  return this.hasVisibleRepaymentClosureOutcome();
+}
 
-  if (this.getReloanDecisionState() === 'eligible') {
-    return this.canApplyReloan;
-  }
-
-  return this.hasClosedLoanOrPendingClosureSync() &&
-    !this.showActiveLoanCard &&
-    this.getReloanDecisionState() !== 'none';
+private hasVisibleRepaymentClosureOutcome(): boolean {
+  return this.showClosedLoanUnavailableCard || this.showReloanActionButton;
 }
 async startVideoKyc() {
   if (!this.videoKycCustomerUrl) {

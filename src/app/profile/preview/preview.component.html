@@ -12,7 +12,10 @@
 
     <p><strong>PAN:</strong> {{ user?.pan?.masked || user?.pan?.number }}</p>
     <p><strong>Phone:</strong> {{ user?.phone }}</p>
-    <p><strong>Email:</strong> {{ user?.email }}</p>
+    <p class="profile-card__text profile-card__text--email">
+      <strong>Email:</strong>
+      <span class="profile-card__value">{{ user?.email }}</span>
+    </p>
   </div>
 
   <!-- RIGHT CARD -->

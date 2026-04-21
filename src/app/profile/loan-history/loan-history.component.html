@@ -80,7 +80,7 @@
         <div class="ledger-stat">
           <label>Interest Amount</label>
           <strong>
-            {{ item.financials?.interestAmount !== null ? (item.financials.interestAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+            {{ item.overview?.currentInterestAmount !== null ? (item.overview.currentInterestAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
           </strong>
         </div>
 
