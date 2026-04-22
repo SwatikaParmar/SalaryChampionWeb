@@ -72,6 +72,9 @@ describe('LoanDetailComponent', () => {
         loan: {
           loanId: 'LN001'
         },
+        loanTerms: {
+          netDisbAmount: 6650
+        },
         status: {
           loanStatus: 'CLOSED'
         },
@@ -82,7 +85,9 @@ describe('LoanDetailComponent', () => {
           finalDueAmount: 0,
           principalAmount: 7000,
           interestAmount: 490,
+          currentInterestAmount: 420,
           penalInterestAmount: 599,
+          repayAmount: 8075,
           totalRepayAmount: 8089,
           repaymentMode: 'UPI',
           tenureDays: 35,
@@ -139,8 +144,11 @@ describe('LoanDetailComponent', () => {
     expect(component.totalPaidAmount).toBe(8089);
     expect(component.outstandingAmount).toBe(0);
     expect(component.principalAmount).toBe(7000);
-    expect(component.interestAmount).toBe(490);
+    expect(component.netDisbAmount).toBe(6650);
+    expect(component.currentInterestAmount).toBe(420);
+    expect(component.interestAmount).toBe(420);
     expect(component.penalInterestAmount).toBe(599);
+    expect(component.repayAmount).toBe(8075);
     expect(component.totalRepayAmount).toBe(8089);
     expect(component.repaymentMode).toBe('UPI');
     expect(component.tenureDisplay).toBe('35 DAYS');

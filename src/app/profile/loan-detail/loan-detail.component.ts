@@ -127,12 +127,26 @@ export class LoanDetailComponent implements OnInit {
     return this.toNumber(this.overview?.principalAmount);
   }
 
+  get netDisbAmount(): number | null {
+    return this.toNumber(
+      this.data?.loanTerms?.netDisbAmount ?? this.overview?.netDisbAmount
+    );
+  }
+
+  get currentInterestAmount(): number | null {
+    return this.toNumber(this.overview?.currentInterestAmount ?? this.overview?.interestAmount);
+  }
+
   get interestAmount(): number | null {
-    return this.toNumber(this.overview?.interestAmount);
+    return this.currentInterestAmount;
   }
 
   get penalInterestAmount(): number | null {
     return this.toNumber(this.overview?.penalInterestAmount);
+  }
+
+  get repayAmount(): number | null {
+    return this.toNumber(this.overview?.repayAmount ?? this.overview?.totalRepayAmount);
   }
 
   get totalRepayAmount(): number | null {

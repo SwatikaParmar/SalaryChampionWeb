@@ -2,7 +2,9 @@
   <div class="loan-top-card">
     <div class="loan-top-header">
       <div class="loan-top-left">
-        <button class="back-btn" (click)="goBack()">Back</button>
+        <button class="back-btn" type="button" (click)="goBack()" aria-label="Go Back">
+          <i class="fa-solid fa-angle-left"></i>
+        </button>
 
         <div class="loan-title-block">
           <span class="loan-kicker">Borrower Loan Detail</span>
@@ -26,7 +28,7 @@
       <div class="top-stat">
         <label>Total Repay Amount</label>
         <strong>
-          {{ totalPayableAmount !== null ? (totalPayableAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+          {{ repayAmount !== null ? (repayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
       </div>
 
@@ -60,6 +62,13 @@
       </div>
 
       <div class="detail-stat">
+        <label>Net Disbursal Amount</label>
+        <strong>
+          {{ netDisbAmount !== null ? (netDisbAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat">
         <label>Interest Amount</label>
         <strong>
           {{ interestAmount !== null ? (interestAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
@@ -74,7 +83,7 @@
       </div>
 
       <div class="detail-stat">
-        <label>Total Repay Amount</label>
+        <label>Repay Amount</label>
         <strong>
           {{ totalRepayAmount !== null ? (totalRepayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
@@ -121,7 +130,7 @@
       </div>
 
       <div class="detail-stat">
-        <label>Due Date</label>
+        <label>Repay Date</label>
         <strong>{{ dueDateDisplay }}</strong>
       </div>
 

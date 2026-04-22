@@ -184,6 +184,44 @@ label {
   border-radius: 10px;
 }
 
+.back-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 9px;
+  background: linear-gradient(180deg, #66c1ea 0%, #1699d5 100%);
+  color: #ffffff;
+  font-size: 20px;
+  line-height: 1;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 6px 12px rgba(22, 126, 190, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.back-btn i {
+  color: #ffffff;
+  font-size: 20px;
+  line-height: 1;
+}
+
+.back-btn:hover {
+  background: linear-gradient(180deg, #58b8e5 0%, #0f87c3 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 8px 14px rgba(22, 126, 190, 0.28);
+  transform: translateY(-1px);
+}
+
+.back-btn:focus-visible {
+  outline: 3px solid rgba(49, 165, 229, 0.28);
+  outline-offset: 2px;
+}
+
 .pay-btn {
   background: linear-gradient(135deg, #12355d, #1f9fd6);
   color: #ffffff;

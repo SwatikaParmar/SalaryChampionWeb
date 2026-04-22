@@ -48,8 +48,35 @@ describe('DashboardComponent', () => {
       disbursedAmount: 10000,
       totalPaidAmount: 11800,
       interestPaidAmount: 1800,
+      currentInterestAmount: 1800,
       penaltyInterestPaidAmount: 250,
       closedDateDisplay: '01-05-2026'
+    }));
+  });
+
+  it('should use current interest amount from borrower snapshot in the closed loan summary', () => {
+    component.profileProgress = 100;
+    component.borrowerSnapshot = {
+      overview: {
+        currentInterestAmount: 425
+      }
+    };
+    component.loanTracking = {
+      loanStatus: 'CLOSED',
+      applicationNumber: 'AP2026000130',
+      approvedAmount: 7000,
+      netDisbursalAmount: 6500,
+      repayAmount: 7200
+    };
+    component.reloanDecision = {
+      saved: false,
+      isSaved: false,
+      pending: true,
+      eligible: false
+    };
+
+    expect(component.closedLoanSummary).toEqual(jasmine.objectContaining({
+      currentInterestAmount: 425
     }));
   });
 

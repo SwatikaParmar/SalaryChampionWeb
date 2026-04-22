@@ -176,12 +176,12 @@
         <strong>{{ closedLoan.closedDateDisplay || closedLoan.statusLabel || '--' }}</strong>
       </div>
 
-      <div class="reloan-closed-note" *ngIf="closedLoan.disbursedAmount !== null || closedLoan.interestPaidAmount !== null || closedLoan.penaltyInterestPaidAmount !== null">
+      <div class="reloan-closed-note" *ngIf="closedLoan.disbursedAmount !== null || closedLoan.currentInterestAmount !== null || closedLoan.penaltyInterestPaidAmount !== null">
         <span *ngIf="closedLoan.disbursedAmount !== null">
           Disbursed: {{ closedLoan.disbursedAmount | currency:'INR':'symbol':'1.0-0' }}
         </span>
-        <span *ngIf="closedLoan.interestPaidAmount !== null">
-          Interest paid: {{ closedLoan.interestPaidAmount | currency:'INR':'symbol':'1.0-0' }}
+        <span *ngIf="closedLoan.currentInterestAmount !== null">
+          Interest paid: {{ closedLoan.currentInterestAmount | currency:'INR':'symbol':'1.0-0' }}
         </span>
         <span *ngIf="closedLoan.penaltyInterestPaidAmount !== null">
           Penalty interest paid: {{ closedLoan.penaltyInterestPaidAmount | currency:'INR':'symbol':'1.0-0' }}

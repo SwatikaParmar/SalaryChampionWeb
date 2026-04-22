@@ -2,64 +2,6 @@
   display: flex;
   gap: 20px;
   padding: 20px;
-}
-
-.avatar {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.details-card {
-  flex: 1;
-  background: #fff;
-  padding: 20px;
-}
-
-.section {
-  margin-bottom: 20px;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 0;
-  border-bottom: 1px solid #eee;
-}
-
-.edit-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.cta {
-  text-align: center;
-  margin-top: 20px;
-}
-
-.primary-btn {
-    background: linear-gradient(90deg, #7c4fe0, #4528dc);
-    font-family: "Poppins", sans-serif;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 7px;
-    height: 48px;
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
-}
-.preview-container {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
   background: #f3f6ff;
 }
 
@@ -71,41 +13,81 @@
   border: 1px solid #eaeaea;
 }
 
+.avatar-shell {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid rgb(132 64 218 / 46%);
+  background: #eef4ff;
+}
+
+.avatar-shell--loading {
+  background: #f5f7ff;
+}
+
+.avatar-loader {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.88);
+  z-index: 1;
+}
+
+.avatar-loader__spinner {
+  width: 1.75rem;
+  height: 1.75rem;
+  color: #31a5e5;
+}
+
 .avatar {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 20px;
-    border: 1px solid rgb(132 64 218 / 46%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+  border: 1px solid rgb(132 64 218 / 46%);
+  transition: opacity 0.2s ease;
 }
+
+.avatar--hidden {
+  opacity: 0;
+}
+
 .profile-card h4 {
-    font-size: 18px;
-    font-weight: 600;
+  font-size: 18px;
+  font-weight: 600;
 }
+
 .profile-card p {
-    margin: 0;
-    color: #555;
-    font-size: 15px;
+  margin: 0;
+  color: #555;
+  font-size: 15px;
 }
 
 .profile-card__text--email {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .profile-card__value {
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.4;
 }
+
 .profile-card p strong {
-    font-weight: 500;
-    color: #31a5e5;
+  font-weight: 500;
+  color: #31a5e5;
 }
 
 .details-card {
+  flex: 1;
   background: #fff;
   padding: 20px;
   border: 1px solid #eaeaea;
@@ -119,13 +101,13 @@
 }
 
 .tab {
-    padding: 8px 25px;
-    border-radius: 60px;
-    border: 1px solid #ddd;
-    background: #fff;
-    font-family: "Poppins", sans-serif;
-    font-size: 14px;
-    cursor: pointer;
+  padding: 8px 25px;
+  border-radius: 60px;
+  border: 1px solid #ddd;
+  background: #fff;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  cursor: pointer;
 }
 
 .tab.active {
@@ -143,9 +125,9 @@
 }
 
 .tab-content {
-    background: #ffffff;
-    padding: 15px;
-    border: 1px solid #f1f1f1;
+  background: #ffffff;
+  padding: 15px;
+  border: 1px solid #f1f1f1;
 }
 
 .row {
@@ -170,31 +152,32 @@
   margin-bottom: 10px;
 }
 
-.tab-content .row span:first-child{
-    font-weight: 500;
-    color: #3c3c3c;
-    font-size: 15px;
+.tab-content .row span:first-child {
+  font-weight: 500;
+  color: #3c3c3c;
+  font-size: 15px;
 }
+
 .tab-content .row span {
-    font-family: "Poppins", sans-serif;
-    font-size: 15px;    
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
 }
 
 .primary-btn {
   background: linear-gradient(90deg, #7c4fe0, #4528dc);
-    font-family: "Poppins", sans-serif;
-    border: none;
-    padding: 10px 30px;
-    border-radius: 7px;
-    height: 48px;
-    color: #fff;
-    font-size: 14px;
-    cursor: pointer;
+  font-family: "Poppins", sans-serif;
+  border: none;
+  padding: 10px 30px;
+  border-radius: 7px;
+  height: 48px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
 }
+
 .btn-primary:hover {
   background: #3c3c3c;
 }
 
-.detail-card{
-
+.detail-card {
 }

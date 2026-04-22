@@ -106,9 +106,10 @@ videoKycModalMessage: string = '';
 
 
     isReloanJourney = false;
- steps: any = {};
+  steps: any = {};
   currentLoanRequest: any;
 
+  borrowerSnapshot: any = null;
   loanTracking: any;
   reloanDecision: any = null;
   applicationId: string = '';
@@ -171,10 +172,16 @@ videoKycModalMessage: string = '';
       return null;
     }
 
+    const snapshot = this.borrowerSnapshot || {};
     const tracking = this.loanTracking || {};
     const activeLoan = tracking?.activeLoan || {};
     const repayment = tracking?.repayment || {};
     const request = this.currentLoanRequest || {};
+    const snapshotOverview = snapshot?.overview || {};
+    const trackingOverview = tracking?.overview || {};
+    const activeLoanOverview = activeLoan?.overview || {};
+    const repaymentOverview = repayment?.overview || {};
+    const requestOverview = request?.overview || {};
 
     const loanAmount = this.pickFirstAmount(
       activeLoan?.approvedAmount,
@@ -238,6 +245,20 @@ videoKycModalMessage: string = '';
         : totalPaidAmount !== null && interestBaseAmount !== null
           ? Math.max(totalPaidAmount - interestBaseAmount, 0)
           : null;
+    const currentInterestAmount = this.pickFirstAmount(
+      snapshot?.currentInterestAmount,
+      snapshotOverview?.currentInterestAmount,
+      tracking?.currentInterestAmount,
+      trackingOverview?.currentInterestAmount,
+      activeLoan?.currentInterestAmount,
+      activeLoanOverview?.currentInterestAmount,
+      repayment?.currentInterestAmount,
+      repaymentOverview?.currentInterestAmount,
+      request?.currentInterestAmount,
+      requestOverview?.currentInterestAmount,
+      explicitInterestPaidAmount,
+      interestPaidAmount
+    );
     const penaltyInterestPaidAmount = this.pickPositiveAmount(tracking?.penaltyAmount);
 
     return {
@@ -264,6 +285,7 @@ videoKycModalMessage: string = '';
       disbursedAmount,
       totalPaidAmount,
       interestPaidAmount,
+      currentInterestAmount,
       penaltyInterestPaidAmount,
       closedDateDisplay: this.formatSnapshotDateForDisplay(
         tracking?.closedAt,
@@ -368,6 +390,7 @@ private applyBorrowerSnapshotData(
   const offer = data?.offer || {};
   const eligibility = data?.eligibility || {};
 
+  this.borrowerSnapshot = data || null;
   this.applicationId = data?.application?.id || '';
   this.profileProgress = data?.basicFlow?.percent || 0;
   this.loanProgress = data?.applicationFlow?.percent || 0;
