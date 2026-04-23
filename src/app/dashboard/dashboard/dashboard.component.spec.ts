@@ -54,6 +54,19 @@ describe('DashboardComponent', () => {
     }));
   });
 
+  it('should keep showing loan closed successfully card until reloan eligibility arrives', () => {
+    component.profileProgress = 100;
+    component.loanTracking = {
+      loanStatus: 'CLOSED',
+      applicationNumber: 'AP2026000129'
+    };
+    component.reloanDecision = null;
+
+    expect(component.showClosedLoanUnavailableCard).toBeTrue();
+    expect(component.isPendingReloanDecision).toBeTrue();
+    expect(component.showReloanActionButton).toBeFalse();
+  });
+
   it('should use current interest amount from borrower snapshot in the closed loan summary', () => {
     component.profileProgress = 100;
     component.borrowerSnapshot = {
@@ -117,6 +130,49 @@ describe('DashboardComponent', () => {
     expect(component.showClosedLoanUnavailableCard).toBeFalse();
     expect(component.showReloanActionButton).toBeTrue();
     expect(component.canApplyReloan).toBeTrue();
+  });
+
+  it('should show eligible reloan card when tracking marks reloan as true even before token is ready', () => {
+    component.profileProgress = 100;
+    component.loanTracking = {
+      loanStatus: 'CLOSED',
+      reloanEligible: true,
+      nextAction: {
+        url: 'https://example.com/reloan'
+      }
+    };
+    component.reloanDecision = null;
+
+    expect(component.showClosedLoanUnavailableCard).toBeFalse();
+    expect(component.showReloanActionButton).toBeTrue();
+    expect(component.canApplyReloan).toBeFalse();
+  });
+
+  it('should switch to the eligible reloan card when refreshed tracking marks the borrower eligible', () => {
+    component.profileProgress = 100;
+    component.loanTracking = {
+      loanStatus: 'CLOSED',
+      applicationNumber: 'AP2026000131'
+    };
+    component.reloanDecision = {
+      saved: true,
+      isSaved: true,
+      eligible: false
+    };
+
+    (component as any).syncTrackerRuntimeState({
+      loanTracking: {
+        reloanEligible: true,
+        nextAction: {
+          url: 'https://example.com/reloan'
+        }
+      }
+    });
+
+    expect(component.reloanDecision).toBeNull();
+    expect(component.showClosedLoanUnavailableCard).toBeFalse();
+    expect(component.showReloanActionButton).toBeTrue();
+    expect(component.canApplyReloan).toBeFalse();
   });
 
   it('should keep reloan button disabled until the action url has token details', () => {

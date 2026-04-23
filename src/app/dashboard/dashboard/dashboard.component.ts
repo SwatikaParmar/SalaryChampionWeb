@@ -113,65 +113,368 @@ videoKycModalMessage: string = '';
   loanTracking: any;
   reloanDecision: any = null;
   applicationId: string = '';
+  dashboardVersion: number | null = null;
+  dashboardPrimaryCardType: string | null = null;
+  dashboardPrimaryCard: any = null;
 
-  get showReloanActionButton(): boolean {
-    const reloanDecisionState = this.getReloanDecisionState();
+  get showBasicProfileCard(): boolean {
+    return this.isPrimaryCardType('BASIC_PROFILE_COMPLETION');
+  }
 
-    if (reloanDecisionState !== 'none') {
-      return reloanDecisionState === 'eligible';
-    }
-
-    return (
-      this.loanTracking?.showReloanCard === true &&
-      this.canApplyReloan
+  get showNegativeStatusCard(): boolean {
+    return this.matchesPrimaryCardTypeOrStatus(
+      'NOT_ELIGIBLE',
+      'RESTRICTED',
+      'APPLICATION_REJECTED',
+      'SYSTEM_REJECTED'
     );
   }
 
+  get showNotEligibleSimpleCard(): boolean {
+    return this.matchesPrimaryCardTypeOrStatus('NOT_ELIGIBLE', 'APPLICATION_REJECTED');
+  }
+
+  get showDecisionNegativeCard(): boolean {
+    return this.showNegativeStatusCard && !this.showNotEligibleSimpleCard;
+  }
+
+  get isApplicationRejectedSimpleCard(): boolean {
+    return this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED');
+  }
+
+  get showReloanActionButton(): boolean {
+    return this.isPrimaryCardType('RELOAN_ELIGIBLE');
+  }
+
   get showClosedLoanUnavailableCard(): boolean {
-    if (this.profileProgress !== 100 || !this.hasClosedLoanOrPendingClosureSync()) {
-      return false;
-    }
-
-    const reloanDecisionState = this.getReloanDecisionState();
-
-    if (reloanDecisionState !== 'none') {
-      return reloanDecisionState === 'pending' || reloanDecisionState === 'not_eligible';
-    }
-
-    return this.hasExplicitReloanUnavailableFlag();
+    return this.isPrimaryCardType('CLOSED_LOAN', 'RELOAN_NOT_ELIGIBLE');
   }
 
   get canApplyReloan(): boolean {
-    return !!this.getResolvedReloanActionParams();
+    if (!this.showReloanActionButton) {
+      return false;
+    }
+
+    return !!this.getPrimaryCardCtaUrl() || !!this.getResolvedReloanActionParams();
   }
 
   get isPendingReloanDecision(): boolean {
-    return this.getReloanDecisionState() === 'pending';
+    return this.isPrimaryCardType('CLOSED_LOAN');
   }
 
   get isRejectedReloanDecision(): boolean {
-    return this.getReloanDecisionState() === 'not_eligible';
+    return this.isPrimaryCardType('RELOAN_NOT_ELIGIBLE');
   }
 
   get reloanUnavailableTitle(): string {
-    return this.isPendingReloanDecision
-      ? 'Loan Closed Successfully'
-      : 'Re-Loan Unavailable';
+    return this.dashboardPrimaryCard?.title ||
+      (this.isRejectedReloanDecision ? 'Reloan Not Eligible' : 'Loan Closed');
   }
 
   get showReloanUnavailableReason(): boolean {
-    return this.isRejectedReloanDecision && !!this.ineligibleReason;
+    return this.isRejectedReloanDecision && !!this.closedLoanReasonText;
   }
 
   get showReloanUnavailableRetryDate(): boolean {
-    return this.isRejectedReloanDecision && !!this.retryDate;
+    return this.isRejectedReloanDecision && !!this.closedLoanRetryDate;
+  }
+
+  get basicProfileCardTitle(): string {
+    return this.dashboardPrimaryCard?.title || 'My Profile';
+  }
+
+  get basicProfileCardMessage(): string {
+    return this.dashboardPrimaryCard?.message ||
+      'Complete registration to apply for a loan. Your financial solution awaits.';
+  }
+
+  get basicProfileCardButtonLabel(): string {
+    return this.dashboardPrimaryCard?.cta?.label || `Let's Start`;
+  }
+
+  get negativeCardTitle(): string {
+    return this.dashboardPrimaryCard?.title ||
+      (
+        this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')
+          ? 'System Rejected'
+          : this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')
+            ? 'Application Rejected'
+            : this.matchesPrimaryCardTypeOrStatus('RESTRICTED')
+              ? 'Account Restricted'
+              : 'Not Eligible Right Now'
+      );
+  }
+
+  get negativeCardMessage(): string {
+    return this.dashboardPrimaryCard?.message ||
+      (
+        this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')
+          ? 'Your request was declined during automated system validation checks.'
+          : this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')
+            ? 'Your current loan application could not be approved.'
+            : this.matchesPrimaryCardTypeOrStatus('RESTRICTED')
+              ? 'Your account currently has restrictions on borrower actions.'
+              : `You don't meet the loan criteria at this moment. Review your details and try again later.`
+      );
+  }
+
+  get negativeCardStatusLabel(): string {
+    return this.pickFirstString(
+      this.dashboardPrimaryCard?.title,
+      this.formatStatusLabel(this.dashboardPrimaryCard?.statusCode),
+      this.formatStatusLabel(this.dashboardPrimaryCardType),
+      'Not Eligible'
+    );
+  }
+
+  get notEligibleBadgeText(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return this.pickFirstString(
+        this.formatStatusLabel(this.dashboardPrimaryCard?.statusCode),
+        this.formatStatusLabel(this.dashboardPrimaryCardType),
+        'Application Rejected'
+      );
+    }
+
+    return this.pickFirstString(
+      this.formatStatusLabel(this.dashboardPrimaryCard?.statusCode),
+      'Not Eligible'
+    );
+  }
+
+  get simpleNegativeTipText(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return 'Tip: review the rejection reason carefully before applying again.';
+    }
+
+    return 'Tip: update income/KYC to improve your chances.';
+  }
+
+  get negativeCardThemeClass(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+      return 'not-eligible-card--system';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return 'not-eligible-card--application';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+      return 'not-eligible-card--restricted';
+    }
+
+    return 'not-eligible-card--eligibility';
+  }
+
+  get negativeCardKicker(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+      return 'System Decision';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return 'Application Decision';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+      return 'Account Status';
+    }
+
+    return 'Eligibility Update';
+  }
+
+  get negativeCardIconClass(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+      return 'fa-shield-halved';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return 'fa-file-circle-xmark';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+      return 'fa-lock';
+    }
+
+    return 'fa-circle-exclamation';
+  }
+
+  get negativeCardCaseType(): string {
+    return this.pickFirstString(
+      this.formatStatusLabel(this.dashboardPrimaryCard?.statusCode),
+      this.formatStatusLabel(this.dashboardPrimaryCardType),
+      'Review Required'
+    );
+  }
+
+  get negativeCardReason(): string {
+    const cardData = this.dashboardPrimaryCard?.data || {};
+
+    if (this.isPrimaryCardType('RESTRICTED')) {
+      return this.pickFirstString(
+        cardData?.reason,
+        cardData?.customerMessage
+      );
+    }
+
+    if (this.isPrimaryCardType('NOT_ELIGIBLE')) {
+      return this.pickFirstString(
+        this.ineligibleReason,
+        cardData?.eligibility?.ineligibleReason,
+        cardData?.ineligible?.reason,
+        cardData?.ineligible?.message
+      );
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED', 'SYSTEM_REJECTED')) {
+      return this.pickFirstString(
+        cardData?.rejection?.reason,
+        this.loanTracking?.rejection?.reason,
+        cardData?.reason
+      );
+    }
+
+    return '';
+  }
+
+  get negativeCardRetryDate(): string {
+    const cardData = this.dashboardPrimaryCard?.data || {};
+
+    return this.pickFirstString(
+      this.retryDate,
+      cardData?.rejection?.retryAllowedOn,
+      this.loanTracking?.reapplyEligibleOn,
+      this.loanTracking?.rejection?.retryAllowedOn,
+      cardData?.eligibility?.nextEligibilityAllowedOn,
+      cardData?.eligibility?.retryDate,
+      cardData?.ineligible?.retryAfter
+    );
+  }
+
+  get showNegativeRetryPanel(): boolean {
+    return this.matchesPrimaryCardTypeOrStatus('NOT_ELIGIBLE') && !!this.negativeCardRetryDate;
+  }
+
+  get negativeCardResolutionText(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+      return 'This decision came from automated validation checks. If the details look correct, contact support before retrying.';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return 'This application has reached a rejected outcome. Review the reason carefully before starting a fresh request.';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+      return 'Your borrower profile currently has restrictions on loan actions. Support can help confirm the next allowed step.';
+    }
+
+    return 'Your current eligibility inputs do not meet the present lending criteria. Updating profile or KYC details may improve the next review.';
+  }
+
+  get negativeCardActionHint(): string {
+    if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+      return 'Recommended next step: contact support and verify the submitted details.';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED')) {
+      return 'Recommended next step: review the rejection reason and start only when the profile is ready.';
+    }
+
+    if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+      return 'Recommended next step: use the support option below for account clarification.';
+    }
+
+    if (this.showNegativeRetryPanel) {
+      return 'Recommended next step: improve profile details and retry after the cooldown window.';
+    }
+
+    return 'Recommended next step: review your details and try again later.';
+  }
+
+  get closedLoanCardMessage(): string {
+    return this.dashboardPrimaryCard?.message ||
+      'Loan is closed. No further borrower action is required.';
+  }
+
+  get closedLoanReasonText(): string {
+    const cardData = this.dashboardPrimaryCard?.data || {};
+    const reloanDecision = cardData?.reloanDecision || {};
+
+    return this.pickFirstString(
+      reloanDecision?.remarks,
+      this.ineligibleReason
+    );
+  }
+
+  get closedLoanRetryDate(): string {
+    const cardData = this.dashboardPrimaryCard?.data || {};
+    const noc = cardData?.noc || {};
+
+    return this.pickFirstString(
+      this.retryDate,
+      noc?.retryAfter
+    );
+  }
+
+  get loanJourneyCardTitle(): string {
+    return this.dashboardPrimaryCard?.title || 'Loan Application';
+  }
+
+  get loanJourneyCardMessage(): string {
+    return this.dashboardPrimaryCard?.message ||
+      `Congratulations! You're now successfully eligible. Your gateway to seamless financial solutions is officially open.`;
+  }
+
+  get loanJourneyButtonLabel(): string {
+    return this.dashboardPrimaryCard?.cta?.label ||
+      (this.loanProgress > 0 ? 'Continue' : 'View & Apply');
+  }
+
+  get showLoanJourneyProgress(): boolean {
+    return this.loanProgress >= 0 && this.loanProgress < 100;
+  }
+
+  get reloanEligibleCardTitle(): string {
+    return this.dashboardPrimaryCard?.title || 'You are eligible for reloan';
+  }
+
+  get reloanEligibleCardMessage(): string {
+    return this.dashboardPrimaryCard?.message ||
+      'Your previous loan journey is complete. You can now continue with a new reloan application.';
+  }
+
+  get reloanEligibleCardButtonLabel(): string {
+    return this.dashboardPrimaryCard?.cta?.label || 'Apply For Reloan';
+  }
+
+  get showReloanEligibilityHint(): boolean {
+    return this.showReloanActionButton && !this.canApplyReloan;
+  }
+
+  get showAssignedContactCard(): boolean {
+    return !!this.dashboardPrimaryCardType &&
+      !!this.creditManager &&
+      !this.showClosedLoanUnavailableCard &&
+      !this.showReloanActionButton;
+  }
+
+  get showRefreshStatusButton(): boolean {
+    return this.isPrimaryCardType(
+      'LOAN_APPLICATION_TRACKING',
+      'ACTIVE_LOAN',
+      'CLOSED_LOAN',
+      'RELOAN_NOT_ELIGIBLE',
+      'RELOAN_ELIGIBLE'
+    );
   }
 
   get closedLoanSummary(): any | null {
-    if (!this.hasClosedLoanOrPendingClosureSync()) {
+    if (!this.showClosedLoanUnavailableCard) {
       return null;
     }
 
+    const card = this.dashboardPrimaryCard || {};
+    const cardData = card?.data || {};
+    const summary = cardData?.summary || {};
     const snapshot = this.borrowerSnapshot || {};
     const tracking = this.loanTracking || {};
     const activeLoan = tracking?.activeLoan || {};
@@ -184,6 +487,7 @@ videoKycModalMessage: string = '';
     const requestOverview = request?.overview || {};
 
     const loanAmount = this.pickFirstAmount(
+      summary?.loanAmount,
       activeLoan?.approvedAmount,
       tracking?.approvedAmount,
       activeLoan?.principal,
@@ -193,6 +497,7 @@ videoKycModalMessage: string = '';
       request?.principal
     );
     const disbursedAmount = this.pickFirstAmount(
+      summary?.netDisbursalAmount,
       activeLoan?.netDisbursalAmount,
       tracking?.netDisbursalAmount,
       activeLoan?.disbursalAmount,
@@ -201,6 +506,7 @@ videoKycModalMessage: string = '';
       request?.disbursalAmount
     );
     const totalPaidAmount = this.pickFirstAmount(
+      summary?.totalReceivedAmount,
       repayment?.totalPaidAmount,
       repayment?.paidAmount,
       repayment?.repaidAmount,
@@ -263,6 +569,8 @@ videoKycModalMessage: string = '';
 
     return {
       loanNumber: this.pickFirstString(
+        card?.applicationNumber,
+        card?.applicationId,
         tracking?.applicationNumber,
         tracking?.loanAccountNo,
         tracking?.loanId,
@@ -274,6 +582,7 @@ videoKycModalMessage: string = '';
       ),
       statusLabel:
         this.pickFirstString(
+          card?.statusCode,
           tracking?.loanStatus,
           activeLoan?.status,
           activeLoan?.loanStatus,
@@ -287,7 +596,28 @@ videoKycModalMessage: string = '';
       interestPaidAmount,
       currentInterestAmount,
       penaltyInterestPaidAmount,
+      dueDateDisplay: this.formatSnapshotDateForDisplay(
+        summary?.dueDate,
+        repayment?.nextDueDate,
+        tracking?.nextDueDate,
+        tracking?.repayDate,
+        activeLoan?.repayDate,
+        activeLoan?.maturityDate
+      ),
+      paidDateDisplay: this.formatSnapshotDateForDisplay(
+        summary?.paidDate,
+        repayment?.paidAt,
+        repayment?.repaidAt,
+        tracking?.repaidAt,
+        tracking?.paidAt
+      ),
+      ratePerDay: this.pickFirstAmount(summary?.ratePerDay),
+      rateAnnualPercent: this.pickFirstAmount(summary?.rateAnnualPercent),
       closedDateDisplay: this.formatSnapshotDateForDisplay(
+        summary?.closedOn,
+        summary?.paidDate,
+        summary?.dueDate,
+        cardData?.closedOn,
         tracking?.closedAt,
         tracking?.closedOn,
         tracking?.closedDate,
@@ -344,6 +674,115 @@ videoKycModalMessage: string = '';
   showActiveLoanCard: boolean = false;
   activeLoan: any = null;
 
+private isPrimaryCardType(...types: string[]): boolean {
+  return !!this.dashboardPrimaryCardType && types.includes(this.dashboardPrimaryCardType);
+}
+
+private matchesPrimaryCardTypeOrStatus(...types: string[]): boolean {
+  const normalizedType = this.normalizeCardKey(this.dashboardPrimaryCardType);
+  const normalizedStatusCode = this.normalizeCardKey(this.dashboardPrimaryCard?.statusCode);
+
+  return types.some((type) => {
+    const normalizedTarget = this.normalizeCardKey(type);
+    return normalizedTarget === normalizedType || normalizedTarget === normalizedStatusCode;
+  });
+}
+
+private setDashboardPrimaryCard(data: any) {
+  const dashboard = data?.dashboard || {};
+  const primaryCard = dashboard?.primaryCard || null;
+
+  this.dashboardVersion = this.pickFirstAmount(dashboard?.version);
+  this.dashboardPrimaryCard = primaryCard;
+  this.dashboardPrimaryCardType =
+    this.pickFirstString(primaryCard?.type, dashboard?.primaryCardType) || null;
+}
+
+private applyDashboardPrimaryCardState() {
+  const cardData = this.dashboardPrimaryCard?.data || {};
+  const basicProfilePercent = this.pickFirstAmount(cardData?.percent);
+  const applicationPercent = this.pickFirstAmount(cardData?.percent);
+
+  if (this.isPrimaryCardType('BASIC_PROFILE_COMPLETION') && basicProfilePercent !== null) {
+    this.profileProgress = basicProfilePercent;
+  }
+
+  if (this.isPrimaryCardType('APPLICATION_PROFILE_COMPLETION') && applicationPercent !== null) {
+    this.loanProgress = applicationPercent;
+  }
+
+  this.showLoanCard = this.isPrimaryCardType(
+    'ELIGIBLE',
+    'APPLICATION_PROFILE_COMPLETION',
+    'CURRENT_LOAN_REQUEST'
+  );
+  this.showTracker = this.isPrimaryCardType('LOAN_APPLICATION_TRACKING');
+  this.creditManager = this.resolveDashboardContactDetail();
+
+  this.patchTrackerFromSnapshot();
+  this.patchActiveLoanFromSnapshot();
+}
+
+private resolveDashboardContactDetail(): any {
+  const primaryCardContact = this.dashboardPrimaryCard?.contactDetail;
+
+  if (primaryCardContact && typeof primaryCardContact === 'object') {
+    return {
+      name: this.pickFirstString(primaryCardContact?.name, primaryCardContact?.roleName, 'Support'),
+      mobile: this.pickFirstString(primaryCardContact?.phone),
+      email: this.pickFirstString(primaryCardContact?.email),
+      role: this.pickFirstString(primaryCardContact?.roleName, primaryCardContact?.roleCode, 'Support')
+    };
+  }
+
+  const creditManagerDetail =
+    this.loanTracking?.creditManagerDetail ||
+    this.loanTracking?.assignedRoleDetails?.find((role: any) => role?.roleCode === 'CREDIT_MANAGER') ||
+    this.loanTracking?.assignedRoleDetails?.[0];
+
+  return creditManagerDetail ? {
+    name: creditManagerDetail?.name,
+    mobile: creditManagerDetail?.phone || creditManagerDetail?.contact,
+    email: creditManagerDetail?.email,
+    role: creditManagerDetail?.roleName || creditManagerDetail?.roleCode
+  } : null;
+}
+
+handleBasicProfileAction() {
+  this.router.navigate(['/dashboard/profile']);
+}
+
+handleLoanJourneyAction() {
+  this.router.navigate(['/dashboard/loan']);
+}
+
+handleSupportAction() {
+  const phone = this.pickFirstString(
+    this.dashboardPrimaryCard?.cta?.phone,
+    this.creditManager?.mobile
+  );
+  const email = this.pickFirstString(
+    this.dashboardPrimaryCard?.cta?.email,
+    this.creditManager?.email
+  );
+
+  if (phone && typeof window !== 'undefined') {
+    window.location.href = `tel:${phone}`;
+    return;
+  }
+
+  if (email && typeof window !== 'undefined') {
+    window.location.href = `mailto:${email}`;
+    return;
+  }
+
+  this.toastr.info('Support details are not available right now.');
+}
+
+handleReloanCardAction() {
+  this.applyReloan();
+}
+
 getBorrowerSnapshot() {
   this.getBorrowerSnapshotWithOptions(true);
 }
@@ -390,13 +829,23 @@ private applyBorrowerSnapshotData(
   const offer = data?.offer || {};
   const eligibility = data?.eligibility || {};
 
+  this.setDashboardPrimaryCard(data);
   this.borrowerSnapshot = data || null;
-  this.applicationId = data?.application?.id || '';
+  this.applicationId =
+    data?.application?.id ||
+    this.dashboardPrimaryCard?.applicationId ||
+    this.applicationId ||
+    '';
   this.profileProgress = data?.basicFlow?.percent || 0;
   this.loanProgress = data?.applicationFlow?.percent || 0;
   this.overallProgress = data?.progressPercent || 0;
   this.loanTracking = data?.loanTracking || null;
-  this.reloanDecision = this.extractReloanDecision(data);
+  this.currentLoanRequest = data?.currentLoanRequest || null;
+  this.reloanDecision = this.resolveLatestReloanDecision(
+    data,
+    this.loanTracking,
+    this.currentLoanRequest
+  );
   this.videoKycCustomerUrl =
     data?.videoKycCustomerUrl ||
     data?.journeyLinks?.videoKycCustomerUrl ||
@@ -416,31 +865,9 @@ private applyBorrowerSnapshotData(
     data?.applicationFlow?.statusFlow ||
     data?.statusFlow
   );
-  this.currentLoanRequest = data?.currentLoanRequest || null;
   this.applyEligibilityState(offer, eligibility);
-
-  const creditManagerDetail =
-    this.loanTracking?.creditManagerDetail ||
-    this.loanTracking?.assignedRoleDetails?.find((role: any) => role?.roleCode === 'CREDIT_MANAGER') ||
-    this.loanTracking?.assignedRoleDetails?.[0];
-
-  this.creditManager = creditManagerDetail ? {
-    name: creditManagerDetail?.name,
-    mobile: creditManagerDetail?.phone || creditManagerDetail?.contact,
-    email: creditManagerDetail?.email,
-    role: creditManagerDetail?.roleName
-  } : null;
-
-  this.showTracker = this.loanProgress === 100;
-  this.patchTrackerFromSnapshot();
-  this.patchActiveLoanFromSnapshot();
+  this.applyDashboardPrimaryCardState();
   this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
-
-  this.showLoanCard =
-    !this.showActiveLoanCard &&
-    this.isEligible &&
-    this.profileProgress === 100 &&
-    this.loanProgress < 100;
 
   this.triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible);
 
@@ -651,6 +1078,32 @@ private mapIneligibleReason(reasons: string[] = []): string {
 }
 
 private patchTrackerFromSnapshot() {
+  if (this.dashboardPrimaryCardType && !this.showTracker) {
+    return;
+  }
+
+  if (this.showTracker) {
+    const trackerSteps =
+      this.dashboardPrimaryCard?.data?.steps ||
+      this.loanTracking?.steps ||
+      this.steps;
+
+    if (trackerSteps && Object.keys(trackerSteps).length > 0) {
+      this.trackingSteps = this.buildTrackerSteps(trackerSteps);
+    }
+
+    this.currentTitle =
+      this.dashboardPrimaryCard?.title ||
+      this.loanTracking?.currentTitle ||
+      this.loanTracking?.currentStage ||
+      this.currentTitle;
+    this.currentMessage =
+      this.dashboardPrimaryCard?.message ||
+      this.loanTracking?.currentMessage ||
+      this.currentMessage;
+    return;
+  }
+
   const snapshotSteps = this.loanTracking?.steps || this.steps;
   if (!snapshotSteps || Object.keys(snapshotSteps).length === 0) return;
 
@@ -668,7 +1121,9 @@ private syncTrackerRuntimeState(statusData: any) {
   if (!statusData || typeof statusData !== 'object') return;
 
   const existingTracking = this.loanTracking || {};
+  const existingRequest = this.currentLoanRequest || {};
   const incomingTracking = statusData?.loanTracking || {};
+  const incomingRequest = statusData?.currentLoanRequest || {};
   const incomingVideoKyc = statusData?.videoKyc || incomingTracking?.videoKyc || {};
   const incomingNextAction = statusData?.nextAction || incomingTracking?.nextAction;
   const shouldPreserveRepaymentRefreshTracking =
@@ -702,12 +1157,22 @@ private syncTrackerRuntimeState(statusData: any) {
     },
     nextAction: this.resolveNextAction(existingTracking?.nextAction, incomingNextAction)
   };
+  const mergedCurrentLoanRequest =
+    incomingRequest && Object.keys(incomingRequest).length > 0
+      ? {
+          ...existingRequest,
+          ...incomingRequest
+        }
+      : this.currentLoanRequest;
 
   this.loanTracking = mergedTracking;
-  this.reloanDecision =
-    this.extractReloanDecision(statusData) ||
-    this.extractReloanDecision({ loanTracking: mergedTracking, currentLoanRequest: this.currentLoanRequest }) ||
-    this.reloanDecision;
+  this.currentLoanRequest = mergedCurrentLoanRequest;
+  this.reloanDecision = this.resolveLatestReloanDecision(
+    statusData,
+    mergedTracking,
+    mergedCurrentLoanRequest,
+    this.reloanDecision
+  );
   this.videoKycCustomerUrl =
     statusData?.videoKycCustomerUrl ||
     statusData?.journeyLinks?.videoKycCustomerUrl ||
@@ -725,54 +1190,76 @@ private syncTrackerRuntimeState(statusData: any) {
 }
 
 private patchActiveLoanFromSnapshot() {
-  const tracking = this.loanTracking || {};
-  const activeLoan = tracking?.activeLoan || {};
-  const repayment = tracking?.repayment || {};
-  const isDisbursementDone = this.isDisbursementCompleted();
-  const shouldSuppressActiveLoanCard = this.isPendingLoanClosureSync(tracking);
-
-  this.showActiveLoanCard =
-    tracking?.showActiveLoanCard === true &&
-    isDisbursementDone &&
-    !shouldSuppressActiveLoanCard;
-
-  if (!this.showActiveLoanCard) {
+  if (!this.isPrimaryCardType('ACTIVE_LOAN')) {
+    this.showActiveLoanCard = false;
     this.activeLoan = null;
     return;
   }
 
+  const tracking = this.loanTracking || {};
+  const cardData = this.dashboardPrimaryCard?.data || {};
+  const summary = cardData?.summary || {};
+  const activeLoan = cardData?.activeLoan || tracking?.activeLoan || {};
+  const repayment = cardData?.repayment || tracking?.repayment || {};
+  this.showActiveLoanCard = true;
+
   this.activeLoan = {
     loanNumber: this.pickFirstString(
+      this.dashboardPrimaryCard?.applicationNumber,
+      this.dashboardPrimaryCard?.applicationId,
       tracking?.applicationNumber,
+      activeLoan?.loanNumber,
+      activeLoan?.loanAccountNo,
       tracking?.loanAccountNo,
       tracking?.loanId
     ),
     status: this.pickFirstString(
+      this.dashboardPrimaryCard?.statusCode,
       tracking?.loanStatus,
       activeLoan?.loanStatus,
       tracking?.currentTitle,
       activeLoan?.status
     ) || 'ACTIVE',
     approvedAmount: this.pickFirstAmount(
-      tracking?.approvedAmount,
+      summary?.loanAmount,
       activeLoan?.approvedAmount,
+      tracking?.approvedAmount,
       activeLoan?.principal
     ),
+    disbursedAmount: this.pickFirstAmount(
+      summary?.netDisbursalAmount,
+      activeLoan?.netDisbursalAmount,
+      tracking?.netDisbursalAmount,
+      activeLoan?.disbursalAmount
+    ),
+    totalReceivedAmount: this.pickFirstAmount(
+      summary?.totalReceivedAmount,
+      repayment?.totalPaidAmount,
+      repayment?.paidAmount,
+      tracking?.totalPaidAmount
+    ),
+    ratePerDay: this.pickFirstAmount(summary?.ratePerDay),
+    rateAnnualPercent: this.pickFirstAmount(summary?.rateAnnualPercent),
     repayDateDisplay: this.formatSnapshotDateForDisplay(
+      summary?.dueDate,
+      repayment?.nextDueDate,
       tracking?.nextDueDate,
       tracking?.repayDate,
       activeLoan?.repayDate,
       activeLoan?.maturityDate
     ),
     payableNowAmount: this.pickFirstAmount(
-      tracking?.finalDueAmount,
+      summary?.currentOutstandingAmount,
       repayment?.finalDueAmount,
       repayment?.outstandingAmount,
-      tracking?.outstandingAmount
+      tracking?.finalDueAmount,
+      tracking?.outstandingAmount,
+      activeLoan?.outstandingAmount
     ),
     delayDays: this.pickFirstAmount(
+      repayment?.delayDays,
       tracking?.delayDays,
-      repayment?.delayDays
+      activeLoan?.delayDays
     )
   };
 }
@@ -835,31 +1322,48 @@ private hasClearedLoanBalance(trackingSource?: any): boolean {
   return dueAmounts.length > 0 && dueAmounts.every((amount) => amount <= 0);
 }
 
-private hasExplicitReloanUnavailableFlag(): boolean {
-  const tracking = this.loanTracking || {};
-  const request = this.currentLoanRequest || {};
-
-  const booleanCandidates = [
-    tracking?.showReloanCard,
-    tracking?.isReloanEligible,
-    tracking?.reloanEligible,
-    tracking?.isReloanAvailable,
-    tracking?.reloanAvailable,
-    request?.showReloanCard,
-    request?.isReloanEligible,
-    request?.reloanEligible,
-    request?.isReloanAvailable,
-    request?.reloanAvailable
-  ];
-
-  const hasExplicitFalseFlag = booleanCandidates.some((value) => value === false);
+  private hasExplicitReloanUnavailableFlag(): boolean {
+    const hasExplicitFalseFlag = this.getReloanAvailabilityCandidates().some((value) => value === false);
 
   return hasExplicitFalseFlag || (
     this.hasEvaluatedEligibility &&
     !this.isEligible &&
-    !this.showReloanActionButton
+    !this.hasExplicitReloanEligibleFlag()
   );
-}
+  }
+
+  private hasExplicitReloanEligibleFlag(): boolean {
+    return this.getReloanAvailabilityCandidates().some((value) => value === true);
+  }
+
+  private hasExplicitReloanAvailabilitySignal(
+    trackingSource?: any,
+    requestSource?: any
+  ): boolean {
+    return this.getReloanAvailabilityCandidates(trackingSource, requestSource)
+      .some((value) => typeof value === 'boolean');
+  }
+
+  private getReloanAvailabilityCandidates(
+    trackingSource?: any,
+    requestSource?: any
+  ): Array<boolean | null | undefined> {
+    const tracking = trackingSource || this.loanTracking || {};
+    const request = requestSource || this.currentLoanRequest || {};
+
+    return [
+      tracking?.showReloanCard,
+      tracking?.isReloanEligible,
+      tracking?.reloanEligible,
+      tracking?.isReloanAvailable,
+      tracking?.reloanAvailable,
+      request?.showReloanCard,
+      request?.isReloanEligible,
+      request?.reloanEligible,
+      request?.isReloanAvailable,
+      request?.reloanAvailable
+    ];
+  }
 
 private getReloanDecisionState(): 'pending' | 'not_eligible' | 'eligible' | 'none' {
   const hasPendingClosureSync = this.isPendingLoanClosureSync();
@@ -871,12 +1375,22 @@ private getReloanDecisionState(): 'pending' | 'not_eligible' | 'eligible' | 'non
   const reloanDecision = this.reloanDecision;
 
   if (!reloanDecision || typeof reloanDecision !== 'object') {
-    return hasPendingClosureSync || this.shouldTreatClosedLoanAsPendingDuringRefresh()
-      ? 'pending'
-      : 'none';
+    if (this.hasExplicitReloanEligibleFlag()) {
+      return 'eligible';
+    }
+
+    if (this.hasExplicitReloanUnavailableFlag()) {
+      return 'not_eligible';
+    }
+
+    return 'pending';
   }
 
   if (!this.isReloanDecisionSaved(reloanDecision)) {
+    if (this.hasExplicitReloanEligibleFlag()) {
+      return 'eligible';
+    }
+
     return 'pending';
   }
 
@@ -955,6 +1469,27 @@ private shouldTreatClosedLoanAsPendingDuringRefresh(): boolean {
     !this.showActiveLoanCard;
 }
 
+private resolveLatestReloanDecision(
+  source: any,
+  trackingSource?: any,
+  requestSource?: any,
+  fallbackDecision: any = null
+): any {
+  const reloanDecision =
+    this.extractReloanDecision(source) ||
+    this.extractReloanDecision({ loanTracking: trackingSource, currentLoanRequest: requestSource });
+
+  if (reloanDecision && typeof reloanDecision === 'object') {
+    return reloanDecision;
+  }
+
+  if (this.hasExplicitReloanAvailabilitySignal(trackingSource, requestSource)) {
+    return null;
+  }
+
+  return fallbackDecision;
+}
+
 private extractReloanDecision(source: any): any {
   const reloanDecision =
     source?.reloanDecision ||
@@ -986,6 +1521,17 @@ private resolveNextAction(existingNextAction: any, incomingNextAction: any): any
   return incomingNextAction;
 }
 
+private getPrimaryCardCtaUrl(cardSource?: any): string {
+  const card = cardSource ?? this.dashboardPrimaryCard;
+  const url =
+    card?.cta?.url ||
+    card?.data?.reloanUrl ||
+    card?.data?.nocUrl ||
+    '';
+
+  return typeof url === 'string' ? url.trim() : '';
+}
+
 private getResolvedReloanActionParams(nextActionSource?: any): { applicationId: string; token: string } | null {
   const actionUrl = this.getNextActionUrl(nextActionSource);
 
@@ -1015,6 +1561,14 @@ private getResolvedReloanActionParams(nextActionSource?: any): { applicationId: 
 }
 
 private getNextActionUrl(nextActionSource?: any): string {
+  if (nextActionSource === undefined) {
+    const primaryCardUrl = this.getPrimaryCardCtaUrl();
+
+    if (primaryCardUrl) {
+      return primaryCardUrl;
+    }
+  }
+
   const nextAction = nextActionSource ?? this.loanTracking?.nextAction;
   const url = nextAction?.url;
 
@@ -1036,6 +1590,19 @@ private parseActionUrl(url: string): URL | null {
   } catch {
     return null;
   }
+}
+
+private openExternalUrl(url: string, newTab = false) {
+  if (!url || typeof window === 'undefined') {
+    return;
+  }
+
+  if (newTab) {
+    window.open(url, '_blank', 'noopener');
+    return;
+  }
+
+  window.location.href = url;
 }
 
 private pickFirstAmount(...candidates: any[]): number | null {
@@ -1091,6 +1658,28 @@ private formatSnapshotDateForDisplay(...candidates: any[]): string {
   }
 
   return '';
+}
+
+private formatStatusLabel(value: any): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  return value
+    .trim()
+    .toLowerCase()
+    .split(/[_\s]+/)
+    .filter((part) => !!part)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ');
+}
+
+private normalizeCardKey(value: any): string {
+  if (typeof value !== 'string') {
+    return '';
+  }
+
+  return value.trim().toUpperCase().replace(/\s+/g, '_');
 }
 
 private isClosedLoanStatus(status: any): boolean {
@@ -1413,8 +2002,6 @@ private applyApplicationStatusData(data: any) {
   this.syncTrackerRuntimeState(data);
   this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
   this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
-  this.patchActiveLoanFromSnapshot();
-  this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
   this.currentTitle =
     data?.borrowerGuidance?.title ||
     this.loanTracking?.currentTitle ||
@@ -1425,6 +2012,8 @@ private applyApplicationStatusData(data: any) {
     this.loanTracking?.currentMessage ||
     '';
   this.videoKycData = data?.videoKyc;
+  this.applyDashboardPrimaryCardState();
+  this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
 
   this.triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible);
 
@@ -1954,11 +2543,6 @@ setDashboardFlags(data: any) {
 
 
 refreshStatus() {
-  if (this.applicationId) {
-    this.applicationStatusApi();
-    return;
-  }
-
   this.getBorrowerSnapshot();
 }
 

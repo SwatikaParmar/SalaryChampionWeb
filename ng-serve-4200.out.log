@@ -112,3 +112,1081 @@ chunk-6GZDSFJS.mjs  | dashboard-module | 157.44 kB |
 Application bundle generation complete. [1.321 seconds]
 
 Page reload sent to client(s).
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-6Y6GITO6.js   | loan-module      | 218.84 kB | 
+chunk-SFNF2FIC.js   | dashboard-module | 161.20 kB | 
+
+Application bundle generation complete. [2.149 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-V32GIVSD.js   | loan-module      | 218.84 kB | 
+chunk-QLUSVJGG.js   | dashboard-module | 161.20 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-XCTHUQSB.mjs  | loan-module      | 209.83 kB | 
+chunk-4A3UNS3C.mjs  | dashboard-module | 157.44 kB | 
+
+Application bundle generation complete. [0.717 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-3W7EZX3B.js   | loan-module      | 218.84 kB | 
+chunk-MYH27DBC.js   | dashboard-module | 161.20 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-C6JNI7HB.mjs  | loan-module      | 209.83 kB | 
+chunk-IWQQY2OT.mjs  | dashboard-module | 157.44 kB | 
+
+Application bundle generation complete. [0.568 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+chunk-HQOVXR64.js   | -                | 173.08 kB | 
+chunk-QAIQMTJJ.js   | -                |  31.28 kB | 
+chunk-FY2UIGWY.js   | -                |   9.18 kB | 
+main.js             | main             |   7.06 kB | 
+chunk-26F5RPA3.js   | -                |   5.72 kB | 
+chunk-KTW2LRRM.js   | -                |   4.91 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-HRBHKYOG.js   | profile-module   | 260.10 kB | 
+chunk-YJXQJEMD.js   | loan-module      | 218.84 kB | 
+chunk-LZS2P4PC.js   | dashboard-module | 161.20 kB | 
+chunk-MEX53J24.js   | landing-module   | 186 bytes | 
+chunk-NF2YUATX.js   | auth-module      | 180 bytes | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+chunk-GOXIYOGK.mjs  | -                | 445.96 kB | 
+chunk-3RDW3REV.mjs  | -                | 165.69 kB | 
+chunk-FABPVCER.mjs  | -                |  30.38 kB | 
+chunk-HDPJNEYV.mjs  | -                |   9.14 kB | 
+main.server.mjs     | main.server      |   6.83 kB | 
+chunk-E6TFRQHT.mjs  | -                |   4.92 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-FJMV5YHO.mjs  | profile-module   | 383.20 kB | 
+chunk-B3OUW3GY.mjs  | loan-module      | 209.83 kB | 
+chunk-XRISFF75.mjs  | dashboard-module | 157.44 kB | 
+chunk-MSTO7556.mjs  | auth-module      | 310 bytes | 
+chunk-EYHKB5YY.mjs  | landing-module   | 285 bytes | 
+
+Application bundle generation complete. [0.516 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-7BAJ4L3U.js   | loan-module      | 218.84 kB | 
+chunk-WYVK37UH.js   | dashboard-module | 161.20 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-ESDAZK4F.mjs  | loan-module      | 209.83 kB | 
+chunk-6SGMWHXX.mjs  | dashboard-module | 157.44 kB | 
+
+Application bundle generation complete. [0.619 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-PFHZXCBL.js   | loan-module      | 218.84 kB | 
+chunk-WE4QWZOM.js   | dashboard-module | 161.20 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-PEUMB2GH.mjs  | loan-module      | 209.83 kB | 
+chunk-CL65HCV4.mjs  | dashboard-module | 157.44 kB | 
+
+Application bundle generation complete. [0.598 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-PE6U42K2.js   | dashboard-module | 161.51 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-RYQ4QIHN.mjs  | dashboard-module | 157.76 kB | 
+
+Application bundle generation complete. [12.474 seconds]
+
+Page reload sent to client(s).
+Initial chunk files | Names            |  Raw size
+chunk-A62Q3NFJ.js   | -                | 173.08 kB | 
+chunk-NRUKUODU.js   | -                |  31.28 kB | 
+chunk-DNOF5LUD.js   | -                |   9.18 kB | 
+main.js             | main             |   7.06 kB | 
+chunk-2N667XFZ.js   | -                |   5.72 kB | 
+chunk-F4SWAC63.js   | -                |   4.91 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-V7KHQFS5.js   | profile-module   | 260.10 kB | 
+chunk-USHHZNRG.js   | loan-module      | 218.84 kB | 
+chunk-4XXDOO4O.js   | dashboard-module | 161.51 kB | 
+chunk-LMHE77MK.js   | landing-module   | 186 bytes | 
+chunk-RJDJX45Z.js   | auth-module      | 180 bytes | 
+
+Application bundle generation complete. [2.266 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-GUOL3B5D.js   | dashboard-module | 161.71 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+chunk-75H66R56.mjs  | -                | 445.96 kB | 
+chunk-SRRW26XH.mjs  | -                | 165.69 kB | 
+chunk-F3CCGDM7.mjs  | -                |  30.38 kB | 
+chunk-MUABPWNF.mjs  | -                |   9.14 kB | 
+main.server.mjs     | main.server      |   6.83 kB | 
+chunk-4MKTYHM5.mjs  | -                |   4.92 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-EEVQZONO.mjs  | profile-module   | 383.20 kB | 
+chunk-7IXOSS5A.mjs  | loan-module      | 209.83 kB | 
+chunk-JKEXESD5.mjs  | dashboard-module | 157.96 kB | 
+chunk-QYYQDDES.mjs  | auth-module      | 310 bytes | 
+chunk-AHOPDTL3.mjs  | landing-module   | 285 bytes | 
+
+Application bundle generation complete. [4.243 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-ZQ24EVQK.js   | dashboard-module | 161.71 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-7JHX2E6U.mjs  | dashboard-module | 157.96 kB | 
+
+Application bundle generation complete. [1.818 seconds]
+
+Page reload sent to client(s).
+Application bundle generation failed. [15.403 seconds]
+
+Browser bundles        
+Initial chunk files     | Names               |  Raw size
+chunk-A62Q3NFJ.js       | -                   | 173.08 kB | 
+polyfills.js            | polyfills           |  88.09 kB | 
+chunk-NRUKUODU.js       | -                   |  31.28 kB | 
+styles.css              | styles              |  30.33 kB | 
+chunk-DNOF5LUD.js       | -                   |   9.18 kB | 
+main.js                 | main                |   7.06 kB | 
+chunk-2N667XFZ.js       | -                   |   5.72 kB | 
+chunk-F4SWAC63.js       | -                   |   4.91 kB | 
+
+                        | Initial total       | 349.65 kB
+
+Lazy chunk files        | Names               |  Raw size
+chunk-V7KHQFS5.js       | profile-module      | 260.10 kB | 
+chunk-USHHZNRG.js       | loan-module         | 218.84 kB | 
+chunk-AJGSOJFF.js       | dashboard-module    | 161.20 kB | 
+chunk-YOQ7JA3R.js       | -                   |   1.69 kB | 
+chunk-LMHE77MK.js       | landing-module      | 186 bytes | 
+chunk-RJDJX45Z.js       | auth-module         | 180 bytes | 
+
+
+Server bundles         
+Initial chunk files     | Names               |  Raw size
+chunk-V4XKDKNK.mjs      | -                   |   1.03 MB | 
+chunk-NKUEFXWB.mjs      | -                   | 652.02 kB | 
+polyfills.server.mjs    | polyfills.server    | 559.49 kB | 
+chunk-75H66R56.mjs      | -                   | 445.96 kB | 
+chunk-SRRW26XH.mjs      | -                   | 165.69 kB | 
+chunk-F3CCGDM7.mjs      | -                   |  30.38 kB | 
+chunk-WUMXBRRQ.mjs      | -                   |  17.34 kB | 
+chunk-MUABPWNF.mjs      | -                   |   9.14 kB | 
+main.server.mjs         | main.server         |   6.83 kB | 
+chunk-4MKTYHM5.mjs      | -                   |   4.92 kB | 
+chunk-OGTRFHQR.mjs      | -                   |   3.52 kB | 
+render-utils.server.mjs | render-utils.server | 462 bytes | 
+
+Lazy chunk files        | Names               |  Raw size
+chunk-EEVQZONO.mjs      | profile-module      | 383.20 kB | 
+chunk-7IXOSS5A.mjs      | loan-module         | 209.83 kB | 
+chunk-R5H3AFFM.mjs      | dashboard-module    | 157.44 kB | 
+chunk-I25RXEJY.mjs      | xhr2                |  39.09 kB | 
+chunk-KQSHBN2W.mjs      | -                   |   1.73 kB | 
+chunk-QYYQDDES.mjs      | auth-module         | 310 bytes | 
+chunk-AHOPDTL3.mjs      | landing-module      | 285 bytes | 
+
+Application bundle generation complete. [5.558 seconds]
+
+Page reload sent to client(s).
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-H6AJ66UJ.js   | dashboard-module | 161.20 kB | 
+
+Application bundle generation complete. [3.163 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+chunk-HQOVXR64.js   | -                | 173.08 kB | 
+chunk-QAIQMTJJ.js   | -                |  31.28 kB | 
+chunk-FY2UIGWY.js   | -                |   9.18 kB | 
+main.js             | main             |   7.06 kB | 
+chunk-26F5RPA3.js   | -                |   5.72 kB | 
+chunk-KTW2LRRM.js   | -                |   4.91 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-HRBHKYOG.js   | profile-module   | 260.10 kB | 
+chunk-PFHZXCBL.js   | loan-module      | 218.84 kB | 
+chunk-QGP6OADU.js   | dashboard-module | 161.20 kB | 
+chunk-MEX53J24.js   | landing-module   | 186 bytes | 
+chunk-NF2YUATX.js   | auth-module      | 180 bytes | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+chunk-GOXIYOGK.mjs  | -                | 445.96 kB | 
+chunk-3RDW3REV.mjs  | -                | 165.69 kB | 
+chunk-FABPVCER.mjs  | -                |  30.38 kB | 
+chunk-HDPJNEYV.mjs  | -                |   9.14 kB | 
+main.server.mjs     | main.server      |   6.83 kB | 
+chunk-E6TFRQHT.mjs  | -                |   4.92 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-FJMV5YHO.mjs  | profile-module   | 383.20 kB | 
+chunk-PEUMB2GH.mjs  | loan-module      | 209.83 kB | 
+chunk-JCKZYKMN.mjs  | dashboard-module | 157.44 kB | 
+chunk-MSTO7556.mjs  | auth-module      | 310 bytes | 
+chunk-EYHKB5YY.mjs  | landing-module   | 285 bytes | 
+
+Application bundle generation complete. [3.902 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+chunk-XRRZXN2S.js   | -                | 173.08 kB | 
+chunk-SE47CJFC.js   | -                |  31.28 kB | 
+chunk-2BNOC3JE.js   | -                |   9.18 kB | 
+main.js             | main             |   7.06 kB | 
+chunk-H6OBSZJH.js   | -                |   5.72 kB | 
+chunk-AE2OL5A4.js   | -                |   4.91 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-PJH3EXSP.js   | profile-module   | 260.10 kB | 
+chunk-LSNTDLYD.js   | loan-module      | 218.84 kB | 
+chunk-FGRKQPBJ.js   | dashboard-module | 161.20 kB | 
+chunk-D74J7X2J.js   | landing-module   | 186 bytes | 
+chunk-PDXA3RYH.js   | auth-module      | 180 bytes | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+chunk-WUCQFVS7.mjs  | -                | 445.96 kB | 
+chunk-WCN2B3QO.mjs  | -                | 165.69 kB | 
+chunk-X6WM6MM7.mjs  | -                |  30.38 kB | 
+chunk-TSDWLBRI.mjs  | -                |   9.14 kB | 
+main.server.mjs     | main.server      |   6.83 kB | 
+chunk-6A5OVRTO.mjs  | -                |   4.92 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-EQC6MQ3O.mjs  | profile-module   | 383.20 kB | 
+chunk-AHIU3K5H.mjs  | loan-module      | 209.83 kB | 
+chunk-G4P4ZASM.mjs  | dashboard-module | 157.44 kB | 
+chunk-HLDMFFNI.mjs  | auth-module      | 310 bytes | 
+chunk-ZSWFOMTN.mjs  | landing-module   | 285 bytes | 
+
+Application bundle generation complete. [2.946 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-YJIDTB5S.js   | dashboard-module | 161.37 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-I6652QRD.mjs  | dashboard-module | 157.62 kB | 
+
+Application bundle generation complete. [8.250 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-LC6B6DCU.js   | dashboard-module | 161.28 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-JMJIOLGP.mjs  | dashboard-module | 157.53 kB | 
+
+Application bundle generation complete. [3.745 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-DQ7N7WLQ.js   | dashboard-module | 161.39 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-JRKPYLD4.mjs  | dashboard-module | 157.64 kB | 
+
+Application bundle generation complete. [6.833 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-LDNL3N2M.js   | dashboard-module | 161.30 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-B6NA577Q.mjs  | dashboard-module | 157.55 kB | 
+
+Application bundle generation complete. [2.701 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-MKZXFP4E.js   | dashboard-module | 161.47 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-FMKSMOTG.mjs  | dashboard-module | 157.72 kB | 
+
+Application bundle generation complete. [2.387 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-Y4MG6VWT.js   | dashboard-module | 161.51 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-Q3XTAII2.mjs  | dashboard-module | 157.76 kB | 
+
+Application bundle generation complete. [2.268 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-QQUSELJB.js   | dashboard-module | 162.61 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-KDPRLYDV.mjs  | dashboard-module | 158.86 kB | 
+
+Application bundle generation complete. [4.927 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-NPB4SZE3.js   | dashboard-module | 162.57 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-QRYB2C2T.mjs  | dashboard-module | 158.82 kB | 
+
+Application bundle generation complete. [3.278 seconds]
+
+Page reload sent to client(s).
+Application bundle generation failed. [2.905 seconds]
+
+Application bundle generation failed. [2.953 seconds]
+
+Application bundle generation failed. [2.362 seconds]
+
+Application bundle generation failed. [1.775 seconds]
+
+Browser bundles        
+Initial chunk files     | Names               |  Raw size
+chunk-XRRZXN2S.js       | -                   | 173.08 kB | 
+polyfills.js            | polyfills           |  88.09 kB | 
+chunk-SE47CJFC.js       | -                   |  31.28 kB | 
+styles.css              | styles              |  30.33 kB | 
+chunk-2BNOC3JE.js       | -                   |   9.18 kB | 
+main.js                 | main                |   7.06 kB | 
+chunk-H6OBSZJH.js       | -                   |   5.72 kB | 
+chunk-AE2OL5A4.js       | -                   |   4.91 kB | 
+
+                        | Initial total       | 349.65 kB
+
+Lazy chunk files        | Names               |  Raw size
+chunk-PJH3EXSP.js       | profile-module      | 260.10 kB | 
+chunk-LSNTDLYD.js       | loan-module         | 218.84 kB | 
+chunk-37DVZOP3.js       | dashboard-module    | 170.42 kB | 
+chunk-YOQ7JA3R.js       | -                   |   1.69 kB | 
+chunk-D74J7X2J.js       | landing-module      | 186 bytes | 
+chunk-PDXA3RYH.js       | auth-module         | 180 bytes | 
+
+
+Server bundles         
+Initial chunk files     | Names               |  Raw size
+chunk-V4XKDKNK.mjs      | -                   |   1.03 MB | 
+chunk-NKUEFXWB.mjs      | -                   | 652.02 kB | 
+polyfills.server.mjs    | polyfills.server    | 559.49 kB | 
+chunk-WUCQFVS7.mjs      | -                   | 445.96 kB | 
+chunk-WCN2B3QO.mjs      | -                   | 165.69 kB | 
+chunk-X6WM6MM7.mjs      | -                   |  30.38 kB | 
+chunk-WUMXBRRQ.mjs      | -                   |  17.34 kB | 
+chunk-TSDWLBRI.mjs      | -                   |   9.14 kB | 
+main.server.mjs         | main.server         |   6.83 kB | 
+chunk-6A5OVRTO.mjs      | -                   |   4.92 kB | 
+chunk-OGTRFHQR.mjs      | -                   |   3.52 kB | 
+render-utils.server.mjs | render-utils.server | 462 bytes | 
+
+Lazy chunk files        | Names               |  Raw size
+chunk-EQC6MQ3O.mjs      | profile-module      | 383.20 kB | 
+chunk-AHIU3K5H.mjs      | loan-module         | 209.83 kB | 
+chunk-NEN5ECNA.mjs      | dashboard-module    | 166.67 kB | 
+chunk-I25RXEJY.mjs      | xhr2                |  39.09 kB | 
+chunk-KQSHBN2W.mjs      | -                   |   1.73 kB | 
+chunk-HLDMFFNI.mjs      | auth-module         | 310 bytes | 
+chunk-ZSWFOMTN.mjs      | landing-module      | 285 bytes | 
+
+Application bundle generation complete. [2.660 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-4MX2DWWM.js   | dashboard-module | 170.51 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-UPSQVLTG.mjs  | dashboard-module | 166.76 kB | 
+
+Application bundle generation complete. [2.215 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-ETUJ76O7.js   | dashboard-module | 171.04 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-C4B6DH7Q.mjs  | dashboard-module | 167.25 kB | 
+
+Application bundle generation complete. [1.796 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-PDVWXOD3.js   | dashboard-module | 170.95 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-AM2PCUXW.mjs  | dashboard-module | 167.16 kB | 
+
+Application bundle generation complete. [1.394 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-A7ABXWXV.js   | dashboard-module | 171.04 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-4NAUEJZY.mjs  | dashboard-module | 167.23 kB | 
+
+Application bundle generation complete. [1.423 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-SUJ7X4EK.js   | dashboard-module | 171.50 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-YEYBQGJ2.mjs  | dashboard-module | 167.67 kB | 
+
+Application bundle generation complete. [1.426 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-PVDMMTJG.js   | dashboard-module | 170.46 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-2Z47XBFZ.mjs  | dashboard-module | 166.67 kB | 
+
+Application bundle generation complete. [1.516 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-JUBQ2BCC.js   | dashboard-module | 170.53 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-2OXJQSLF.mjs  | dashboard-module | 166.73 kB | 
+
+Application bundle generation complete. [1.273 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-VQLYDJXF.js   | dashboard-module | 170.27 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-RLFEPYVW.mjs  | dashboard-module | 166.48 kB | 
+
+Application bundle generation complete. [1.536 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-HM6MKGXH.js   | dashboard-module | 170.32 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-VSHMWE2B.mjs  | dashboard-module | 166.51 kB | 
+
+Application bundle generation complete. [1.291 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-UHWKSQHJ.js   | dashboard-module | 170.58 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-7A3M53GV.mjs  | dashboard-module | 166.76 kB | 
+
+Application bundle generation complete. [1.356 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-2NEPXKUC.js   | dashboard-module | 170.87 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-BLWEYPLS.mjs  | dashboard-module | 167.02 kB | 
+
+Application bundle generation complete. [1.415 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-ZQXU23E6.js   | dashboard-module | 171.33 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-VPJUDB34.mjs  | dashboard-module | 167.46 kB | 
+
+Application bundle generation complete. [1.511 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-5IFLTD6H.js   | dashboard-module | 171.25 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-66JCL54J.mjs  | dashboard-module | 167.37 kB | 
+
+Application bundle generation complete. [1.416 seconds]
+
+Page reload sent to client(s).
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-4OHM63XE.js   | dashboard-module | 172.46 kB | 
+
+Application bundle generation complete. [2.884 seconds]
+
+Page reload sent to client(s).
+Application bundle generation failed. [2.300 seconds]
+
+Application bundle generation failed. [1.151 seconds]
+
+Browser bundles        
+Initial chunk files     | Names               |  Raw size
+chunk-XRRZXN2S.js       | -                   | 173.08 kB | 
+polyfills.js            | polyfills           |  88.09 kB | 
+chunk-SE47CJFC.js       | -                   |  31.28 kB | 
+styles.css              | styles              |  30.33 kB | 
+chunk-2BNOC3JE.js       | -                   |   9.18 kB | 
+main.js                 | main                |   7.06 kB | 
+chunk-H6OBSZJH.js       | -                   |   5.72 kB | 
+chunk-AE2OL5A4.js       | -                   |   4.91 kB | 
+
+                        | Initial total       | 349.65 kB
+
+Lazy chunk files        | Names               |  Raw size
+chunk-PJH3EXSP.js       | profile-module      | 260.10 kB | 
+chunk-LSNTDLYD.js       | loan-module         | 218.84 kB | 
+chunk-TAYXZCWO.js       | dashboard-module    | 176.08 kB | 
+chunk-YOQ7JA3R.js       | -                   |   1.69 kB | 
+chunk-D74J7X2J.js       | landing-module      | 186 bytes | 
+chunk-PDXA3RYH.js       | auth-module         | 180 bytes | 
+
+
+Server bundles         
+Initial chunk files     | Names               |  Raw size
+chunk-V4XKDKNK.mjs      | -                   |   1.03 MB | 
+chunk-NKUEFXWB.mjs      | -                   | 652.02 kB | 
+polyfills.server.mjs    | polyfills.server    | 559.49 kB | 
+chunk-WUCQFVS7.mjs      | -                   | 445.96 kB | 
+chunk-WCN2B3QO.mjs      | -                   | 165.69 kB | 
+chunk-X6WM6MM7.mjs      | -                   |  30.38 kB | 
+chunk-WUMXBRRQ.mjs      | -                   |  17.34 kB | 
+chunk-TSDWLBRI.mjs      | -                   |   9.14 kB | 
+main.server.mjs         | main.server         |   6.83 kB | 
+chunk-6A5OVRTO.mjs      | -                   |   4.92 kB | 
+chunk-OGTRFHQR.mjs      | -                   |   3.52 kB | 
+render-utils.server.mjs | render-utils.server | 462 bytes | 
+
+Lazy chunk files        | Names               |  Raw size
+chunk-EQC6MQ3O.mjs      | profile-module      | 383.20 kB | 
+chunk-AHIU3K5H.mjs      | loan-module         | 209.83 kB | 
+chunk-RPJVHY5Q.mjs      | dashboard-module    | 172.20 kB | 
+chunk-I25RXEJY.mjs      | xhr2                |  39.09 kB | 
+chunk-KQSHBN2W.mjs      | -                   |   1.73 kB | 
+chunk-HLDMFFNI.mjs      | auth-module         | 310 bytes | 
+chunk-ZSWFOMTN.mjs      | landing-module      | 285 bytes | 
+
+Application bundle generation complete. [1.497 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-OBHPHGQV.js   | dashboard-module | 177.34 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-2ZYHH6W5.mjs  | dashboard-module | 173.35 kB | 
+
+Application bundle generation complete. [1.296 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-XEOMTVJK.js   | dashboard-module | 181.92 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-KA3WED3A.mjs  | dashboard-module | 177.93 kB | 
+
+Application bundle generation complete. [1.440 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-WGOAQZID.js   | dashboard-module | 182.89 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-CGBYH4JL.mjs  | dashboard-module | 178.90 kB | 
+
+Application bundle generation complete. [1.182 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-EVGY2OBW.js   | dashboard-module | 183.49 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-VTU2H6PN.mjs  | dashboard-module | 179.50 kB | 
+
+Application bundle generation complete. [1.431 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-HTYZSM7Q.js   | dashboard-module | 183.70 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-TNGBMVB5.mjs  | dashboard-module | 179.71 kB | 
+
+Application bundle generation complete. [1.659 seconds]
+
+Page reload sent to client(s).
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-2QTJXDRE.js   | dashboard-module | 187.10 kB | 
+
+Application bundle generation complete. [1.045 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-56XBUKAX.js   | dashboard-module | 190.32 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-AF4C54XH.mjs  | dashboard-module | 186.14 kB | 
+
+Application bundle generation complete. [1.375 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-WVZKXQIJ.js   | dashboard-module | 190.47 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-H5UWQ4JW.mjs  | dashboard-module | 186.28 kB | 
+
+Application bundle generation complete. [1.445 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-4U6325TB.js   | dashboard-module | 190.46 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-CTPWIDEF.mjs  | dashboard-module | 186.28 kB | 
+
+Application bundle generation complete. [1.184 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-JQZ3AO2B.js   | dashboard-module | 191.32 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-HAU6V6ST.mjs  | dashboard-module | 187.13 kB | 
+
+Application bundle generation complete. [1.847 seconds]
+
+Page reload sent to client(s).
+Application bundle generation failed. [1.376 seconds]
+
+Application bundle generation failed. [1.565 seconds]
+
+Browser bundles        
+Initial chunk files     | Names               |  Raw size
+chunk-XRRZXN2S.js       | -                   | 173.08 kB | 
+polyfills.js            | polyfills           |  88.09 kB | 
+chunk-SE47CJFC.js       | -                   |  31.28 kB | 
+styles.css              | styles              |  30.33 kB | 
+chunk-2BNOC3JE.js       | -                   |   9.18 kB | 
+main.js                 | main                |   7.06 kB | 
+chunk-H6OBSZJH.js       | -                   |   5.72 kB | 
+chunk-AE2OL5A4.js       | -                   |   4.91 kB | 
+
+                        | Initial total       | 349.65 kB
+
+Lazy chunk files        | Names               |  Raw size
+chunk-PJH3EXSP.js       | profile-module      | 260.10 kB | 
+chunk-LSNTDLYD.js       | loan-module         | 218.84 kB | 
+chunk-ET2LUI54.js       | dashboard-module    | 192.52 kB | 
+chunk-YOQ7JA3R.js       | -                   |   1.69 kB | 
+chunk-D74J7X2J.js       | landing-module      | 186 bytes | 
+chunk-PDXA3RYH.js       | auth-module         | 180 bytes | 
+
+
+Server bundles         
+Initial chunk files     | Names               |  Raw size
+chunk-V4XKDKNK.mjs      | -                   |   1.03 MB | 
+chunk-NKUEFXWB.mjs      | -                   | 652.02 kB | 
+polyfills.server.mjs    | polyfills.server    | 559.49 kB | 
+chunk-WUCQFVS7.mjs      | -                   | 445.96 kB | 
+chunk-WCN2B3QO.mjs      | -                   | 165.69 kB | 
+chunk-X6WM6MM7.mjs      | -                   |  30.38 kB | 
+chunk-WUMXBRRQ.mjs      | -                   |  17.34 kB | 
+chunk-TSDWLBRI.mjs      | -                   |   9.14 kB | 
+main.server.mjs         | main.server         |   6.83 kB | 
+chunk-6A5OVRTO.mjs      | -                   |   4.92 kB | 
+chunk-OGTRFHQR.mjs      | -                   |   3.52 kB | 
+render-utils.server.mjs | render-utils.server | 462 bytes | 
+
+Lazy chunk files        | Names               |  Raw size
+chunk-EQC6MQ3O.mjs      | profile-module      | 383.20 kB | 
+chunk-AHIU3K5H.mjs      | loan-module         | 209.83 kB | 
+chunk-LJTMTLHV.mjs      | dashboard-module    | 188.34 kB | 
+chunk-I25RXEJY.mjs      | xhr2                |  39.09 kB | 
+chunk-KQSHBN2W.mjs      | -                   |   1.73 kB | 
+chunk-HLDMFFNI.mjs      | auth-module         | 310 bytes | 
+chunk-ZSWFOMTN.mjs      | landing-module      | 285 bytes | 
+
+Application bundle generation complete. [1.085 seconds]
+
+Page reload sent to client(s).
+Browser bundles    
+Initial chunk files | Names            |  Raw size
+main.js             | main             |   7.06 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-2DE7Y5Z4.js   | dashboard-module | 193.01 kB | 
+
+
+Server bundles     
+Initial chunk files | Names            |  Raw size
+main.server.mjs     | main.server      |   6.83 kB | 
+
+Lazy chunk files    | Names            |  Raw size
+chunk-K4FQXBB7.mjs  | dashboard-module | 188.83 kB | 
+
+Application bundle generation complete. [1.681 seconds]
+
+Page reload sent to client(s).

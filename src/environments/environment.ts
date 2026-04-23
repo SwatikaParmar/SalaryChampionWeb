@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
+ apiUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
   rootPathUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
   firebase : {
   apiKey: "AIzaSyA4u51jhF9KijKON-xrvC7YgHIcpAZsEco",
