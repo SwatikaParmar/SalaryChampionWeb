@@ -71,21 +71,11 @@
     class="not-eligible-simple-card"
     [class.not-eligible-simple-card--application]="isApplicationRejectedSimpleCard"
   >
-    <div class="not-eligible-simple-status">
-      <span class="not-eligible-simple-dot"></span>
-      Status: {{ notEligibleBadgeText }}
-    </div>
-
     <div class="not-eligible-simple-body">
       <div class="not-eligible-simple-copy">
         <h2 class="not-eligible-simple-title">{{ negativeCardTitle }}</h2>
 
-        <p class="not-eligible-simple-message">{{ negativeCardMessage }}</p>
-
-        <p class="not-eligible-simple-reason" *ngIf="negativeCardReason">
-          Reason:
-          <strong>{{ negativeCardReason }}</strong>
-        </p>
+        <p class="not-eligible-simple-message" *ngIf="simpleNegativeMessage">{{ simpleNegativeMessage }}</p>
 
         <p class="not-eligible-simple-retry" *ngIf="negativeCardRetryDate">
           Try again after: {{ negativeCardRetryDate | date:'dd-MM-yyyy' }}
@@ -133,11 +123,6 @@
         <strong>{{ negativeCardCaseType }}</strong>
       </div>
 
-      <div class="not-eligible-panel" *ngIf="negativeCardReason">
-        <span class="not-eligible-panel-label">Reason</span>
-        <p>{{ negativeCardReason }}</p>
-      </div>
-
       <div class="not-eligible-panel" *ngIf="showNegativeRetryPanel">
         <span class="not-eligible-panel-label">Retry After</span>
         <strong>{{ negativeCardRetryDate | date:'dd-MM-yyyy' }}</strong>
@@ -172,10 +157,6 @@
 
     <div class="reloan-unavailable-alert">
       <p>{{ closedLoanCardMessage }}</p>
-
-      <p class="reloan-unavailable-meta" *ngIf="showReloanUnavailableReason">
-        Reason: {{ closedLoanReasonText }}
-      </p>
 
       <p class="reloan-unavailable-meta" *ngIf="showReloanUnavailableRetryDate">
         Try again after: {{ closedLoanRetryDate | date:'dd-MM-yyyy' }}

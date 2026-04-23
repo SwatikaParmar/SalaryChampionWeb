@@ -175,12 +175,12 @@
 }
 
 .not-eligible-simple-card {
-  margin-bottom: 20px;
-  padding: 20px 22px;
-  border-radius: 22px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 16px;
   border: 1px solid #e8edf7;
   background: linear-gradient(180deg, #ffffff, #f9fbff);
-  box-shadow: 0 16px 40px rgba(23, 42, 71, 0.12);
+  box-shadow: 0 10px 24px rgba(23, 42, 71, 0.08);
 }
 
 .not-eligible-simple-card--application {
@@ -191,39 +191,39 @@
 .not-eligible-simple-status {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
+  gap: 6px;
+  padding: 6px 11px;
   border-radius: 999px;
-  border: 2px solid #ef4444;
+  border: 1.5px solid #ef4444;
   color: #ef4444;
   background: rgba(255, 255, 255, 0.92);
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 500;
 }
 
 .not-eligible-simple-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
   background: #ef4444;
 }
 
 .not-eligible-simple-body {
-  margin-top: 26px;
+  margin-top: 12px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 12px;
 }
 
 .not-eligible-simple-copy {
-  max-width: 760px;
+  max-width: 680px;
 }
 
 .not-eligible-simple-title {
-  margin: 0 0 14px;
+  margin: 0 0 8px;
   color: #1f4b9a;
-  font-size: 42px;
+  font-size: 28px;
   font-weight: 700;
   line-height: 1.15;
 }
@@ -236,10 +236,10 @@
 .not-eligible-simple-reason,
 .not-eligible-simple-retry,
 .not-eligible-simple-tip {
-  margin: 0 0 12px;
+  margin: 0 0 5px;
   color: #3b4a62;
-  font-size: 18px;
-  line-height: 1.65;
+  font-size: 15px;
+  line-height: 1.45;
 }
 
 .not-eligible-simple-reason strong,
@@ -255,8 +255,8 @@
 .not-eligible-simple-visual {
   position: relative;
   flex-shrink: 0;
-  width: 220px;
-  min-height: 220px;
+  width: 132px;
+  min-height: 132px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -264,10 +264,10 @@
 
 .not-eligible-simple-arch {
   position: absolute;
-  top: 12px;
+  top: 6px;
   left: 50%;
-  width: 116px;
-  height: 116px;
+  width: 74px;
+  height: 74px;
   border-radius: 999px 999px 0 0;
   background: linear-gradient(180deg, #1f78c8, #29a4f2);
   transform: translateX(-50%);
@@ -280,7 +280,7 @@
 .not-eligible-simple-visual img {
   position: relative;
   z-index: 1;
-  width: 180px;
+  width: 108px;
   max-width: 100%;
   object-fit: contain;
 }
@@ -509,46 +509,46 @@
 
 @media (max-width: 768px) {
   .not-eligible-simple-card {
-    padding: 18px 16px;
-    border-radius: 18px;
+    padding: 12px 12px;
+    border-radius: 16px;
   }
 
   .not-eligible-simple-status {
-    font-size: 14px;
-    padding: 8px 14px;
+    font-size: 12px;
+    padding: 6px 10px;
   }
 
   .not-eligible-simple-body {
-    margin-top: 20px;
+    margin-top: 12px;
     flex-direction: column;
     align-items: flex-start;
   }
 
   .not-eligible-simple-title {
-    font-size: 30px;
+    font-size: 24px;
   }
 
   .not-eligible-simple-message,
   .not-eligible-simple-reason,
   .not-eligible-simple-retry,
   .not-eligible-simple-tip {
-    font-size: 16px;
+    font-size: 14px;
   }
 
   .not-eligible-simple-visual {
     width: 100%;
-    min-height: 180px;
+    min-height: 104px;
     justify-content: flex-end;
   }
 
   .not-eligible-simple-arch {
     left: auto;
-    right: 22px;
+    right: 10px;
     transform: none;
   }
 
   .not-eligible-simple-visual img {
-    width: 150px;
+    width: 92px;
   }
 
   .not-eligible-card {

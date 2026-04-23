@@ -113,6 +113,19 @@ describe('DashboardComponent', () => {
     expect(component.showReloanActionButton).toBeFalse();
   });
 
+  it('should not surface the raw rejection reason inside the rejected reloan message area', () => {
+    component.dashboardPrimaryCardType = 'RELOAN_NOT_ELIGIBLE';
+    component.dashboardPrimaryCard = {
+      title: 'Reloan Not Eligible',
+      message: 'ggg'
+    };
+    component.ineligibleReason = 'ggg';
+
+    expect(component.closedLoanCardMessage).toBe(
+      'Your previous loan is closed, but reloan is not available right now.'
+    );
+  });
+
   it('should show eligible card when reloan decision is saved as eligible', () => {
     component.profileProgress = 100;
     component.loanTracking = {

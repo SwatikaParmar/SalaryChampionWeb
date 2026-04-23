@@ -214,8 +214,33 @@ videoKycModalMessage: string = '';
             ? 'Your current loan application could not be approved.'
             : this.matchesPrimaryCardTypeOrStatus('RESTRICTED')
               ? 'Your account currently has restrictions on borrower actions.'
-              : `You don't meet the loan criteria at this moment. Review your details and try again later.`
+            : `You don't meet the loan criteria at this moment. Review your details and try again later.`
       );
+  }
+
+  get simpleNegativeMessage(): string {
+    const message = this.negativeCardMessage;
+
+    if (!this.isApplicationRejectedSimpleCard) {
+      return message;
+    }
+
+    const normalizedMessage = this.normalizeCardKey(message);
+    const titleKey = this.normalizeCardKey(this.negativeCardTitle);
+    const reasonKey = this.normalizeCardKey(this.negativeCardReason);
+
+    if (
+      !normalizedMessage ||
+      normalizedMessage === 'REJECT' ||
+      normalizedMessage === 'REJECTED' ||
+      normalizedMessage === 'APPLICATION_REJECTED' ||
+      normalizedMessage === titleKey ||
+      normalizedMessage === reasonKey
+    ) {
+      return '';
+    }
+
+    return message;
   }
 
   get negativeCardStatusLabel(): string {
@@ -391,6 +416,10 @@ videoKycModalMessage: string = '';
   }
 
   get closedLoanCardMessage(): string {
+    if (this.isRejectedReloanDecision) {
+      return 'Your previous loan is closed, but reloan is not available right now.';
+    }
+
     return this.dashboardPrimaryCard?.message ||
       'Loan is closed. No further borrower action is required.';
   }
