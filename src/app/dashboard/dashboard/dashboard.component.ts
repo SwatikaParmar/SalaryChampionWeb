@@ -131,7 +131,8 @@ videoKycModalMessage: string = '';
   }
 
   get showNotEligibleSimpleCard(): boolean {
-    return this.matchesPrimaryCardTypeOrStatus('NOT_ELIGIBLE', 'APPLICATION_REJECTED');
+    return this.isPrimaryCardType('RELOAN_NOT_ELIGIBLE') ||
+      this.matchesPrimaryCardTypeOrStatus('NOT_ELIGIBLE', 'APPLICATION_REJECTED');
   }
 
   get showDecisionNegativeCard(): boolean {
@@ -147,7 +148,7 @@ videoKycModalMessage: string = '';
   }
 
   get showClosedLoanUnavailableCard(): boolean {
-    return this.isPrimaryCardType('CLOSED_LOAN', 'RELOAN_NOT_ELIGIBLE');
+    return this.isPrimaryCardType('CLOSED_LOAN');
   }
 
   get canApplyReloan(): boolean {
@@ -334,6 +335,23 @@ videoKycModalMessage: string = '';
   get negativeCardReason(): string {
     const cardData = this.dashboardPrimaryCard?.data || {};
 
+    if (this.isRejectedReloanDecision) {
+      const reloanData = this.primaryCardReloanData;
+
+      return this.pickFirstString(
+        reloanData?.reason,
+        reloanData?.remarks,
+        reloanData?.message,
+        reloanData?.customerMessage,
+        reloanData?.reloanDecision?.remarks,
+        reloanData?.decision?.remarks,
+        reloanData?.rejection?.reason,
+        reloanData?.eligibility?.ineligibleReason,
+        reloanData?.ineligible?.reason,
+        reloanData?.ineligible?.message
+      );
+    }
+
     if (this.isPrimaryCardType('RESTRICTED')) {
       return this.pickFirstString(
         cardData?.reason,
@@ -363,6 +381,24 @@ videoKycModalMessage: string = '';
 
   get negativeCardRetryDate(): string {
     const cardData = this.dashboardPrimaryCard?.data || {};
+
+    if (this.isRejectedReloanDecision) {
+      const reloanData = this.primaryCardReloanData;
+
+      return this.pickFirstString(
+        reloanData?.retryAfter,
+        reloanData?.retryDate,
+        reloanData?.retryAllowedOn,
+        reloanData?.nextEligibilityAllowedOn,
+        reloanData?.nextEligibleAt,
+        reloanData?.reloanDecision?.retryAllowedOn,
+        reloanData?.decision?.retryAllowedOn,
+        reloanData?.rejection?.retryAllowedOn,
+        reloanData?.eligibility?.nextEligibilityAllowedOn,
+        reloanData?.eligibility?.retryDate,
+        reloanData?.ineligible?.retryAfter
+      );
+    }
 
     return this.pickFirstString(
       this.retryDate,
@@ -417,7 +453,8 @@ videoKycModalMessage: string = '';
 
   get closedLoanCardMessage(): string {
     if (this.isRejectedReloanDecision) {
-      return 'Your previous loan is closed, but reloan is not available right now.';
+      return this.dashboardPrimaryCard?.message ||
+        'Your previous loan is closed, but reloan is not available right now.';
     }
 
     return this.dashboardPrimaryCard?.message ||
@@ -425,6 +462,10 @@ videoKycModalMessage: string = '';
   }
 
   get closedLoanReasonText(): string {
+    if (this.isRejectedReloanDecision) {
+      return this.negativeCardReason;
+    }
+
     const cardData = this.dashboardPrimaryCard?.data || {};
     const reloanDecision = cardData?.reloanDecision || {};
 
@@ -435,6 +476,10 @@ videoKycModalMessage: string = '';
   }
 
   get closedLoanRetryDate(): string {
+    if (this.isRejectedReloanDecision) {
+      return this.negativeCardRetryDate;
+    }
+
     const cardData = this.dashboardPrimaryCard?.data || {};
     const noc = cardData?.noc || {};
 
@@ -446,6 +491,14 @@ videoKycModalMessage: string = '';
 
   get loanJourneyCardTitle(): string {
     return this.dashboardPrimaryCard?.title || 'Loan Application';
+  }
+
+  private get primaryCardReloanData(): any {
+    const reloanData = this.dashboardPrimaryCard?.data?.reloan;
+
+    return reloanData && typeof reloanData === 'object'
+      ? reloanData
+      : {};
   }
 
   get loanJourneyCardMessage(): string {
@@ -2587,6 +2640,5 @@ openRepayment(): void {
 
 
 }
-
 
 

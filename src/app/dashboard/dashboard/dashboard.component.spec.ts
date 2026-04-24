@@ -113,17 +113,31 @@ describe('DashboardComponent', () => {
     expect(component.showReloanActionButton).toBeFalse();
   });
 
-  it('should not surface the raw rejection reason inside the rejected reloan message area', () => {
+  it('should render reloan not eligible from the primary card only', () => {
     component.dashboardPrimaryCardType = 'RELOAN_NOT_ELIGIBLE';
     component.dashboardPrimaryCard = {
       title: 'Reloan Not Eligible',
-      message: 'ggg'
+      statusCode: 'NOT_ELIGIBLE',
+      message: 'Reloan is not available for this account at the moment.',
+      data: {
+        reloan: {
+          reason: 'Primary card reason',
+          retryDate: '2026-05-25'
+        }
+      }
     };
-    component.ineligibleReason = 'ggg';
+    component.ineligibleReason = 'Legacy root reason';
+    component.retryDate = '2026-06-15';
+    component.loanTracking = {
+      applicationNumber: 'LEGACY123',
+      reapplyEligibleOn: '2026-07-01'
+    };
 
-    expect(component.closedLoanCardMessage).toBe(
-      'Your previous loan is closed, but reloan is not available right now.'
-    );
+    expect(component.showNotEligibleSimpleCard).toBeTrue();
+    expect(component.showClosedLoanUnavailableCard).toBeFalse();
+    expect(component.negativeCardReason).toBe('Primary card reason');
+    expect(component.negativeCardRetryDate).toBe('2026-05-25');
+    expect(component.closedLoanSummary).toBeNull();
   });
 
   it('should show eligible card when reloan decision is saved as eligible', () => {
