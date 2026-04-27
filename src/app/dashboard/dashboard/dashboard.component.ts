@@ -7,8 +7,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 import { formatDateForDisplay } from '../../shared/date-format.util';
-import { Subscription } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 import { DashboardRefreshService } from '../dashboard-refresh.service';
+
+type RefreshableTrackerStep = 'videoKyc' | 'sanction' | 'esign' | 'enach';
 
 @Component({
   selector: 'app-dashboard',
@@ -51,6 +53,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ENACH: 'enach',
     DISBURSEMENT: 'disbursement'
   };
+  private readonly refreshableTrackerSteps: RefreshableTrackerStep[] = [
+    'videoKyc',
+    'sanction',
+    'esign',
+    'enach'
+  ];
 
   // flags
   isProfileComplete = false;
@@ -94,6 +102,7 @@ hasActiveApplication: boolean = false;
   private shouldRefreshEnachOnReturn = false;
   private isEnachRefreshInFlight = false;
   private isVideoKycRefreshInFlight = false;
+  private isRefreshStatusInFlight = false;
   private hasTriggeredReloanSnapshotRefresh = false;
 
 showKycModal: boolean = false;
@@ -1071,23 +1080,7 @@ private refreshStatusOnTabReturn() {
   }
 
   this.lastTabReturnRefreshAt = now;
-  if (this.tryRefreshEnachOnReturn()) {
-    return;
-  }
-
-  this.refreshStatus();
-}
-
-private tryRefreshEnachOnReturn(refreshApplicationStatusAfterSuccess = true): boolean {
-  this.restorePendingEnachMandateRowId();
-  this.restorePendingEnachReturnRefresh();
-
-  if (!this.mandateRowId) {
-    return false;
-  }
-
-  this.verifyEnach(refreshApplicationStatusAfterSuccess);
-  return true;
+  void this.refreshStatus();
 }
 
 private applyEligibilityState(offer: any, eligibility: any) {
@@ -2624,8 +2617,25 @@ setDashboardFlags(data: any) {
 }
 
 
-refreshStatus() {
-  this.getBorrowerSnapshot();
+async refreshStatus() {
+  if (this.isRefreshStatusInFlight) {
+    return;
+  }
+
+  if (!this.showTracker) {
+    this.getBorrowerSnapshot();
+    return;
+  }
+
+  this.isRefreshStatusInFlight = true;
+  this.spinner.show();
+
+  try {
+    await this.refreshTrackerStepsSequentially();
+  } finally {
+    this.isRefreshStatusInFlight = false;
+    this.spinner.hide();
+  }
 }
 
 openRepayment(): void {
@@ -2637,8 +2647,197 @@ openRepayment(): void {
   this.router.navigate(['/dashboard/profile/loan-repay', this.applicationId]);
 }
 
+private async refreshTrackerStepsSequentially() {
+  await this.refreshBorrowerSnapshotSilently();
 
+  for (const stepKey of this.refreshableTrackerSteps) {
+    if (!this.shouldShowTrackerStep(stepKey) || !this.isTrackerStepPending(stepKey)) {
+      continue;
+    }
 
+    const didRefreshStep = await this.refreshTrackerStepSilently(stepKey);
+    if (!didRefreshStep) {
+      continue;
+    }
+
+    await this.refreshApplicationStatusSilently();
+  }
+}
+
+private isTrackerStepPending(stepKey: string): boolean {
+  return this.normalizeTrackerStatus(this.trackingSteps?.[stepKey]) === 'PENDING';
+}
+
+private refreshBorrowerSnapshotSilently(): Promise<void> {
+  return new Promise((resolve) => {
+    this.getBorrowerSnapshotWithOptions(false, resolve);
+  });
+}
+
+private refreshApplicationStatusSilently(): Promise<void> {
+  return new Promise((resolve) => {
+    this.applicationStatusApi(false, resolve);
+  });
+}
+
+private async refreshTrackerStepSilently(stepKey: RefreshableTrackerStep): Promise<boolean> {
+  switch (stepKey) {
+    case 'videoKyc':
+      return this.refreshVideoKycSilently();
+    case 'sanction':
+      return this.prefetchSanctionSilently();
+    case 'esign':
+      return this.prefetchEsignSilently();
+    case 'enach':
+      return this.refreshEnachSilently();
+    default:
+      return false;
+  }
+}
+
+private async refreshVideoKycSilently(): Promise<boolean> {
+  if (!this.applicationId || this.isVideoKycRefreshInFlight) {
+    return false;
+  }
+
+  this.isVideoKycRefreshInFlight = true;
+
+  try {
+    const res = await firstValueFrom(
+      this.contentService.videoRefresh({ applicationId: this.applicationId })
+    );
+
+    return !!res?.success;
+  } catch (error) {
+    console.error('Video KYC refresh failed', error);
+    return false;
+  } finally {
+    this.isVideoKycRefreshInFlight = false;
+  }
+}
+
+private async prefetchSanctionSilently(): Promise<boolean> {
+  if (!this.applicationId) {
+    return false;
+  }
+
+  try {
+    const res = await firstValueFrom(
+      this.contentService.sanctionEsignLink(this.applicationId)
+    );
+    const url = res?.data?.sanctionLetterUrl;
+
+    if (!res?.success || !url) {
+      return false;
+    }
+
+    this.sanctionUrl = url;
+    this.otpData = res?.data?.otp || this.otpData;
+    return true;
+  } catch (error) {
+    console.error('Sanction link refresh failed', error);
+    return false;
+  }
+}
+
+private async prefetchEsignSilently(): Promise<boolean> {
+  if (!this.applicationId) {
+    return false;
+  }
+
+  try {
+    const res = await firstValueFrom(
+      this.contentService.esignLink(this.applicationId)
+    );
+    const url = res?.data?.esignUrl || res?.data?.redirectUrl;
+
+    if (!res?.success || !url) {
+      return false;
+    }
+
+    this.esignUrl = url;
+    this.esignUrlSafe =
+      this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    return true;
+  } catch (error) {
+    console.error('eSign link refresh failed', error);
+    return false;
+  }
+}
+
+private async ensureEnachMandateReady(): Promise<boolean> {
+  if (!this.applicationId) {
+    return false;
+  }
+
+  this.restorePendingEnachMandateRowId();
+
+  if (this.mandateRowId) {
+    return true;
+  }
+
+  try {
+    const res = await firstValueFrom(
+      this.contentService.createMandate({ applicationId: this.applicationId })
+    );
+
+    if (!res?.success) {
+      return false;
+    }
+
+    this.mandateRowId = String(res?.data?.mandateRowId || '').trim();
+    if (!this.mandateRowId) {
+      return false;
+    }
+
+    this.persistPendingEnachMandateRowId(this.mandateRowId);
+
+    const url = res?.data?.authUrl;
+    if (url) {
+      this.enachUrl = url;
+      this.enachUrlSafe =
+        this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    }
+
+    return true;
+  } catch (error) {
+    console.error('Create mandate failed during refresh', error);
+    return false;
+  }
+}
+
+private async refreshEnachSilently(): Promise<boolean> {
+  if (this.isEnachRefreshInFlight) {
+    return false;
+  }
+
+  const isMandateReady = await this.ensureEnachMandateReady();
+  if (!isMandateReady || !this.mandateRowId) {
+    return false;
+  }
+
+  this.isEnachRefreshInFlight = true;
+
+  try {
+    const res = await firstValueFrom(
+      this.contentService.mendateRefresh({ mandateRowId: this.mandateRowId })
+    );
+
+    if (!res?.success) {
+      return false;
+    }
+
+    this.shouldRefreshEnachOnReturn = true;
+    this.persistPendingEnachReturnRefresh(true);
+    return true;
+  } catch (error) {
+    console.error('Mandate refresh failed', error);
+    return false;
+  } finally {
+    this.isEnachRefreshInFlight = false;
+  }
 }
 
 
+
+}

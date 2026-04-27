@@ -305,4 +305,55 @@ describe('DashboardComponent', () => {
 
     expect(nativeElement.textContent).not.toContain('Delay Days');
   });
+
+  it('should fall back to borrower snapshot refresh when tracker is not visible', async () => {
+    component.showTracker = false;
+
+    const snapshotSpy = spyOn(component, 'getBorrowerSnapshot');
+
+    await component.refreshStatus();
+
+    expect(snapshotSpy).toHaveBeenCalled();
+  });
+
+  it('should refresh unlocked tracker steps in sequence when tracker is visible', async () => {
+    component.showTracker = true;
+
+    const callOrder: string[] = [];
+
+    spyOn<any>(component, 'refreshBorrowerSnapshotSilently').and.callFake(async () => {
+      callOrder.push('snapshot');
+    });
+    spyOn(component, 'shouldShowTrackerStep').and.returnValue(true);
+    spyOn<any>(component, 'isTrackerStepPending').and.callFake((stepKey: string) =>
+      stepKey === 'videoKyc' || stepKey === 'enach'
+    );
+    spyOn<any>(component, 'refreshTrackerStepSilently').and.callFake(async (stepKey: string) => {
+      callOrder.push(stepKey);
+      return true;
+    });
+    spyOn<any>(component, 'refreshApplicationStatusSilently').and.callFake(async () => {
+      callOrder.push('status');
+    });
+
+    await component.refreshStatus();
+
+    expect(callOrder).toEqual([
+      'snapshot',
+      'videoKyc',
+      'status',
+      'enach',
+      'status'
+    ]);
+  });
+
+  it('should route tab return refresh through refreshStatus even when a mandate row id exists', async () => {
+    (component as any).mandateRowId = 'MANDATE123';
+
+    const refreshSpy = spyOn(component, 'refreshStatus').and.resolveTo();
+
+    (component as any).refreshStatusOnTabReturn();
+
+    expect(refreshSpy).toHaveBeenCalled();
+  });
 });
