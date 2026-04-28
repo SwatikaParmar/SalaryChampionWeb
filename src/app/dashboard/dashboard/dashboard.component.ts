@@ -10,7 +10,7 @@ import { formatDateForDisplay } from '../../shared/date-format.util';
 import { firstValueFrom, Subscription } from 'rxjs';
 import { DashboardRefreshService } from '../dashboard-refresh.service';
 
-type RefreshableTrackerStep = 'videoKyc' | 'sanction' | 'esign' | 'enach';
+type RefreshableTrackerStep = 'sanction' | 'esign' | 'enach';
 
 @Component({
   selector: 'app-dashboard',
@@ -54,7 +54,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     DISBURSEMENT: 'disbursement'
   };
   private readonly refreshableTrackerSteps: RefreshableTrackerStep[] = [
-    'videoKyc',
+    // Video KYC should stay read-only on the dashboard refresh flow.
     'sanction',
     'esign',
     'enach'
@@ -2250,6 +2250,9 @@ private closeVideoKycWindow(videoKycWindow?: Window | null) {
 }
 
 videoKycRefresh() {
+  this.applicationStatusApi();
+  return;
+
   if (!this.applicationId || this.isVideoKycRefreshInFlight) return;
 
   const payload = {
@@ -2682,8 +2685,6 @@ private refreshApplicationStatusSilently(): Promise<void> {
 
 private async refreshTrackerStepSilently(stepKey: RefreshableTrackerStep): Promise<boolean> {
   switch (stepKey) {
-    case 'videoKyc':
-      return this.refreshVideoKycSilently();
     case 'sanction':
       return this.prefetchSanctionSilently();
     case 'esign':
@@ -2696,6 +2697,8 @@ private async refreshTrackerStepSilently(stepKey: RefreshableTrackerStep): Promi
 }
 
 private async refreshVideoKycSilently(): Promise<boolean> {
+  return false;
+
   if (!this.applicationId || this.isVideoKycRefreshInFlight) {
     return false;
   }

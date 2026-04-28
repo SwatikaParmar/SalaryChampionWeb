@@ -133,6 +133,99 @@ export class LoanDetailComponent implements OnInit {
     );
   }
 
+  get processingFeePercent(): number | null {
+    return this.toNumber(
+      this.loanTerms?.processingFeePercent ??
+      this.loanTermFees?.processingFeePercent ??
+      this.loanTermFees?.adminFeePercent
+    );
+  }
+
+  get processingFeeAmount(): number | null {
+    return this.toNumber(
+      this.loanTerms?.processingFeeAmount ??
+      this.loanTerms?.processingFee ??
+      this.loanTermFees?.processingFeeAmount ??
+      this.loanTermFees?.processingFee ??
+      this.loanTermFees?.totalProcessingFee ??
+      this.loanTermFees?.adminFee
+    );
+  }
+
+  get convenienceFeeAmount(): number | null {
+    return this.toNumber(
+      this.loanTerms?.convenienceFeeAmount ??
+      this.loanTerms?.convenienceFee ??
+      this.loanTermFees?.convenienceFeeAmount ??
+      this.loanTermFees?.convenienceFee
+    );
+  }
+
+  get conversionFeeAmount(): number | null {
+    return this.toNumber(
+      this.loanTerms?.conversionFeeAmount ??
+      this.loanTermFees?.conversionFeeAmount
+    );
+  }
+
+  get totalFeeAmount(): number | null {
+    return this.toNumber(
+      this.loanTerms?.totalFeeAmount ??
+      this.loanTermFees?.totalFeeAmount ??
+      this.loanTermFees?.netFeeAmount ??
+      this.loanTermFees?.netAdminFee ??
+      this.loanTermFees?.totalAdminFee
+    );
+  }
+
+  get gstPercent(): number | null {
+    return this.toNumber(
+      this.loanTerms?.gstPercent ??
+      this.loanTermFees?.gstPercent
+    );
+  }
+
+  get gstAmount(): number | null {
+    return this.toNumber(
+      this.loanTerms?.gstAmount ??
+      this.loanTermFees?.gstAmount
+    );
+  }
+
+  get totalWaivedAmount(): number | null {
+    return this.toNumber(
+      this.data?.repayment?.calculation?.totalWaivedAmount ??
+      this.data?.closure?.waivedAmount ??
+      this.data?.repayment?.totalWaivedAmount ??
+      this.overview?.totalWaivedAmount
+    );
+  }
+
+  get hasTotalWaivedAmount(): boolean {
+    const waivedAmount = this.totalWaivedAmount;
+    return waivedAmount !== null && waivedAmount > 0;
+  }
+
+  get hasFeeSummary(): boolean {
+    return [
+      this.processingFeePercent,
+      this.processingFeeAmount,
+      this.conversionFeeAmount,
+      this.gstPercent,
+      this.gstAmount
+    ].some((value) => value !== null) || this.hasTotalWaivedAmount;
+  }
+
+  get processingFeePercentDisplay(): string {
+    const feePercent = this.processingFeePercent;
+    return feePercent === null ? '--' : `${feePercent}%`;
+  }
+
+  get gstPercentDisplay(): string {
+    const taxPercent = this.gstPercent;
+    return taxPercent === null ? '--' : `${taxPercent}%`;
+  }
+
   get currentInterestAmount(): number | null {
     return this.toNumber(this.overview?.currentInterestAmount ?? this.overview?.interestAmount);
   }
@@ -182,6 +275,15 @@ export class LoanDetailComponent implements OnInit {
     return delayDays === null ? '--' : `${delayDays}`;
   }
 
+  get showDisbursedOn(): boolean {
+    const normalizedStatus = this.normalizeStatus(this.status?.loanStatus);
+    return (
+      normalizedStatus !== 'INPROCESS' &&
+      normalizedStatus !== 'IN_PROCESS' &&
+      normalizedStatus !== 'IN_PROGRESS'
+    );
+  }
+
   get disbursedOnDisplay(): string {
     return this.formatDisplayDate(this.overview?.disbursalDateDisplay);
   }
@@ -222,6 +324,18 @@ export class LoanDetailComponent implements OnInit {
 
   get hasPaymentRecords(): boolean {
     return this.paymentRecords.length > 0;
+  }
+
+  private get loanTerms(): any {
+    return this.data?.loanTerms || {};
+  }
+
+  private get loanTermFees(): any {
+    return this.loanTerms?.fees || {};
+  }
+
+  private normalizeStatus(value: any): string {
+    return String(value || '').trim().toUpperCase().replace(/[\s-]+/g, '_');
   }
 
   private toNumber(value: any): number | null {

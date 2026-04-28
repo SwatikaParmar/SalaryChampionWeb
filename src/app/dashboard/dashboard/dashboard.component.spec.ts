@@ -316,7 +316,7 @@ describe('DashboardComponent', () => {
     expect(snapshotSpy).toHaveBeenCalled();
   });
 
-  it('should refresh unlocked tracker steps in sequence when tracker is visible', async () => {
+  it('should skip video kyc refresh while refreshing tracker steps on the dashboard', async () => {
     component.showTracker = true;
 
     const callOrder: string[] = [];
@@ -340,11 +340,10 @@ describe('DashboardComponent', () => {
 
     expect(callOrder).toEqual([
       'snapshot',
-      'videoKyc',
-      'status',
       'enach',
       'status'
     ]);
+    expect(callOrder).not.toContain('videoKyc');
   });
 
   it('should route tab return refresh through refreshStatus even when a mandate row id exists', async () => {

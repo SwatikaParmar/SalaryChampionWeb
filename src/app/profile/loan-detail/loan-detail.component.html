@@ -111,6 +111,52 @@
     </div>
   </div>
 
+  <div class="detail-card" *ngIf="hasFeeSummary">
+    <div class="section-head">
+      <h2>Fees & Taxes</h2>
+    </div>
+
+    <div class="detail-grid">
+      <div class="detail-stat">
+        <label>Processing Fee %</label>
+        <strong>{{ processingFeePercentDisplay }}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Processing Fee Amount</label>
+        <strong>
+          {{ processingFeeAmount !== null ? (processingFeeAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>Conversion Fee Amount</label>
+        <strong>
+          {{ conversionFeeAmount !== null ? (conversionFeeAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>GST %</label>
+        <strong>{{ gstPercentDisplay }}</strong>
+      </div>
+
+      <div class="detail-stat">
+        <label>GST Amount</label>
+        <strong>
+          {{ gstAmount !== null ? (gstAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="detail-stat" *ngIf="hasTotalWaivedAmount">
+        <label>Total Waived Amount</label>
+        <strong>
+          {{ totalWaivedAmount !== null ? (totalWaivedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+    </div>
+  </div>
+
   <div class="detail-card">
     <div class="section-head">
       <h2>Important Dates</h2>
@@ -124,7 +170,7 @@
       </div>
 
 
-      <div class="detail-stat">
+      <div class="detail-stat" *ngIf="showDisbursedOn">
         <label>Disbursed On</label>
         <strong>{{ disbursedOnDisplay }}</strong>
       </div>

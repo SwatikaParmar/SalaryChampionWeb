@@ -231,11 +231,6 @@ export class LoanHistoryComponent implements OnInit {
         this.loanList = (data.items || []).map((item: any) => ({
           ...item,
           financials: this.buildHistoryFinancials(item),
-          statusLabel: this.pickFirstString(
-            item?.status?.loanStatus,
-            item?.status?.displayStatus,
-            item?.overview?.historyBucket
-          ) || '--',
           sanctionedAmount:
             this.pickFirstAmount(
               item?.overview?.approvedAmount,

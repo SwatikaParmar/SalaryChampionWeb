@@ -73,7 +73,14 @@ describe('LoanDetailComponent', () => {
           loanId: 'LN001'
         },
         loanTerms: {
-          netDisbAmount: 6650
+          netDisbAmount: 6650,
+          processingFeePercent: 5,
+          processingFeeAmount: 350,
+          convenienceFeeAmount: 120,
+          conversionFeeAmount: 40,
+          totalFeeAmount: 510,
+          gstPercent: 18,
+          gstAmount: 92
         },
         status: {
           loanStatus: 'CLOSED'
@@ -111,6 +118,9 @@ describe('LoanDetailComponent', () => {
           outstandingLedgerEndpoint: '/outstanding-ledger'
         },
         repayment: {
+          calculation: {
+            totalWaivedAmount: 0
+          },
           rows: [
             {
               label: 'Principal',
@@ -145,6 +155,18 @@ describe('LoanDetailComponent', () => {
     expect(component.outstandingAmount).toBe(0);
     expect(component.principalAmount).toBe(7000);
     expect(component.netDisbAmount).toBe(6650);
+    expect(component.processingFeePercent).toBe(5);
+    expect(component.processingFeeAmount).toBe(350);
+    expect(component.convenienceFeeAmount).toBe(120);
+    expect(component.conversionFeeAmount).toBe(40);
+    expect(component.totalFeeAmount).toBe(510);
+    expect(component.gstPercent).toBe(18);
+    expect(component.gstAmount).toBe(92);
+    expect(component.totalWaivedAmount).toBe(0);
+    expect(component.hasFeeSummary).toBeTrue();
+    expect(component.hasTotalWaivedAmount).toBeFalse();
+    expect(component.processingFeePercentDisplay).toBe('5%');
+    expect(component.gstPercentDisplay).toBe('18%');
     expect(component.currentInterestAmount).toBe(420);
     expect(component.interestAmount).toBe(420);
     expect(component.penalInterestAmount).toBe(599);
@@ -167,5 +189,63 @@ describe('LoanDetailComponent', () => {
     expect(component.repaymentRows.length).toBe(1);
     expect(component.paymentRecords.length).toBe(1);
     expect(component.paymentRecords[0].paidAtDisplay).toBe('20-04-2026');
+    expect(fixture.nativeElement.textContent).not.toContain('Convenience Fee Amount');
+    expect(fixture.nativeElement.textContent).not.toContain('Total Fee Amount');
+    expect(fixture.nativeElement.textContent).not.toContain('Total Waived Amount');
+  });
+
+  it('should render total waived amount only when it is greater than zero', () => {
+    contentServiceMock.getLoanDetail.and.returnValue(of({
+      data: {
+        applicationId: 'APP123',
+        applicationNumber: 'SCRFL00169',
+        status: {
+          loanStatus: 'ACTIVE'
+        },
+        overview: {
+          approvedAmount: 12000
+        },
+        loanTerms: {
+          totalFeeAmount: 500
+        },
+        repayment: {
+          calculation: {
+            totalWaivedAmount: 250
+          }
+        }
+      }
+    }));
+
+    fixture = TestBed.createComponent(LoanDetailComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.totalWaivedAmount).toBe(250);
+    expect(component.hasTotalWaivedAmount).toBeTrue();
+    expect(fixture.nativeElement.textContent).toContain('Total Waived Amount');
+  });
+
+  it('should hide disbursed on when loan status is in progress', () => {
+    contentServiceMock.getLoanDetail.and.returnValue(of({
+      data: {
+        applicationId: 'APP123',
+        applicationNumber: 'SCRFL00170',
+        status: {
+          loanStatus: 'In Progress'
+        },
+        overview: {
+          approvedAmount: 12000,
+          disbursalDateDisplay: '2026-04-28'
+        }
+      }
+    }));
+
+    fixture = TestBed.createComponent(LoanDetailComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.showDisbursedOn).toBeFalse();
+    expect(component.disbursedOnDisplay).toBe('28-04-2026');
+    expect(fixture.nativeElement.textContent).not.toContain('Disbursed On');
   });
 });
