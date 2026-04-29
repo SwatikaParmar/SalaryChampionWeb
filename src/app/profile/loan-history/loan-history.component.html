@@ -37,8 +37,8 @@
           <h4>{{ item.applicationNumber }}</h4>
 
           <div class="loan-pill-row">
-            <span class="history-pill" [ngClass]="getHistoryBucketClass(item.overview?.historyBucket)">
-              {{ item.overview?.historyBucket || 'Loan' }}
+            <span class="history-pill" [ngClass]="getHistoryBucketClass(item.overview?.loanStatus)">
+              {{ item.overview?.loanStatus || 'Loan' }}
             </span>
           </div>
         </div>
