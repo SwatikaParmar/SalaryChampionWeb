@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -24,6 +25,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   displayTime = '00:00';
   showResend = false;
   private intervalId: any;
+  private readonly isBrowser: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -31,16 +33,12 @@ export class OtpComponent implements OnInit, OnDestroy {
     private router: Router,
     private toastr: ToastrService,
     private spinner: NgxSpinnerService,
-  ) {}
+    @Inject(PLATFORM_ID) platformId: Object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
-    this.phone = localStorage.getItem('loginPhone') || '';
-
-    if (!this.phone) {
-      this.router.navigate(['/auth/login']);
-      return;
-    }
-
     this.otpForm = this.fb.group({
       d1: ['', Validators.required],
       d2: ['', Validators.required],
@@ -50,18 +48,29 @@ export class OtpComponent implements OnInit, OnDestroy {
       d6: ['', Validators.required],
     });
 
+    this.phone = this.isBrowser ? localStorage.getItem('loginPhone') || '' : '';
+
+    if (!this.phone) {
+      if (this.isBrowser) {
+        this.router.navigate(['/auth/login']);
+      }
+      return;
+    }
+
     const savedLocation = this.auth.getSavedLoginLocation();
     if (savedLocation) {
       this.lat = savedLocation.lat;
       this.long = savedLocation.long;
     }
 
-    const savedTimer = localStorage.getItem('otpTimer');
+    const savedTimer = this.isBrowser ? localStorage.getItem('otpTimer') : null;
     this.timer = savedTimer ? +savedTimer : 60;
 
-    this.startCountdown();
+    if (this.isBrowser) {
+      this.startCountdown();
+    }
 
-    if (this.lat === null || this.long === null) {
+    if (this.isBrowser && (this.lat === null || this.long === null)) {
       this.getLocation();
     }
   }
@@ -73,6 +82,10 @@ export class OtpComponent implements OnInit, OnDestroy {
   }
 
   startCountdown() {
+    if (!this.isBrowser) {
+      return;
+    }
+
     this.showResend = false;
 
     if (this.intervalId) {
@@ -143,8 +156,10 @@ export class OtpComponent implements OnInit, OnDestroy {
 
         const data = res.data;
 
-        localStorage.setItem('accessToken', data.auth.access_token);
-        localStorage.setItem('refreshToken', data.auth.refresh_token);
+        if (this.isBrowser) {
+          localStorage.setItem('accessToken', data.auth.access_token);
+          localStorage.setItem('refreshToken', data.auth.refresh_token);
+        }
 
         this.auth.setCurrentUser(data.user);
         this.deviceRegister();

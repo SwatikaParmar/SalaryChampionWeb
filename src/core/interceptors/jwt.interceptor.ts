@@ -23,7 +23,10 @@ export class JwtInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('accessToken');
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('accessToken')
+        : null;
 
     if (token) {
       request = request.clone({
@@ -42,7 +45,9 @@ export class JwtInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           JwtInterceptor.isLoggingOut = true;
 
-          alert('Session expired. Please login again.');
+          if (typeof window !== 'undefined' && typeof alert !== 'undefined') {
+            alert('Session expired. Please login again.');
+          }
 
           this.authService.logout({ preserveLoginLocation: true });
 

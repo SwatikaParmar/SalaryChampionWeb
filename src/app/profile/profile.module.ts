@@ -16,6 +16,7 @@ import { LoanHistoryComponent } from './loan-history/loan-history.component';
 import { LoanDetailComponent } from './loan-detail/loan-detail.component';
 import { LoanRepayComponent } from './loan-repay/loan-repay.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { ProfileTermsAndConditionsComponent } from './terms-and-conditions/terms-and-conditions.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
     LoanDetailComponent,
     LoanRepayComponent,
     PrivacyComponent,
+    ProfileTermsAndConditionsComponent,
   ],
   imports: [
     CommonModule,

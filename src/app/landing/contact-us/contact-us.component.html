@@ -340,7 +340,7 @@
           <input type="text" placeholder="Enter your email" class="form-control">
           <input type="submit" value="Subscribe" class="form-control">
 
-          <span class="pp-tags mt-2">By subscribing, you agree to our <a href="#">Privacy Policy</a></span>
+          <span class="pp-tags mt-2">By subscribing, you agree to our <a [routerLink]="['/privacy-policy']">Privacy Policy</a></span>
         </div>      
     
       </div>
@@ -353,7 +353,7 @@
         <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
         <div class="col-md-6">
           <ul class="link-ft small-li">
-            <li><a href="#">Terms & Conditions</a></li>
+            <li><a [routerLink]="['/terms-and-conditions']">Terms & Conditions</a></li>
             <li><a [routerLink]="['/privacy-policy']">Privacy Policy</a></li>
             <li><a href="#">Interest Rate Policy</a></li>
             <li><a href="#">Fair Practice Code</a></li>

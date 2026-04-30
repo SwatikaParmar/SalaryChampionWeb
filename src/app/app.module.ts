@@ -6,8 +6,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { JwtInterceptor } from '../core/interceptors/jwt.interceptor';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AuthModule } from './auth/auth.module';
-import { LandingModule } from './landing/landing.module';
 import { ToastrModule } from 'ngx-toastr';
 import { NgxSpinnerModule } from 'ngx-spinner';
 
@@ -16,8 +14,6 @@ import { NgxSpinnerModule } from 'ngx-spinner';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AuthModule,
-    LandingModule,
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,

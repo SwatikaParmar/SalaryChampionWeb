@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-terms-condition',
-  templateUrl: './terms-condition.component.html',
-  styleUrl: './terms-condition.component.css'
+  selector: 'app-terms-and-conditions',
+  templateUrl: './terms-and-conditions.component.html',
+  styleUrl: './terms-and-conditions.component.css'
 })
-export class TermsConditionComponent implements OnInit {
+export class TermsAndConditionsComponent implements OnInit {
   isMenuOpen = false;
 
   ngOnInit(): void {

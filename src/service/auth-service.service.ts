@@ -1,5 +1,7 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Inject, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { ApiEndPoint } from '../enums/api-end-point';
 import { environment } from '../environments/environment';
@@ -14,9 +16,15 @@ export class AuthServiceService {
     null;
   private currentUserSubject: BehaviorSubject<any>;
   public currentUser$: Observable<any>;
+  private readonly isBrowser: boolean;
 
-  constructor(private http: HttpClient) {
-    const userData = JSON.parse(localStorage.getItem('user') || 'null');
+  constructor(
+    private http: HttpClient,
+    @Inject(PLATFORM_ID) platformId: Object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+
+    const userData = this.getStoredJson('user');
     this.currentUserSubject = new BehaviorSubject<any>(userData);
     this.currentUser$ = this.currentUserSubject.asObservable();
   }
@@ -25,17 +33,56 @@ export class AuthServiceService {
     return this.currentUserSubject.value;
   }
 
+  private getStoredItem(key: string): string | null {
+    if (!this.isBrowser || typeof localStorage === 'undefined') {
+      return null;
+    }
+
+    return localStorage.getItem(key);
+  }
+
+  private setStoredItem(key: string, value: string) {
+    if (!this.isBrowser || typeof localStorage === 'undefined') {
+      return;
+    }
+
+    localStorage.setItem(key, value);
+  }
+
+  private removeStoredItem(key: string) {
+    if (!this.isBrowser || typeof localStorage === 'undefined') {
+      return;
+    }
+
+    localStorage.removeItem(key);
+  }
+
+  private getStoredJson(key: string) {
+    const value = this.getStoredItem(key);
+
+    if (!value) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(value);
+    } catch {
+      this.removeStoredItem(key);
+      return null;
+    }
+  }
+
   setCurrentUser(user: any) {
-    localStorage.setItem('user', JSON.stringify(user));
+    this.setStoredItem('user', JSON.stringify(user));
     this.currentUserSubject.next(user);
   }
 
   saveLoginLocation(lat: number, long: number) {
-    localStorage.setItem(this.loginLocationKey, JSON.stringify({ lat, long }));
+    this.setStoredItem(this.loginLocationKey, JSON.stringify({ lat, long }));
   }
 
   getSavedLoginLocation(): { lat: number; long: number } | null {
-    const savedLocation = localStorage.getItem(this.loginLocationKey);
+    const savedLocation = this.getStoredItem(this.loginLocationKey);
 
     if (!savedLocation) {
       return null;
@@ -44,18 +91,22 @@ export class AuthServiceService {
     try {
       return JSON.parse(savedLocation);
     } catch {
-      localStorage.removeItem(this.loginLocationKey);
+      this.removeStoredItem(this.loginLocationKey);
       return null;
     }
   }
 
   clearLoginLocation() {
-    localStorage.removeItem(this.loginLocationKey);
+    this.removeStoredItem(this.loginLocationKey);
   }
 
   private getCurrentPosition(options?: PositionOptions) {
     return new Promise<{ lat: number; long: number }>((resolve, reject) => {
-      if (!navigator.geolocation) {
+      if (
+        !this.isBrowser ||
+        typeof navigator === 'undefined' ||
+        !navigator.geolocation
+      ) {
         reject(new Error('Geolocation is not supported'));
         return;
       }
@@ -77,7 +128,7 @@ export class AuthServiceService {
   }
 
   clearLoginFlowData(preserveLocation = true) {
-    this.loginFlowKeys.forEach((key) => localStorage.removeItem(key));
+    this.loginFlowKeys.forEach((key) => this.removeStoredItem(key));
 
     if (!preserveLocation) {
       this.clearLoginLocation();
@@ -87,12 +138,14 @@ export class AuthServiceService {
   logout(options?: { preserveLoginLocation?: boolean }) {
     const preserveLoginLocation = options?.preserveLoginLocation ?? true;
 
-    localStorage.removeItem('user');
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    this.removeStoredItem('user');
+    this.removeStoredItem('accessToken');
+    this.removeStoredItem('refreshToken');
     this.clearLoginFlowData(preserveLoginLocation);
 
-    sessionStorage.clear();
+    if (this.isBrowser && typeof sessionStorage !== 'undefined') {
+      sessionStorage.clear();
+    }
 
     this.locationRequestPromise = null;
     this.currentUserSubject.next(null);
@@ -104,6 +157,7 @@ export class AuthServiceService {
     }
 
     if (
+      !this.isBrowser ||
       typeof navigator === 'undefined' ||
       !navigator.geolocation ||
       !navigator.permissions?.query

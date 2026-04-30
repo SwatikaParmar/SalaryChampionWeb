@@ -5,7 +5,7 @@
     <div class="container">
 
       <!-- Logo -->
-      <a class="navbar-brand d-flex align-items-center" href="#">
+      <a class="navbar-brand d-flex align-items-center" [routerLink]="['/']">
         <!-- Replace with your logo image -->
         <img src="assets/images/logo.png" alt="Loan112 Logo" class="brand-logo">
       </a>
@@ -107,7 +107,7 @@
 
                     <p>At Salary Champion ("we," "us," or "our"), we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services.</p>
 
-                    <p>Please read this policy carefully. By accessing or using our services, you ackni want to show a saharychampion website should be clickable and blue in my html under paragraph tagi want to show a saharychampion website should be clickable and blue in my html under paragraph tagowledge that you have read, understood, and agree to be bound by the terms of this Privacy Policy.</p>
+                    <p>Please read this policy carefully. By accessing or using our services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Privacy Policy.</p>
 
 
                     <h5>2. Information We Collect</h5>
@@ -247,7 +247,7 @@
                             I Accept This Policy
                         </button>
 
-                        <button class="policy-actions__btn policy-actions__btn--secondary">
+                        <button class="policy-actions__btn policy-actions__btn--secondary" [routerLink]="['/']" type="button">
                             Return to Home
                         </button>
                     </div>
@@ -380,7 +380,7 @@
           <input type="text" placeholder="Enter your email" class="form-control">
           <input type="submit" value="Subscribe" class="form-control">
 
-          <span class="pp-tags mt-2">By subscribing, you agree to our <a href="#">Privacy Policy</a></span>
+          <span class="pp-tags mt-2">By subscribing, you agree to our <a [routerLink]="['/privacy-policy']">Privacy Policy</a></span>
         </div>      
     
       </div>
@@ -393,7 +393,7 @@
         <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
         <div class="col-md-6 xs-mt-40">
           <ul class="link-ft small-li">
-            <li><a href="#">Terms & Conditions</a></li>
+            <li><a [routerLink]="['/terms-and-conditions']">Terms & Conditions</a></li>
             <li><a  [routerLink]="['/privacy-policy']">Privacy Policy</a></li>
             <li><a href="#">Interest Rate Policy</a></li>
             <li><a href="#">Fair Practice Code</a></li>

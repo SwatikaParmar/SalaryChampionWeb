@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, Inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -17,6 +18,7 @@ export class LoginComponent implements OnInit {
   isLocationLoading = false;
   lat: number | null = null;
   long: number | null = null;
+  private readonly isBrowser: boolean;
 
   constructor(
     private fb: FormBuilder,
@@ -24,7 +26,10 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private spinner: NgxSpinnerService,
     private toastr: ToastrService,
-  ) {}
+    @Inject(PLATFORM_ID) platformId: Object,
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
 
   ngOnInit(): void {
     this.mobileForm = this.fb.group({
@@ -32,7 +37,9 @@ export class LoginComponent implements OnInit {
       agree: [false, Validators.requiredTrue],
     });
 
-    const savedMobile = localStorage.getItem('loginMobile');
+    const savedMobile = this.isBrowser
+      ? localStorage.getItem('loginMobile')
+      : null;
     if (savedMobile) {
       this.mobileForm.patchValue({
         mobile: savedMobile,
@@ -84,12 +91,14 @@ export class LoginComponent implements OnInit {
         this.spinner.hide();
 
         if (res?.success) {
-          localStorage.setItem('loginPhone', payload.phone);
-          localStorage.setItem('loginMobile', this.mobileForm.value.mobile);
-          localStorage.setItem(
-            'otpTimer',
-            res?.data?.nextRequestInSec?.toString() || '45',
-          );
+          if (this.isBrowser) {
+            localStorage.setItem('loginPhone', payload.phone);
+            localStorage.setItem('loginMobile', this.mobileForm.value.mobile);
+            localStorage.setItem(
+              'otpTimer',
+              res?.data?.nextRequestInSec?.toString() || '45',
+            );
+          }
 
           this.toastr.success(res?.message || 'OTP sent successfully');
           this.router.navigate(['/auth/otp']);

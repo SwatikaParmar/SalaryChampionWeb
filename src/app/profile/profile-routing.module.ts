@@ -13,6 +13,7 @@ import { LoanHistoryComponent } from './loan-history/loan-history.component';
 import { LoanDetailComponent } from './loan-detail/loan-detail.component';
 import { LoanRepayComponent } from './loan-repay/loan-repay.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { ProfileTermsAndConditionsComponent } from './terms-and-conditions/terms-and-conditions.component';
 
 // profile-routing.module.ts
 const routes: Routes = [
@@ -28,7 +29,8 @@ const routes: Routes = [
   { path: 'loan-history', component:LoanHistoryComponent},
   { path: 'loan-detail/:id', component:LoanDetailComponent},
   { path: 'loan-repay/:id', component:LoanRepayComponent},
-  { path: 'privacy', component:PrivacyComponent}
+  { path: 'privacy', component:PrivacyComponent},
+  { path: 'terms-and-conditions', component: ProfileTermsAndConditionsComponent }
 ];
 
 @NgModule({

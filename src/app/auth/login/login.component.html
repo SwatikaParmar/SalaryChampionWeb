@@ -1,7 +1,7 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="left_boxx">
-      <img src="assets/images/logo.png" class="img-fluid logo-login" routerLink="['']">
+      <img src="assets/images/logo.png" class="img-fluid logo-login" [routerLink]="['/']">
 <h5 class="text-center" style="margin-bottom: 15px;">
   When money is your need,<br>
   we are a solution
@@ -33,7 +33,7 @@
       <!-- CHECKBOX -->
       <label class="checkbox">
         <input type="checkbox" formControlName="agree" />
-        I agree to <a href="#">Terms</a> & <a [routerLink]="['/privacy-policy']">Privacy Policy</a>
+        I agree to <a [routerLink]="['/terms-and-conditions']">Terms</a> & <a [routerLink]="['/privacy-policy']">Privacy Policy</a>
       </label>
 
       <!-- ERROR -->
