@@ -56,6 +56,26 @@ export class ContentService {
     );
   }
 
+  getEmploymentJourneyDetails(applicationId?: string) {
+    let params = new HttpParams();
+
+    if (applicationId) {
+      params = params.set('applicationId', applicationId);
+    }
+
+    return this.http.get<any>(
+      environment.apiUrl + ApiEndPoint.employmentJourneyDetails,
+      { params }
+    );
+  }
+
+  saveEmploymentJourneyDetails(data: any) {
+    return this.http.post<any>(
+      environment.apiUrl + ApiEndPoint.saveEmploymentJourneyDetails,
+      data
+    );
+  }
+
   saveAddressDetail(data: any) {
     return this.http.post<any>(
       environment.apiUrl + ApiEndPoint.saveAddressDetail,

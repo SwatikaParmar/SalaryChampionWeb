@@ -9,6 +9,8 @@ export enum ApiEndPoint {
   saveAddressDetail = 'lead/saveAddressDetails',
   resolvePincode = 'public/pincodes',
   saveIncomeDetail = 'lead/saveEmploymentDetails',
+  employmentJourneyDetails = 'lead/employmentJourneyDetails',
+  saveEmploymentJourneyDetails = 'lead/saveEmploymentJourneyDetails',
   imageUpload = 'upload/createUploadIntent',
   completeUpload = 'upload/completeUpload',
   emiLoanQuote = 'loan/quote',
