@@ -10,7 +10,7 @@
           <span class="loan-kicker">Borrower Loan Detail</span>
           <h1>{{ applicationNumber }}</h1>
           <div class="loan-status-row">
-            <span class="status-pill">{{ loanStatus }}</span>
+            <span *ngIf="displayLoanStatus" class="status-pill">{{ displayLoanStatus }}</span>
             <button class="noc-btn" *ngIf="hasNocButton" (click)="openNoc()">View NOC</button>
           </div>
         </div>

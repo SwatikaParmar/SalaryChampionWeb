@@ -13,6 +13,8 @@ import { formatDateForDisplay } from '../../shared/date-format.util';
   styleUrls: ['./loan-detail.component.css']
 })
 export class LoanDetailComponent implements OnInit {
+  private readonly hiddenLoanStatuses = ['INPROCESS', 'IN_PROCESS', 'IN_PROGRESS'];
+
   applicationId: string | null = null;
   loanId = '';
   repaymentScheduleEndpoint = '';
@@ -105,6 +107,14 @@ export class LoanDetailComponent implements OnInit {
 
   get loanStatus(): string {
     return this.readText(this.status?.loanStatus) || '--';
+  }
+
+  get displayLoanStatus(): string {
+    if (this.shouldHideLoanStatus(this.status?.loanStatus)) {
+      return '';
+    }
+
+    return this.loanStatus === '--' ? '' : this.loanStatus;
   }
 
   get approvedAmount(): number | null {
@@ -336,6 +346,10 @@ export class LoanDetailComponent implements OnInit {
 
   private normalizeStatus(value: any): string {
     return String(value || '').trim().toUpperCase().replace(/[\s-]+/g, '_');
+  }
+
+  private shouldHideLoanStatus(value: any): boolean {
+    return this.hiddenLoanStatuses.includes(this.normalizeStatus(value));
   }
 
   private toNumber(value: any): number | null {

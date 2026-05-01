@@ -18,10 +18,6 @@
       Closed ({{ allSummary?.countsByBucket?.closed || 0 }})
     </button>
 
-    <button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
-      In Progress ({{ allSummary?.countsByBucket?.inProgress || 0 }})
-    </button>
-
   </div>
 
   <div *ngIf="loanList.length === 0" class="empty-state">
@@ -37,8 +33,11 @@
           <h4>{{ item.applicationNumber }}</h4>
 
           <div class="loan-pill-row">
-            <span class="history-pill" [ngClass]="getHistoryBucketClass(item.overview?.loanStatus)">
-              {{ item.overview?.loanStatus || 'Loan' }}
+            <span
+              *ngIf="getDisplayLoanStatus(item.overview?.loanStatus) as loanStatus"
+              class="history-pill"
+              [ngClass]="getHistoryBucketClass(loanStatus)">
+              {{ loanStatus }}
             </span>
           </div>
         </div>

@@ -12,6 +12,7 @@ import { formatDateForDisplay } from '../../shared/date-format.util';
   styleUrls: ['./loan-history.component.css']
 })
 export class LoanHistoryComponent implements OnInit {
+  private readonly hiddenLoanStatuses = ['INPROCESS', 'IN_PROCESS', 'IN_PROGRESS'];
 
   loanList: any[] = [];
   summary: any = {};
@@ -92,6 +93,14 @@ export class LoanHistoryComponent implements OnInit {
     return '';
   }
 
+  private normalizeStatus(value: any): string {
+    return String(value || '').trim().toUpperCase().replace(/[\s-]+/g, '_');
+  }
+
+  private shouldHideLoanStatus(value: any): boolean {
+    return this.hiddenLoanStatuses.includes(this.normalizeStatus(value));
+  }
+
   private formatHistoryDate(...candidates: any[]): string {
     for (const candidate of candidates) {
       if (typeof candidate !== 'string') {
@@ -167,6 +176,10 @@ export class LoanHistoryComponent implements OnInit {
   }
 
   getHistoryBucketClass(bucket: any): string {
+    if (this.shouldHideLoanStatus(bucket)) {
+      return 'history-pill--neutral';
+    }
+
     const normalizedBucket = typeof bucket === 'string'
       ? bucket.trim().toUpperCase()
       : '';
@@ -183,6 +196,14 @@ export class LoanHistoryComponent implements OnInit {
     }
   }
 
+  getDisplayLoanStatus(status: any): string {
+    if (this.shouldHideLoanStatus(status)) {
+      return '';
+    }
+
+    return this.pickFirstString(status);
+  }
+
   // 🔥 OVERVIEW CARDS
   get overviewCards() {
     const source = this.overview || this.allSummary;
@@ -191,7 +212,6 @@ export class LoanHistoryComponent implements OnInit {
       { label: 'Total Applications', value: source?.totalApplications, type: 'count' },
       { label: 'Active Loans', value: source?.countsByBucket?.active, type: 'count' },
       { label: 'Closed Loans', value: source?.countsByBucket?.closed, type: 'count' },
-      { label: 'In Progress', value: source?.countsByBucket?.inProgress, type: 'count' },
       { label: 'Approved Amount', value: source?.totalApprovedAmount, type: 'amount' },
       { label: 'Requested Amount', value: source?.totalRequestedAmount, type: 'amount' }
     ];

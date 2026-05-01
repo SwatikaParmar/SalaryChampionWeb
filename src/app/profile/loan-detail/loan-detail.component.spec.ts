@@ -244,8 +244,10 @@ describe('LoanDetailComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
 
+    expect(component.displayLoanStatus).toBe('');
     expect(component.showDisbursedOn).toBeFalse();
     expect(component.disbursedOnDisplay).toBe('28-04-2026');
+    expect(fixture.nativeElement.textContent).not.toContain('In Progress');
     expect(fixture.nativeElement.textContent).not.toContain('Disbursed On');
   });
 });

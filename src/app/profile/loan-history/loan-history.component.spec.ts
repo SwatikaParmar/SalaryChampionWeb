@@ -109,4 +109,41 @@ describe('LoanHistoryComponent', () => {
     expect(component.loanList[0].overview.repayDateDisplay).toBe('20-04-2026');
     expect(component.loanList[0].financials.paidOnDisplay).toBe('20-04-2026');
   });
+
+  it('should not show the in progress tab or status pill in loan history', () => {
+    contentServiceMock.getLoanHistory.and.returnValue(of({
+      data: {
+        items: [
+          {
+            applicationId: 'APP125',
+            applicationNumber: 'SCRFL00171',
+            overview: {
+              loanStatus: 'IN_PROGRESS',
+              approvedAmount: 9000,
+              outstandingAmount: 0
+            }
+          }
+        ],
+        summary: {
+          totalApplications: 1,
+          countsByBucket: {
+            active: 0,
+            closed: 0,
+            inProgress: 1
+          },
+          totalApprovedAmount: 9000,
+          totalRequestedAmount: 9000
+        },
+        total: 1,
+        totalPages: 1
+      }
+    }));
+
+    fixture = TestBed.createComponent(LoanHistoryComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.getDisplayLoanStatus('IN_PROGRESS')).toBe('');
+    expect(fixture.nativeElement.textContent).not.toContain('In Progress');
+  });
 });
