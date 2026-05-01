@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-    apiUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
-  rootPathUrl: "https://dyjrqdgw6rhwz.cloudfront.net/",
+    apiUrl: "https://d1sm1pbrlvdqo6.cloudfront.net/",
+  rootPathUrl: "https://d1sm1pbrlvdqo6.cloudfront.net/",
 };
 

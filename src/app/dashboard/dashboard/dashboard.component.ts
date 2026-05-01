@@ -558,6 +558,10 @@ videoKycModalMessage: string = '';
     );
   }
 
+  get showRepayNowButton(): boolean {
+    return this.pickPositiveAmount(this.activeLoan?.payableNowAmount) !== null;
+  }
+
   get closedLoanSummary(): any | null {
     if (!this.showClosedLoanUnavailableCard) {
       return null;

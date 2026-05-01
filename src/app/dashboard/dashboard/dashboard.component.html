@@ -284,7 +284,11 @@
         <p>{{ dashboardPrimaryCard?.message || 'Your loan is active. Repayment details are available.' }}</p>
       </div>
 
-      <button class="btn-start repay-now-btn" type="button" (click)="openRepayment()">
+      <button
+        *ngIf="showRepayNowButton"
+        class="btn-start repay-now-btn"
+        type="button"
+        (click)="openRepayment()">
         Repay Now
       </button>
     </div>

@@ -306,6 +306,22 @@ describe('DashboardComponent', () => {
     expect(nativeElement.textContent).not.toContain('Delay Days');
   });
 
+  it('should hide repay now button when current outstanding is zero', () => {
+    component.activeLoan = {
+      payableNowAmount: 0
+    };
+
+    expect(component.showRepayNowButton).toBeFalse();
+  });
+
+  it('should show repay now button when current outstanding is greater than zero', () => {
+    component.activeLoan = {
+      payableNowAmount: 7490
+    };
+
+    expect(component.showRepayNowButton).toBeTrue();
+  });
+
   it('should fall back to borrower snapshot refresh when tracker is not visible', async () => {
     component.showTracker = false;
 
