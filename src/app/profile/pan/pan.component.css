@@ -114,6 +114,11 @@
   border: none;
   padding: 10px 18px;
 }
+.btn-primary,
+.btn-secondary {
+  min-width: 120px;
+  min-height: 44px;
+}
 .btn-primary.theme{
   background: linear-gradient(270deg, #2c5aa0, #3da3d5);
 }
@@ -125,6 +130,12 @@
   background: #ccc;
   border: none;
   padding: 10px 18px;
+}
+
+.btn-primary[disabled],
+.btn-secondary[disabled] {
+  cursor: not-allowed;
+  opacity: 0.85;
 }
 
 .pan-form .modal-box h4{
@@ -155,6 +166,13 @@
 }
 .btn-white:hover{
   background: #3c3c3c;
+}
+
+.btn-loading-content {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 @media only screen and (min-width: 320px) and (max-width: 480px) {

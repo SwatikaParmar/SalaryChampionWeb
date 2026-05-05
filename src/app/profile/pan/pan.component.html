@@ -77,12 +77,18 @@
     </div>
 
     <div class="modal-actions">
-      <button class="btn-secondary btn-white" (click)="closeModal()">
+      <button class="btn-secondary btn-white" (click)="closeModal()" [disabled]="isLoading">
         Cancel
       </button>
 
-      <button class="btn-primary theme" (click)="confirmPan()">
-        Verify
+      <button class="btn-primary theme" (click)="confirmPan()" [disabled]="isLoading">
+        <ng-container *ngIf="!isLoading; else verifyingState">Verify</ng-container>
+        <ng-template #verifyingState>
+          <span class="btn-loading-content">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            Verifying...
+          </span>
+        </ng-template>
       </button>
     </div>
 

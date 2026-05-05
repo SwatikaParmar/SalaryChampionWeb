@@ -128,6 +128,10 @@ export class PanComponent {
   }
 
   closeModal() {
+    if (this.isLoading) {
+      return;
+    }
+
     this.showModal = false;
   }
   // 🔹 STEP 2: VERIFY PAN (FINAL)

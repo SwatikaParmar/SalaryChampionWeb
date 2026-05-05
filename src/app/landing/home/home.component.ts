@@ -10,7 +10,7 @@ export class HomeComponent implements OnInit {
 
   readonly minLoanAmount = 7000;
   readonly maxLoanAmount = 100000;
-  readonly loanAmountStep = 1000;
+  readonly loanAmountStep = 500;
 
   loanAmount = 50000;
   tenure = 15; // days
