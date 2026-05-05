@@ -145,16 +145,16 @@
         <!-- Loan Amount -->
   <!-- Loan Amount -->
 <div class="range-labels">
-  <span>₹7000</span>
+  <span>₹{{ minLoanAmount | number }}</span>
   <span class="active">₹{{ loanAmount | number }}</span>
-  <span>₹1,00,000</span>
+  <span>₹{{ maxLoanAmount | number }}</span>
 </div>
 
 <input
   type="range"
-  min="7000"
-  max="100000"
-  step="5000"
+  [min]="minLoanAmount"
+  [max]="maxLoanAmount"
+  [step]="loanAmountStep"
   [(ngModel)]="loanAmount"
   (input)="calculateLoan()"
   class="slider"

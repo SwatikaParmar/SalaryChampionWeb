@@ -8,6 +8,10 @@ import { Component, OnInit } from '@angular/core';
 export class HomeComponent implements OnInit {
   isMenuOpen = false;
 
+  readonly minLoanAmount = 7000;
+  readonly maxLoanAmount = 100000;
+  readonly loanAmountStep = 1000;
+
   loanAmount = 50000;
   tenure = 15; // days
 
