@@ -184,6 +184,20 @@
     font-size: 14px;
 }
 
+.upload-box-text {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 14px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.upload-file-name {
+  font-weight: 500;
+}
+
 .upload-icon {
   font-size: 26px;
   display: block;
@@ -232,9 +246,4 @@
     .docoment-page{
         padding: 30px 15px;
     }
-    .upload-modal .upload-box span {
-      font-size: 14px;
-      display: block;
-      word-wrap: break-word;
-  }
 }

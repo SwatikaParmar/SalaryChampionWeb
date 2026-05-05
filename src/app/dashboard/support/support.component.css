@@ -1,0 +1,141 @@
+.support-page {
+  min-height: calc(100vh - 80px);
+  padding: 30px;
+  background:
+    radial-gradient(circle at top left, rgba(49, 165, 229, 0.12), transparent 26%),
+    linear-gradient(180deg, #f5f8ff, #eef4ff);
+}
+
+.support-shell {
+  width: min(100%, 860px);
+}
+
+.support-head {
+  margin-bottom: 22px;
+}
+
+.support-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(28, 70, 133, 0.08);
+  color: #1c4685;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.support-head h1 {
+  margin: 14px 0 8px;
+  color: #1a2b4c;
+  font-size: 34px;
+  font-weight: 700;
+}
+
+.support-head p {
+  margin: 0;
+  max-width: 620px;
+  color: #5b6880;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.support-card {
+  padding: 26px 28px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(88, 197, 255, 0.24), transparent 28%),
+    linear-gradient(135deg, #1e2c87, #27349c 55%, #2a34a8);
+  box-shadow: 0 22px 50px rgba(30, 44, 135, 0.24);
+  display: grid;
+  gap: 24px;
+}
+
+.support-row {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.support-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.support-icon i {
+  color: #29f0e1;
+  font-size: 22px;
+}
+
+.support-copy {
+  min-width: 0;
+}
+
+.support-copy span {
+  display: inline-block;
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.support-copy p,
+.support-copy a {
+  margin: 0;
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.support-copy a:hover {
+  color: #aef7ff;
+}
+
+@media (max-width: 768px) {
+  .support-page {
+    padding: 22px 16px;
+  }
+
+  .support-head h1 {
+    font-size: 28px;
+  }
+
+  .support-card {
+    padding: 20px 18px;
+    border-radius: 20px;
+    gap: 18px;
+  }
+
+  .support-row {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .support-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .support-icon i {
+    font-size: 18px;
+  }
+
+  .support-copy p,
+  .support-copy a {
+    font-size: 16px;
+  }
+}

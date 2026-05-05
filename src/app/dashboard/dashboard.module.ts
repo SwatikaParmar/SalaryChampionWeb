@@ -7,6 +7,7 @@ import { DashboardLayoutComponent } from './dashboard-layout/dashboard-layout.co
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { FormsModule } from '@angular/forms';
+import { SupportComponent } from './support/support.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { FormsModule } from '@angular/forms';
     DashboardComponent,
     DashboardLayoutComponent,
     SidebarComponent,
-    HeaderComponent
+    HeaderComponent,
+    SupportComponent
   ],
   imports: [
     CommonModule,

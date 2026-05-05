@@ -58,6 +58,14 @@
       (change)="onFileChange($event)"
     />
 
+    <p
+      *ngIf="selectedFile"
+      class="selected-file-name"
+      [title]="selectedFile.name"
+    >
+      {{ selectedFile.name }}
+    </p>
+
     <input
       type="password"
       class="form-control mt-2"

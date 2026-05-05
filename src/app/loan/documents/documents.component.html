@@ -70,8 +70,14 @@
 
     <!-- FILE SELECT -->
     <label class="upload-box" [class.disabled]="isUploading">
-      <span *ngIf="!selectedFile" style="font-size: 14px; word-wrap: break-word;">⬆ Tap to select file</span>
-      <span *ngIf="selectedFile">📄 {{ selectedFile.name }}</span>
+      <span *ngIf="!selectedFile" class="upload-box-text">⬆ Tap to select file</span>
+      <span
+        *ngIf="selectedFile"
+        class="upload-box-text upload-file-name"
+        [title]="selectedFile.name"
+      >
+        📄 {{ selectedFile.name }}
+      </span>
 
       <input
         type="file"

@@ -11,6 +11,7 @@ import { environment } from '../environments/environment';
 })
 export class AuthServiceService {
   private readonly loginLocationKey = 'loginLocation';
+  private readonly lastProtectedRouteKey = 'lastProtectedRoute';
   private readonly loginFlowKeys = ['loginPhone', 'loginMobile', 'otpTimer'];
   private locationRequestPromise: Promise<{ lat: number; long: number }> | null =
     null;
@@ -57,6 +58,30 @@ export class AuthServiceService {
     localStorage.removeItem(key);
   }
 
+  private getSessionStoredItem(key: string): string | null {
+    if (!this.isBrowser || typeof sessionStorage === 'undefined') {
+      return null;
+    }
+
+    return sessionStorage.getItem(key);
+  }
+
+  private setSessionStoredItem(key: string, value: string) {
+    if (!this.isBrowser || typeof sessionStorage === 'undefined') {
+      return;
+    }
+
+    sessionStorage.setItem(key, value);
+  }
+
+  private removeSessionStoredItem(key: string) {
+    if (!this.isBrowser || typeof sessionStorage === 'undefined') {
+      return;
+    }
+
+    sessionStorage.removeItem(key);
+  }
+
   private getStoredJson(key: string) {
     const value = this.getStoredItem(key);
 
@@ -98,6 +123,22 @@ export class AuthServiceService {
 
   clearLoginLocation() {
     this.removeStoredItem(this.loginLocationKey);
+  }
+
+  setLastProtectedRoute(url: string) {
+    if (!url) {
+      return;
+    }
+
+    this.setSessionStoredItem(this.lastProtectedRouteKey, url);
+  }
+
+  getLastProtectedRoute(): string | null {
+    return this.getSessionStoredItem(this.lastProtectedRouteKey);
+  }
+
+  clearLastProtectedRoute() {
+    this.removeSessionStoredItem(this.lastProtectedRouteKey);
   }
 
   private getCurrentPosition(options?: PositionOptions) {
@@ -142,6 +183,7 @@ export class AuthServiceService {
     this.removeStoredItem('accessToken');
     this.removeStoredItem('refreshToken');
     this.clearLoginFlowData(preserveLoginLocation);
+    this.clearLastProtectedRoute();
 
     if (this.isBrowser && typeof sessionStorage !== 'undefined') {
       sessionStorage.clear();

@@ -852,26 +852,7 @@ handleLoanJourneyAction() {
 }
 
 handleSupportAction() {
-  const phone = this.pickFirstString(
-    this.dashboardPrimaryCard?.cta?.phone,
-    this.creditManager?.mobile
-  );
-  const email = this.pickFirstString(
-    this.dashboardPrimaryCard?.cta?.email,
-    this.creditManager?.email
-  );
-
-  if (phone && typeof window !== 'undefined') {
-    window.location.href = `tel:${phone}`;
-    return;
-  }
-
-  if (email && typeof window !== 'undefined') {
-    window.location.href = `mailto:${email}`;
-    return;
-  }
-
-  this.toastr.info('Support details are not available right now.');
+  this.router.navigate(['/dashboard/support']);
 }
 
 handleReloanCardAction() {

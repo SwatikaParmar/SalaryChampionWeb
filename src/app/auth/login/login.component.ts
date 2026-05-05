@@ -101,7 +101,7 @@ export class LoginComponent implements OnInit {
           }
 
           this.toastr.success(res?.message || 'OTP sent successfully');
-          this.router.navigate(['/auth/otp']);
+          this.router.navigate(['/auth/otp'], { replaceUrl: true });
         } else {
           this.toastr.error(getFirstApiErrorMessage(res, 'Failed to send OTP'));
         }

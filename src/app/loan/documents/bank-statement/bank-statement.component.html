@@ -39,6 +39,14 @@
           (change)="onFilePicked($event)"
         />
 
+        <p
+          *ngIf="selectedFile"
+          class="selected-file-name"
+          [title]="selectedFile.name"
+        >
+          {{ selectedFile.name }}
+        </p>
+
         <!-- Password -->
         <label class="form-label mt-3">
           Password (if protected)

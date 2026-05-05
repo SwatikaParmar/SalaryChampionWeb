@@ -36,7 +36,13 @@
   <img src="assets/images/support.svg" class="img-fluid">
   Loan History
 </li>
-    <li><img src="assets/images/support.svg" class="img-fluid"> Support</li>
+    <li
+      [routerLink]="['/dashboard/support']"
+      routerLinkActive="active"
+      (click)="isMobile && closeSidebar()"
+    >
+      <img src="assets/images/support.svg" class="img-fluid"> Support
+    </li>
     <li
       [routerLink]="['/dashboard/profile/terms-and-conditions']"
       routerLinkActive="active"

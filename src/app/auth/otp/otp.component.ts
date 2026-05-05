@@ -52,7 +52,7 @@ export class OtpComponent implements OnInit, OnDestroy {
 
     if (!this.phone) {
       if (this.isBrowser) {
-        this.router.navigate(['/auth/login']);
+        this.router.navigate(['/auth/login'], { replaceUrl: true });
       }
       return;
     }
@@ -170,14 +170,18 @@ export class OtpComponent implements OnInit, OnDestroy {
 
         if (roles.includes('BORROWER')) {
           if (!data.basicFlow?.steps?.panVerification) {
-            this.router.navigate(['/dashboard/profile/pan']);
+            this.router.navigate(['/dashboard/profile/pan'], {
+              replaceUrl: true,
+            });
           } else if (!data.basicFlow?.steps?.basicInformation) {
-            this.router.navigate(['/dashboard/profile/basic-info']);
+            this.router.navigate(['/dashboard/profile/basic-info'], {
+              replaceUrl: true,
+            });
           } else {
-            this.router.navigate(['/dashboard']);
+            this.router.navigate(['/dashboard'], { replaceUrl: true });
           }
         } else {
-          this.router.navigate(['/dashboard']);
+          this.router.navigate(['/dashboard'], { replaceUrl: true });
         }
       },
       error: (err) => {
@@ -226,6 +230,7 @@ export class OtpComponent implements OnInit, OnDestroy {
   editNumber() {
     this.router.navigate(['/auth/login'], {
       queryParams: { edit: true },
+      replaceUrl: true,
     });
   }
 
