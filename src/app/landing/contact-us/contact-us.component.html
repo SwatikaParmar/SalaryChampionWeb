@@ -101,16 +101,18 @@
                 <!-- Item 1 -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed"
+                        <button class="accordion-button"
+                                [class.collapsed]="openFaq !== 'faq1'"
                                 type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#faq1">
+                                [attr.aria-expanded]="openFaq === 'faq1'"
+                                aria-controls="faq1"
+                                (click)="toggleFaq('faq1')">
                             Personal Loan
                         </button>
                     </h2>
                     <div id="faq1"
                         class="accordion-collapse collapse"
-                        data-bs-parent="#faqAccordion">
+                        [class.show]="openFaq === 'faq1'">
                         <div class="accordion-body">
                             Information related to Personal Loan goes here.
                         </div>
@@ -120,16 +122,18 @@
                 <!-- Item 2 -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed"
+                        <button class="accordion-button"
+                                [class.collapsed]="openFaq !== 'faq2'"
                                 type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#faq2">
+                                [attr.aria-expanded]="openFaq === 'faq2'"
+                                aria-controls="faq2"
+                                (click)="toggleFaq('faq2')">
                             Credit Tracker
                         </button>
                     </h2>
                     <div id="faq2"
                         class="accordion-collapse collapse"
-                        data-bs-parent="#faqAccordion">
+                        [class.show]="openFaq === 'faq2'">
                         <div class="accordion-body">
                             Details about Credit Tracker services.
                         </div>
@@ -139,16 +143,18 @@
                 <!-- Item 3 -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed"
+                        <button class="accordion-button"
+                                [class.collapsed]="openFaq !== 'faq3'"
                                 type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#faq3">
+                                [attr.aria-expanded]="openFaq === 'faq3'"
+                                aria-controls="faq3"
+                                (click)="toggleFaq('faq3')">
                             FD Select
                         </button>
                     </h2>
                     <div id="faq3"
                         class="accordion-collapse collapse"
-                        data-bs-parent="#faqAccordion">
+                        [class.show]="openFaq === 'faq3'">
                         <div class="accordion-body">
                             FD Select related FAQs content.
                         </div>
@@ -158,16 +164,18 @@
                 <!-- Item 4 -->
                 <div class="accordion-item">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed"
+                        <button class="accordion-button"
+                                [class.collapsed]="openFaq !== 'faq4'"
                                 type="button"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#faq4">
+                                [attr.aria-expanded]="openFaq === 'faq4'"
+                                aria-controls="faq4"
+                                (click)="toggleFaq('faq4')">
                             Money Manager
                         </button>
                     </h2>
                     <div id="faq4"
                         class="accordion-collapse collapse"
-                        data-bs-parent="#faqAccordion">
+                        [class.show]="openFaq === 'faq4'">
                         <div class="accordion-body">
                             Money Manager FAQ details here.
                         </div>

@@ -20,4 +20,24 @@ describe('ContactUsComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should open an FAQ when clicked', () => {
+    component.toggleFaq('faq1');
+
+    expect(component.openFaq).toBe('faq1');
+  });
+
+  it('should close the same FAQ when clicked again', () => {
+    component.toggleFaq('faq1');
+    component.toggleFaq('faq1');
+
+    expect(component.openFaq).toBeNull();
+  });
+
+  it('should switch to another FAQ when a different one is clicked', () => {
+    component.toggleFaq('faq1');
+    component.toggleFaq('faq2');
+
+    expect(component.openFaq).toBe('faq2');
+  });
 });

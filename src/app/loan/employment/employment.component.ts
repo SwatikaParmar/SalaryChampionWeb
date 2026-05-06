@@ -123,7 +123,7 @@ export class EmploymentComponent implements OnInit {
         residingSince: ['', Validators.required],
       }),
       companyDetail: this.fb.group({
-        workingFromHome: [null, Validators.required],
+        workingFromHome: [false, Validators.required],
         companyName: ['', [Validators.required, Validators.minLength(2)]],
         companyType: ['', Validators.required],
         designation: ['', [Validators.required, Validators.minLength(2)]],
@@ -312,7 +312,8 @@ export class EmploymentComponent implements OnInit {
         residingSince: normalizeDateForInput(currentAddress?.residingSince),
       },
       companyDetail: {
-        workingFromHome: this.normalizeBoolean(companyEmployment?.workingFromHome),
+        workingFromHome:
+          this.normalizeBoolean(companyEmployment?.workingFromHome) ?? false,
         companyName: companyApplication?.companyName || '',
         companyType: companyApplication?.companyType || '',
         designation: companyEmployment?.designation || '',

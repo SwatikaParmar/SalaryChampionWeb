@@ -2220,9 +2220,9 @@ private openVideoKycInNewTab(): Window | null {
     } catch {
       // Ignore browser restrictions while still continuing the KYC flow.
     }
-    this.toastr.info('Complete Video KYC in the new tab, then come back and click Refresh Status.');
+    // this.toastr.info('Complete Video KYC in the new tab, then come back and click Refresh Status.');
   } else {
-    this.toastr.error('Please allow popups to continue Video KYC');
+    // this.toastr.error('Please allow popups to continue Video KYC');
   }
 
   return videoKycWindow;
