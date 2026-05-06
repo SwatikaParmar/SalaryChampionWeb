@@ -44,7 +44,6 @@ export class CalculatorComponent implements OnInit {
     this.getBorrowerSnapshot();
   }
 
-  // ================= GET BORROWER SNAPSHOT =================
 // ================= GET BORROWER SNAPSHOT =================
 getBorrowerSnapshot() {
   this.contentService.getBorrowerSnapshot().subscribe({
@@ -71,9 +70,7 @@ getBorrowerSnapshot() {
       this.principal = quote?.principal || this.minPrincipal;
       this.tenure = eligibility.tenureDays || this.minTenure;
 
-      // 🔥 IMPORTANT FIX
-      this.recalculateQuote();  // 👈 ADD THIS LINE
-
+      this.recalculateQuote();  
     },
     error: () => console.error('Failed to fetch borrower snapshot'),
   });
