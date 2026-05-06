@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardLayoutComponent } from './dashboard-layout/dashboard-layout.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 
 const routes: Routes = [
   {
@@ -9,6 +11,8 @@ const routes: Routes = [
     component: DashboardLayoutComponent,
     children: [
       { path: '', component: DashboardComponent },
+      { path: 'terms-conditions', component: TermsConditionsComponent },
+      { path: 'privacy-policy', component: PrivacyPolicyComponent },
 
       {
         path: 'profile',

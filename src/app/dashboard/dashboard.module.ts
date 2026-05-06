@@ -7,6 +7,8 @@ import { DashboardLayoutComponent } from './dashboard-layout/dashboard-layout.co
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { FormsModule } from '@angular/forms';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 
 
 @NgModule({
@@ -14,7 +16,9 @@ import { FormsModule } from '@angular/forms';
     DashboardComponent,
     DashboardLayoutComponent,
     SidebarComponent,
-    HeaderComponent
+    HeaderComponent,
+    PrivacyPolicyComponent,
+    TermsConditionsComponent
   ],
   imports: [
     CommonModule,
