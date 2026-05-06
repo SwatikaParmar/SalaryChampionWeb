@@ -62,3 +62,31 @@
     height: 100%;
     align-items: center;
 }
+
+.bank-verify-wrapper .row {
+  display: flex;
+  align-items: stretch; /* 🔥 equal height */
+}
+
+.bank-verify-wrapper .col-md-6 {
+  display: flex;
+}
+
+.bank-verify-card,
+.right-card {
+  width: 100%;
+  background: #fff;
+  border-radius: 12px;
+  padding: 51px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* center content */
+  height: 100%; /* 🔥 key line */
+}
+
+/* right image control */
+.right-card img {
+  max-height: 200px;
+  object-fit: contain;
+  margin: 0 auto;
+}

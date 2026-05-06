@@ -42,9 +42,21 @@
         <button
           class="theme-btn"
           type="submit"
-          [disabled]="otpForm.invalid || isLoading"
+          [disabled]="otpForm.invalid || isLoading || isLocationLoading"
         >
-          {{ isLoading ? 'Verifying...' : 'VERIFY OTP' }}
+          <span
+            *ngIf="isLoading || isLocationLoading"
+            class="spinner-border spinner-border-sm me-2"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          {{
+            isLocationLoading
+              ? 'Fetching location...'
+              : isLoading
+                ? 'Verifying...'
+                : 'VERIFY OTP'
+          }}
         </button>
       </form>
 

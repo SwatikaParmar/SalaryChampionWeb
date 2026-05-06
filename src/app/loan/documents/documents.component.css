@@ -181,6 +181,21 @@
     margin: 16px 0;
     cursor: pointer;
     font-family: "Poppins", sans-serif;
+    font-size: 14px;
+}
+
+.upload-box-text {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  font-size: 14px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.upload-file-name {
+  font-weight: 500;
 }
 
 .upload-icon {
@@ -225,4 +240,10 @@
 .upload-box.disabled {
   opacity: 0.6;
   pointer-events: none;
+}
+
+@media only screen and (max-width: 767px) {
+    .docoment-page{
+        padding: 30px 15px;
+    }
 }

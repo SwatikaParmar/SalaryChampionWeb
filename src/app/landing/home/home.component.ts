@@ -6,6 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit {
+  isMenuOpen = false;
+
+  readonly minLoanAmount = 7000;
+  readonly maxLoanAmount = 100000;
+  readonly loanAmountStep = 500;
 
   loanAmount = 50000;
   tenure = 15; // days
@@ -21,6 +26,10 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.calculateLoan();
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
   }
 
   calculateLoan() {

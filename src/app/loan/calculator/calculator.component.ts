@@ -98,7 +98,6 @@ const payload = {
   processingFee: this.processingFeePercent,
   loanPurpose: this.purpose
 };
-
 this.contentService.emiLoanQuote(payload).subscribe({
   next: (res: any) => {
 
@@ -128,10 +127,9 @@ this.contentService.emiLoanQuote(payload).subscribe({
       decision: 'ACCEPT',
       amountApproved: this.principal,
       roi: this.interestRateMonthly / 100, // convert % to decimal
-      tenureMonths: Math.ceil(this.tenure / 30), // days → months (safe)
+      tenureMonths: Math.ceil(this.tenure), // days → months (safe)
       remarks: 'Customer accepted the quote',
     };
-
     this.contentService.accetLoanDecision(payload).subscribe({
       next: (res: any) => {
         if (res?.success) {

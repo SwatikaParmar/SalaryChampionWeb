@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 
-
 @NgModule({
   declarations: [
     DashboardComponent,
@@ -18,12 +17,8 @@ import { TermsConditionsComponent } from './terms-conditions/terms-conditions.co
     SidebarComponent,
     HeaderComponent,
     PrivacyPolicyComponent,
-    TermsConditionsComponent
+    TermsConditionsComponent,
   ],
-  imports: [
-    CommonModule,
-    DashboardRoutingModule,
-    FormsModule   
-  ]
+  imports: [CommonModule, DashboardRoutingModule, FormsModule],
 })
-export class DashboardModule { }
+export class DashboardModule {}

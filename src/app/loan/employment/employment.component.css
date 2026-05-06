@@ -15,6 +15,12 @@
     /* padding: 12px 18px; */
 }
 
+.page-note {
+  margin: 0 0 16px;
+  color: #555;
+  font-size: 13px;
+}
+
 /* ================= GRID ================= */
 .company-grid {
   display: grid;
@@ -25,7 +31,11 @@
 /* ================= CARD ================= */
 .company-card {
   background: #fff;
-    padding: 30px;
+  padding: 30px;
+}
+
+.company-card-full {
+  grid-column: 1 / -1;
 }
 
 /* ================= TOGGLE ================= */
@@ -54,6 +64,11 @@
   background: #3e9ddd;
   color: #fff;
   font-weight: 500;
+}
+
+.toggle-btns button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* ================= FORM ================= */
@@ -88,6 +103,41 @@
     color: #444;
 }
 
+.date-field {
+  position: relative;
+}
+
+.date-text-input {
+  padding-right: 42px !important;
+}
+
+.date-picker-trigger {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #444;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.date-picker-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.native-date-picker {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .form-group input:disabled {
   background: #cfd8e6;
   color: #555;
@@ -116,6 +166,13 @@
     margin-bottom: 15px;
 }
 
+.section-note {
+  color: #c57b00;
+  font-size: 12px;
+  margin-top: -8px;
+  display: block;
+}
+
 /* ================= BUTTONS ================= */
 .btn-row {
   display: flex;
@@ -139,6 +196,22 @@
     color:#fff;
 }
 
+.btn-secondary {
+    font-family: "Poppins", sans-serif;
+    border: 1px solid #3fa9f5;
+    padding: 10px 30px;
+    border-radius: 7px;
+    height: 48px;
+    color: #3fa9f5;
+    font-size: 14px;
+    background: transparent;
+    cursor: pointer;
+}
+.btn-secondary:hover{
+    background: #3fa9f5;
+    color:#fff;
+}
+
 .btn-black {        
     font-family: "Poppins", sans-serif;
     border: 1px solid #ddd;
@@ -153,6 +226,21 @@
 .btn-black:hover{
     background: #3c3c3c;
     color:#fff;
+}
+
+.btn-save:disabled,
+.btn-secondary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-black,
+.btn-secondary,
+.btn-save {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
 }
 
 .btn-continue {

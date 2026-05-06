@@ -119,3 +119,12 @@
     font-weight: 500;
     margin: 0;
 }
+
+@media only screen and (max-width: 767px) {
+    .status-container, .status-card{
+        padding: 30px 15px;
+    }
+    .xs-sm-mt-20{
+      margin-top: 20px;
+    }
+}

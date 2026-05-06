@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrl: './contact-us.component.css'
 })
 export class ContactUsComponent {
+  openFaq: string | null = null;
 
+  toggleFaq(faqId: string): void {
+    this.openFaq = this.openFaq === faqId ? null : faqId;
+  }
 }

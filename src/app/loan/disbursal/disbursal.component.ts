@@ -4,6 +4,7 @@ import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 declare var bootstrap: any;
 
 @Component({
@@ -17,6 +18,15 @@ export class DisbursalComponent implements OnInit {
   isSubmitting = false;
   id: any;
   isAccountReadonly = false;
+  userId: any;
+  ifscSuggestions: Array<{ ifscCode: string; bankName: string; city: string }> =
+    [];
+  selectedIfscOption: { ifscCode: string; bankName: string; city: string } | null =
+    null;
+  showIfscSuggestions = false;
+  showIfscDetails = false;
+  isIfscLookupLoading = false;
+  private lastIfscQueried = '';
 
   constructor(
     private fb: FormBuilder,
@@ -70,16 +80,16 @@ export class DisbursalComponent implements OnInit {
       next: (res: any) => {
         if (!res?.success) {
           this.spinner.hide();
-          this.toastr.error('Failed to load borrower details');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower details'));
           return;
         }
-
         this.applicationId = res.data.application?.id;
+        this.userId = res.data.user.id;
         this.getDisbursalBankDetails();
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to fetch borrower snapshot');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'));
       },
     });
   }
@@ -97,20 +107,26 @@ export class DisbursalComponent implements OnInit {
           if (!res?.success || !res.data?.length) return;
 
           const bank = res.data[0];
+          const accountNumber = bank.accountNumber || '';
 
           this.disbursalForm.patchValue({
             ifsc: bank.ifsc,
             holderName: bank.holderName,
             mobile: bank.mobile,
-            accountNumber: bank.accountNumberMasked,
+            accountNumber,
           });
 
           this.id = bank.id;
-          this.isAccountReadonly = true;
+          this.isAccountReadonly = !!accountNumber;
+
+          const existingIfsc = (bank.ifsc || '').toUpperCase();
+          if (existingIfsc.length === 11) {
+            this.lookupIfsc(existingIfsc);
+          }
         },
-        error: () => {
+        error: (err) => {
           this.spinner.hide();
-          this.toastr.error('Failed to fetch bank details');
+          this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch bank details'));
         },
       });
   }
@@ -119,7 +135,7 @@ export class DisbursalComponent implements OnInit {
      SUBMIT BANK DETAILS
   =============================== */
 submit() {
-  if (this.disbursalForm.invalid || this.isSubmitting) {
+  if (this.disbursalForm.invalid || this.isSubmitting || !this.isIfscVerified) {
     this.disbursalForm.markAllAsTouched();
     return;
   }
@@ -128,31 +144,34 @@ submit() {
   this.spinner.show();
 
   // ✅ payload me id sirf tab add hogi jab value ho
-  const payload: any = {
-    applicationId: this.applicationId,
-    ...this.disbursalForm.getRawValue(),
-    ...(this.id ? { id: this.id } : {}) // 🔥 MAGIC LINE
-  };
-
+const payload: any = {
+  applicationId: this.applicationId,
+  ...this.disbursalForm.getRawValue(),
+  ...(this.userId ? { id: this.userId } : {}) // ✅ updated
+};
   this.contentService.disbursalBankAccount(payload).subscribe({
     next: (res: any) => {
       if (!res?.success) {
         this.spinner.hide();
         this.isSubmitting = false;
-        this.toastr.error('Failed to save bank details');
+        this.toastr.error(
+          getFirstApiErrorMessage(res, 'Failed to save bank details'),
+        );
         return;
       }
-
+debugger
       // ✅ STEP 1: Bank details saved
-      this.toastr.success('Bank details saved successfully ✅');
+      // this.toastr.success('Bank details saved successfully');
 
       // ✅ STEP 2: Penny Drop hit
       this.hitPennyDrop();
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
       this.isSubmitting = false;
-      this.toastr.error('Something went wrong');
+      this.toastr.error(
+        getFirstApiErrorMessage(err, 'Failed to save bank details'),
+      );
     },
   });
 }
@@ -167,6 +186,94 @@ onIfscInput(event: Event) {
 
   // update form control without infinite loop
   this.disbursalForm.get('ifsc')?.setValue(upperValue, { emitEvent: false });
+
+  if (upperValue.length === 11) {
+    this.lookupIfsc(upperValue);
+    return;
+  }
+
+  this.lastIfscQueried = '';
+  this.ifscSuggestions = [];
+  this.showIfscSuggestions = false;
+  this.selectedIfscOption = null;
+  this.showIfscDetails = false;
+}
+
+lookupIfsc(ifscCode: string) {
+  if (!ifscCode || ifscCode.length !== 11 || this.lastIfscQueried === ifscCode) {
+    return;
+  }
+
+  this.lastIfscQueried = ifscCode;
+  this.isIfscLookupLoading = true;
+  this.ifscSuggestions = [];
+
+  this.contentService.ifscLookup(ifscCode).subscribe({
+    next: (res: any) => {
+      this.isIfscLookupLoading = false;
+
+      const details = res?.data?.details;
+      if (!res?.success || !details?.ifscCode) {
+        this.showIfscSuggestions = false;
+        this.selectedIfscOption = null;
+        this.showIfscDetails = false;
+        return;
+      }
+
+      this.ifscSuggestions = [
+        {
+          ifscCode: details.ifscCode,
+          bankName: details.bankName || '-',
+          city: details.city || '-',
+        },
+      ];
+      this.selectedIfscOption = this.ifscSuggestions[0];
+      this.showIfscSuggestions = true;
+    },
+    error: () => {
+      this.isIfscLookupLoading = false;
+      this.showIfscSuggestions = false;
+      this.ifscSuggestions = [];
+      this.selectedIfscOption = null;
+      this.showIfscDetails = false;
+    },
+  });
+}
+
+onIfscFocus() {
+  if (this.ifscSuggestions.length) {
+    this.showIfscSuggestions = true;
+  }
+}
+
+onIfscBlur() {
+  // Delay so mousedown selection can run before list hides.
+  setTimeout(() => {
+    this.showIfscSuggestions = false;
+  }, 150);
+}
+
+selectIfsc(option: { ifscCode: string; bankName: string; city: string }) {
+  this.disbursalForm.get('ifsc')?.setValue(option.ifscCode);
+  this.ifscSuggestions = [option];
+  this.selectedIfscOption = option;
+  this.showIfscSuggestions = false;
+  this.showIfscDetails = false;
+}
+
+toggleIfscDetails(event: Event) {
+  event.preventDefault();
+  event.stopPropagation();
+
+  if (!this.selectedIfscOption) {
+    return;
+  }
+
+  this.showIfscDetails = !this.showIfscDetails;
+}
+
+closeIfscDetails() {
+  this.showIfscDetails = false;
 }
 
 
@@ -180,7 +287,12 @@ hitPennyDrop() {
       this.spinner.hide();
       this.isSubmitting = false;
 
-      if (res?.success) {
+      const pennyDropStatus = (res?.data?.bankAccount?.pennyDropStatus || '').toUpperCase();
+      const providerReason =
+        res?.data?.provider?.reason ||
+        getFirstApiErrorMessage(res, 'Penny drop verification failed');
+
+      if (res?.success && pennyDropStatus === 'MATCHED') {
         // 🔥 OPEN SUCCESS MODAL
         const modalEl = document.getElementById('pennyDropSuccessModal');
         if (modalEl) {
@@ -191,15 +303,13 @@ hitPennyDrop() {
         //  this.router.navigate(['/dashboard/loan']);
 
       } else {
-        this.toastr.warning(
-          res?.message || 'Penny drop verification failed'
-        );
+        this.toastr.error(providerReason);
       }
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
       this.isSubmitting = false;
-      this.toastr.error('Penny drop failed');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Penny drop failed'));
     }
   });
 }
@@ -227,5 +337,15 @@ onPennyDropOk() {
       holderName: any;
       mobile: any;
     };
+  }
+
+  get isIfscVerified(): boolean {
+    const ifscValue = this.disbursalForm.get('ifsc')?.value;
+    return !!(
+      this.selectedIfscOption &&
+      ifscValue &&
+      ifscValue === this.selectedIfscOption.ifscCode &&
+      !this.isIfscLookupLoading
+    );
   }
 }

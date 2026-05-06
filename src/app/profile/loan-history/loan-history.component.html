@@ -1,12 +1,9 @@
 <div class="loan-history-page">
 
-  <!-- HEADER -->
   <div class="history-header">
     <h2>Loan History</h2>
   </div>
 
-
-  <!-- TABS -->
   <div class="history-tabs">
 
     <button [class.active]="tab==='ALL'" (click)="changeTab('ALL')">
@@ -21,68 +18,90 @@
       Closed ({{ allSummary?.countsByBucket?.closed || 0 }})
     </button>
 
-    <button [class.active]="tab==='IN_PROGRESS'" (click)="changeTab('IN_PROGRESS')">
-      In Progress ({{ allSummary?.countsByBucket?.inProgress || 0 }})
-    </button>
-
   </div>
 
-  <!-- EMPTY -->
   <div *ngIf="loanList.length === 0" class="empty-state">
     No loan history found
   </div>
 
-  <!-- LIST -->
   <div class="loan-list">
 
     <div class="loan-card" *ngFor="let item of loanList">
-
-      <div class="loan-top">
-        <div>
+      <div class="loan-card-header">
+        <div class="loan-title-block">
+          <span class="loan-kicker">Loan History</span>
           <h4>{{ item.applicationNumber }}</h4>
-          <span class="badge">
-            {{ item.overview?.historyBucket }}
-          </span>
+
+          <div class="loan-pill-row">
+            <span
+              *ngIf="getDisplayLoanStatus(item.overview?.loanStatus) as loanStatus"
+              class="history-pill"
+              [ngClass]="getHistoryBucketClass(loanStatus)">
+              {{ loanStatus }}
+            </span>
+          </div>
         </div>
 
-        <div class="amount">
-          ₹ {{ item.overview?.approvedAmount || item.overview?.requestedAmount || 0 }}
+        <div class="loan-amount-panel">
+          <span>Loan Amount</span>
+          <strong>{{ item.sanctionedAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
         </div>
       </div>
 
-      <div class="loan-mid">
-
-        <div>
-          <label>Status</label>
-          <p>{{ item.status?.loanStatus || item.status?.applicationStatus }}</p>
-        </div>
-
-        <div>
+      <div class="loan-detail-grid">
+        <div class="loan-detail-stat">
           <label>Outstanding</label>
-          <p>₹ {{ item.overview?.outstandingAmount || 0 }}</p>
+          <strong>{{ (item.overview?.outstandingAmount || 0) | currency:'INR':'symbol':'1.0-0' }}</strong>
         </div>
 
-        <div>
-          <label>Next Due</label>
-          <p>{{ item.overview?.nextDueDateDisplay || '-' }}</p>
+        <div class="loan-detail-stat">
+          <label>Repay Date</label>
+          <strong>{{ item.overview?.repayDateDisplay || '-' }}</strong>
         </div>
 
+        <div class="loan-detail-stat" *ngIf="item.financials?.paidOnDisplay">
+          <label>Paid On</label>
+          <strong>{{ item.financials?.paidOnDisplay }}</strong>
+        </div>
+      </div>
+
+      <div class="loan-payment-ledger" *ngIf="item.financials">
+        <div class="ledger-stat">
+          <label>Total Repaid</label>
+          <strong>
+            {{ item.financials?.totalPaidAmount !== null ? (item.financials.totalPaidAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+          </strong>
+        </div>
+
+        <div class="ledger-stat">
+          <label>Interest Amount</label>
+          <strong>
+            {{ item.overview?.currentInterestAmount !== null ? (item.overview.currentInterestAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+          </strong>
+        </div>
+
+        <div class="ledger-stat" *ngIf="item.financials?.penaltyAmount !== null">
+          <label>Penalty Amount</label>
+          <strong>
+            {{ item.financials.penaltyAmount | currency:'INR':'symbol':'1.0-0' }}
+          </strong>
+        </div>
       </div>
 
       <div class="loan-actions">
 
-        <button class="btn-start"
+        <button class="loan-action-primary"
                 (click)="openDetail(item.applicationId)">
           View Details
         </button>
 
-        <button *ngIf="item.closure?.nocUrl"
+        <button class="loan-action-secondary"
+                *ngIf="item.closure?.nocUrl"
                 (click)="openNoc(item.closure.nocUrl)">
           View NOC
         </button>
 
       </div>
-
     </div>
 
   </div>

@@ -79,7 +79,14 @@ Rented
 
 <label>Date Of Birth *</label>
 
-<input type="date" formControlName="dob">
+<input
+type="text"
+placeholder="dd-mm-yyyy"
+[value]="dobDisplay"
+(input)="onDobInput($event)"
+(blur)="onDobBlur()"
+[disabled]="basicForm.get('dob')?.disabled"
+maxlength="10">
 
 </div>
 
@@ -162,16 +169,6 @@ Enter valid email address
 <input type="email"
 formControlName="officialEmail"
 placeholder="Enter Official Mail ID">
-
-<small class="error"
-*ngIf="basicForm.get('officialEmail')?.touched && basicForm.get('officialEmail')?.errors?.['required']">
-Official email is required
-</small>
-
-<small class="error"
-*ngIf="basicForm.get('officialEmail')?.touched && basicForm.get('officialEmail')?.errors?.['pattern']">
-Enter valid official email
-</small>
 
 
 </div>

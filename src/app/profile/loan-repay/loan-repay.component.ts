@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ContentService } from '../../../service/content.service';
 
-type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM';
+import { ContentService } from '../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay } from '../../shared/date-format.util';
+
+type AmountOption = 'FULL' | 'CUSTOM';
+type RepaymentPaymentType = 'PARTIAL' | 'FULL';
 
 @Component({
   selector: 'app-loan-repay',
@@ -12,6 +16,9 @@ type AmountOption = 'MINIMUM' | 'FULL' | 'CUSTOM';
   styleUrls: ['./loan-repay.component.css']
 })
 export class LoanRepayComponent implements OnInit {
+  private readonly repaymentOrderStoragePrefix = 'repay-order:';
+  private readonly repaymentOptionStoragePrefix = 'repay-option:';
+
   applicationId = '';
   summary: any = null;
   refreshResult: any = null;
@@ -74,64 +81,94 @@ export class LoanRepayComponent implements OnInit {
     return this.summary?.loanStatus || '--';
   }
 
-  get payableAmount(): number {
-    return this.toNumber(this.summary?.payableAmount);
+  get dueDateDisplay(): string {
+    return this.summary?.dueDateDisplay || '--';
   }
 
-  get nextDueAmount(): number {
-    return this.toNumber(this.summary?.nextDueAmount);
+  get delayDays(): number {
+    return this.toNumber(this.summary?.delayDays);
   }
 
-  get overdueAmount(): number {
-    return this.toNumber(this.summary?.overdueAmount);
+  get payableNow(): number {
+    return this.toNumber(this.summary?.payableNow);
+  }
+
+  get scheduledDue(): number {
+    return this.toNumber(this.summary?.scheduledDue);
+  }
+
+  get penaltyAmount(): number {
+    return this.toNumber(this.summary?.penaltyAmount);
+  }
+
+  get totalPaid(): number {
+    return this.toNumber(this.summary?.totalPaid);
+  }
+
+  get allowPartialPayment(): boolean {
+    return !!this.summary?.paymentOptions?.allowPartialPayment;
+  }
+
+  get allowFullPayment(): boolean {
+    return !!this.summary?.paymentOptions?.allowFullPayment;
   }
 
   get minPayAmount(): number {
-    return this.toNumber(this.summary?.minPayAmount);
+    return this.toNumber(this.summary?.paymentOptions?.minPayAmount);
   }
 
   get maxPayAmount(): number {
-    return this.toNumber(this.summary?.maxPayAmount);
+    return this.toNumber(this.summary?.paymentOptions?.maxPayAmount);
+  }
+
+  get suggestedAmounts(): number[] {
+    const rawSuggestedAmounts = Array.isArray(this.summary?.paymentOptions?.suggestedAmounts)
+      ? this.summary.paymentOptions.suggestedAmounts
+      : [];
+
+    return Array.from(
+      new Set(
+        rawSuggestedAmounts
+          .map((amount: any) => this.toNumber(amount))
+          .filter((amount: number) => amount > 0)
+          .filter((amount: number) => this.maxPayAmount <= 0 || amount <= this.maxPayAmount)
+          .filter((amount: number) => this.minPayAmount <= 0 || amount >= this.minPayAmount)
+      )
+    );
+  }
+
+  get canShowFullOption(): boolean {
+    return this.allowFullPayment && this.payableNow > 0;
+  }
+
+  get canShowCustomOption(): boolean {
+    return this.allowPartialPayment && this.maxPayAmount > 0;
   }
 
   get selectedAmount(): number {
     if (this.amountOption === 'FULL') {
-      return this.payableAmount;
-    }
-
-    if (this.amountOption === 'MINIMUM') {
-      return this.minPayAmount;
+      return this.payableNow;
     }
 
     return this.toNumber(this.customAmount);
   }
 
-  get paymentType(): 'FULL' | 'PARTIAL' {
-    return this.amountOption === 'FULL' ? 'FULL' : 'PARTIAL';
-  }
-
-  get quickAmounts(): number[] {
-    const summaryAmounts = Array.isArray(this.summary?.suggestedAmounts)
-      ? this.summary.suggestedAmounts
-      : [];
-
-    const normalized = summaryAmounts
-      .map((amount: any) => this.toNumber(amount))
-      .filter((amount: number) => amount > 0)
-      .filter((amount: number) => this.maxPayAmount <= 0 || amount <= this.maxPayAmount)
-      .filter((amount: number) => this.minPayAmount <= 0 || amount >= this.minPayAmount);
-
-    const deduped = Array.from(new Set<number>(normalized));
-
-    if (this.maxPayAmount > 0 && !deduped.includes(this.maxPayAmount)) {
-      deduped.push(this.maxPayAmount);
+  get selectedAmountLabel(): string {
+    switch (this.amountOption) {
+      case 'CUSTOM':
+        return 'Custom Amount';
+      default:
+        return 'Full Payable';
     }
-
-    return deduped.slice(0, 5);
   }
 
   get canPay(): boolean {
-    return this.maxPayAmount > 0 && !this.creatingOrder && !this.refreshingStatus;
+    return !!this.summary &&
+      this.selectedAmount > 0 &&
+      !this.creatingOrder &&
+      !this.refreshingStatus &&
+      !this.loadingSummary &&
+      !this.amountError;
   }
 
   get amountError(): string {
@@ -143,11 +180,11 @@ export class LoanRepayComponent implements OnInit {
       return 'Enter an amount to continue.';
     }
 
-    if (this.selectedAmount < this.minPayAmount) {
+    if (this.minPayAmount > 0 && this.selectedAmount < this.minPayAmount) {
       return `Amount cannot be below ${this.formatCurrency(this.minPayAmount)}.`;
     }
 
-    if (this.selectedAmount > this.maxPayAmount) {
+    if (this.maxPayAmount > 0 && this.selectedAmount > this.maxPayAmount) {
       return `Amount cannot exceed ${this.formatCurrency(this.maxPayAmount)}.`;
     }
 
@@ -163,43 +200,57 @@ export class LoanRepayComponent implements OnInit {
         this.spinner.hide();
         this.loadingSummary = false;
 
-        const raw = res?.data || res;
-        this.summary = this.normalizeSummary(raw);
-
-        if (this.maxPayAmount <= 0) {
-          this.amountOption = 'FULL';
-          this.customAmount = null;
+        if (res?.success === false) {
+          this.summary = null;
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load repayment summary'));
           return;
         }
 
-        if (this.payableAmount > 0) {
-          this.amountOption = 'FULL';
-        } else if (this.minPayAmount > 0) {
-          this.amountOption = 'MINIMUM';
-        } else {
-          this.amountOption = 'CUSTOM';
-        }
+        const raw = res?.data || res;
+        this.summary = this.normalizeSummary(raw, this.summary);
+        this.syncAmountOptionState();
       },
       error: (err) => {
         this.spinner.hide();
         this.loadingSummary = false;
         this.summary = null;
-        this.toastr.error(err?.error?.message || 'Failed to load repayment summary');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load repayment summary'));
       }
     });
   }
 
   selectAmountOption(option: AmountOption): void {
+    if (
+      (option === 'FULL' && !this.canShowFullOption) ||
+      (option === 'CUSTOM' && !this.canShowCustomOption)
+    ) {
+      return;
+    }
+
     this.amountOption = option;
 
-    if (option !== 'CUSTOM') {
-      this.customAmount = null;
+    if (option === 'CUSTOM') {
+      if (!this.customAmount) {
+        this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
+      }
+      return;
     }
+
+    this.customAmount = null;
   }
 
-  applyQuickAmount(amount: number): void {
-    this.amountOption = amount === this.maxPayAmount ? 'FULL' : 'CUSTOM';
-    this.customAmount = amount === this.maxPayAmount ? null : amount;
+  applySuggestedAmount(amount: number): void {
+    if (this.canShowFullOption && amount === this.payableNow) {
+      this.selectAmountOption('FULL');
+      return;
+    }
+
+    if (!this.canShowCustomOption) {
+      return;
+    }
+
+    this.amountOption = 'CUSTOM';
+    this.customAmount = amount;
   }
 
   createPayment(): void {
@@ -207,49 +258,63 @@ export class LoanRepayComponent implements OnInit {
       return;
     }
 
-    if (this.paymentType === 'PARTIAL' && this.amountError) {
+    if (this.amountError) {
       this.toastr.warning(this.amountError);
       return;
     }
 
     const payload = {
-      applicationId: this.applicationId,
-      amount: this.paymentType === 'FULL' ? this.payableAmount : this.selectedAmount,
-      paymentType: this.paymentType,
-      returnUrl: `https://staging.d3vz8sn6l3j2ck.amplifyapp.com/dashboard/profile/loan-repay/${this.applicationId}`,
-      orderNote: `Repayment for ${this.applicationNumber}`
+      applicationId: this.summary?.applicationId || this.applicationId,
+      amount: this.gatewayAmount,
+      paymentType: this.gatewayPaymentType,
+      returnUrl: this.buildPaymentReturnUrl(),
+      orderNote: 'Loan repayment'
     };
+    const createOrderEndpoint = this.summary?.createOrderEndpoint;
+    const request$ = createOrderEndpoint
+      ? this.contentService.postToEndpoint(createOrderEndpoint, payload)
+      : this.contentService.createBorrowerRepaymentOrder(payload);
 
     this.creatingOrder = true;
 
-    this.contentService.createBorrowerRepaymentOrder(payload).subscribe({
+    request$.subscribe({
       next: (res: any) => {
         this.creatingOrder = false;
 
-        const data = res?.data || res;
-        const orderId = data?.cashfreeOrderId || data?.orderId || data?.paymentGatewayOrder?.orderId || '';
-        const paymentUrl =
-          data?.paymentLinkUrl ||
-          data?.paymentLink ||
-          data?.hostedPaymentUrl ||
-          data?.cashfree?.paymentLinkUrl ||
-          data?.cashfree?.hostedPaymentUrl ||
-          '';
-
-        if (orderId) {
-          sessionStorage.setItem(`repay-order:${this.applicationId}`, orderId);
-        }
-
-        if (paymentUrl) {
-          window.location.href = paymentUrl;
+        if (res?.success === false) {
+          this.toastr.error(getFirstApiErrorMessage(res, 'Unable to create payment order'));
           return;
         }
 
-        this.toastr.error('Payment session created, but payment URL is missing.');
+        const data = res?.data || res;
+        const orderId =
+          data?.cashfreeOrderId ||
+          data?.orderId ||
+          data?.paymentGatewayOrder?.orderId ||
+          '';
+        const hostedPaymentUrl =
+          data?.cashfree?.hostedPaymentUrl ||
+          data?.paymentGatewayOrder?.hostedPaymentUrl ||
+          data?.hostedPaymentUrl ||
+          data?.redirectUrl ||
+          '';
+
+        if (orderId) {
+          this.setSessionValue(this.repaymentOrderStorageKey, orderId);
+          this.setSessionValue(this.repaymentOptionStorageKey, this.amountOption);
+        }
+
+        if (hostedPaymentUrl) {
+          window.location.assign(hostedPaymentUrl);
+          return;
+        }
+
+        const paymentLinkMessage = getFirstApiErrorMessage(res, 'Payment link is unavailable right now');
+        this.toastr.error(paymentLinkMessage);
       },
       error: (err) => {
         this.creatingOrder = false;
-        this.toastr.error(err?.error?.message || 'Unable to create payment order');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Unable to create payment order'));
       }
     });
   }
@@ -257,7 +322,7 @@ export class LoanRepayComponent implements OnInit {
   refreshPaymentStatus(orderId?: string): void {
     const resolvedOrderId =
       orderId ||
-      sessionStorage.getItem(`repay-order:${this.applicationId}`) ||
+      this.getSessionValue(this.repaymentOrderStorageKey) ||
       '';
 
     if (!resolvedOrderId) {
@@ -273,17 +338,41 @@ export class LoanRepayComponent implements OnInit {
       next: (res: any) => {
         this.refreshingStatus = false;
 
+        if (res?.success === false) {
+          this.clearCallbackParams();
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to refresh payment status'));
+          return;
+        }
+
         const data = res?.data || res;
         this.refreshResult = this.normalizeSummary(
-          data?.repaymentSummary || data?.repayment || data?.summary || data
+          data?.repaymentSummary || data?.repayment || data?.summary || data,
+          this.summary
         );
         this.paymentResult = data?.payment || data?.paymentResult || null;
         this.orderStatus = data?.paymentGatewayOrder || data?.orderStatus || null;
 
-        if (this.orderStatus?.paidAt || this.orderStatus?.paymentStatus === 'SUCCESS') {
+        const savedRepaymentOption = this.getSessionValue(this.repaymentOptionStorageKey);
+        const shouldRedirectToDashboard =
+          this.isSuccessfulPayment(this.orderStatus) &&
+          savedRepaymentOption === 'FULL';
+
+        if (this.isSuccessfulPayment(this.orderStatus)) {
           this.toastr.success('Payment status updated successfully');
         } else if (this.orderStatus?.paymentStatus === 'FAILED') {
-          this.toastr.error('Payment failed. You can retry from this page.');
+          const paymentFailureMessage =
+            getFirstApiErrorMessage(this.orderStatus) ||
+            getFirstApiErrorMessage(data);
+
+          if (paymentFailureMessage) {
+            this.toastr.error(paymentFailureMessage);
+          }
+        }
+
+        if (shouldRedirectToDashboard) {
+          this.clearRepaymentStorage();
+          this.navigateToDashboardWithRefresh(true);
+          return;
         }
 
         this.clearCallbackParams();
@@ -292,13 +381,22 @@ export class LoanRepayComponent implements OnInit {
       error: (err) => {
         this.refreshingStatus = false;
         this.clearCallbackParams();
-        this.toastr.error(err?.error?.message || 'Failed to refresh payment status');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to refresh payment status'));
       }
     });
   }
 
   goBack(): void {
-this.router.navigateByUrl('/dashboard')  }
+    this.navigateToDashboardWithRefresh();
+  }
+
+  private get repaymentOrderStorageKey(): string {
+    return `${this.repaymentOrderStoragePrefix}${this.applicationId}`;
+  }
+
+  private get repaymentOptionStorageKey(): string {
+    return `${this.repaymentOptionStoragePrefix}${this.applicationId}`;
+  }
 
   private clearCallbackParams(): void {
     if (!this.callbackOrderId || !this.applicationId) {
@@ -311,71 +409,210 @@ this.router.navigateByUrl('/dashboard')  }
     });
   }
 
-  private normalizeSummary(raw: any): any {
+  private isSuccessfulPayment(orderStatus: any): boolean {
+    return !!(orderStatus?.paidAt || orderStatus?.paymentStatus === 'SUCCESS');
+  }
+
+  private navigateToDashboardWithRefresh(shouldSyncRepaymentState = false): void {
+    const dashboardPath = shouldSyncRepaymentState
+      ? '/dashboard?refresh=true'
+      : '/dashboard';
+    const dashboardUrl = this.buildAbsoluteUrl(dashboardPath);
+
+    if (typeof window !== 'undefined') {
+      window.location.replace(dashboardUrl);
+      return;
+    }
+
+    this.router.navigateByUrl('/dashboard', { replaceUrl: true });
+  }
+
+  private buildAbsoluteUrl(path: string): string {
+    const origin =
+      typeof window !== 'undefined' && typeof window.location?.origin === 'string'
+        ? window.location.origin
+        : '';
+
+    return origin ? `${origin}${path}` : path;
+  }
+
+  private get gatewayAmount(): number {
+    return this.selectedAmount;
+  }
+
+  private get gatewayPaymentType(): RepaymentPaymentType {
+    return this.amountOption === 'FULL' ? 'FULL' : 'PARTIAL';
+  }
+
+  private buildPaymentReturnUrl(): string {
+    return this.amountOption === 'FULL'
+      ? this.buildAbsoluteUrl('/dashboard?refresh=true')
+      : this.buildRepaymentReturnUrl();
+  }
+
+  private buildRepaymentReturnUrl(): string {
+    const targetApplicationId = encodeURIComponent(this.summary?.applicationId || this.applicationId);
+    return this.buildAbsoluteUrl(`/dashboard/profile/loan-repay/${targetApplicationId}`);
+  }
+
+  private clearRepaymentStorage(): void {
+    this.removeSessionValue(this.repaymentOrderStorageKey);
+    this.removeSessionValue(this.repaymentOptionStorageKey);
+  }
+
+  private getSessionValue(key: string): string {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+      return '';
+    }
+
+    return sessionStorage.getItem(key)?.trim() || '';
+  }
+
+  private setSessionValue(key: string, value: string): void {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined' || !value) {
+      return;
+    }
+
+    sessionStorage.setItem(key, value);
+  }
+
+  private removeSessionValue(key: string): void {
+    if (typeof window === 'undefined' || typeof sessionStorage === 'undefined') {
+      return;
+    }
+
+    sessionStorage.removeItem(key);
+  }
+
+  private normalizeSummary(raw: any, fallback?: any): any {
+    const base = fallback || {};
     const borrower = raw?.borrower || {};
     const application = raw?.application || {};
-    const dues = raw?.dues || {};
-    const summary = raw?.summary || {};
+    const loan = raw?.loan || {};
+    const summary = raw?.summary || raw;
+    const paymentOptions = raw?.paymentOptions || {};
+    const dueDateRaw = this.pickFirstString(
+      summary?.nextDueDate,
+      raw?.nextDueDate,
+      base?.dueDateRaw
+    );
+    const fallbackPaymentOptions = base?.paymentOptions || {};
+    const suggestedAmountsSource = Array.isArray(paymentOptions?.suggestedAmounts)
+      ? paymentOptions.suggestedAmounts
+      : Array.isArray(fallbackPaymentOptions?.suggestedAmounts)
+        ? fallbackPaymentOptions.suggestedAmounts
+        : [];
 
     return {
-      borrowerName:
-        raw?.borrowerName ||
-        borrower?.name ||
-        borrower?.fullName ||
-        [borrower?.firstName, borrower?.lastName].filter(Boolean).join(' ') ||
-        '--',
-      applicationNumber:
-        raw?.applicationNumber ||
-        application?.applicationNumber ||
-        summary?.applicationNumber ||
-        '--',
-      loanStatus:
-        raw?.loanStatus ||
-        raw?.status ||
-        application?.status ||
-        application?.applicationStatus ||
-        summary?.applicationStatus ||
-        '--',
-      payableAmount:
-        raw?.payableAmount ??
-        dues?.payableAmount ??
-        summary?.payableAmount ??
-        0,
-      nextDueAmount:
-        raw?.nextDueAmount ??
-        dues?.nextDueAmount ??
-        summary?.nextDueAmount ??
-        0,
-      nextDueDate:
-        raw?.nextDueDate ||
-        dues?.nextDueDate ||
-        summary?.nextDueDate ||
-        null,
-      overdueAmount:
-        raw?.overdueAmount ??
-        dues?.overdueAmount ??
-        summary?.overdueAmount ??
-        0,
-      minPayAmount:
-        raw?.minPayAmount ??
-        raw?.minPayableAmount ??
-        dues?.minPayAmount ??
-        dues?.minimumDueAmount ??
-        summary?.minPayAmount ??
-        0,
-      maxPayAmount:
-        raw?.maxPayAmount ??
-        raw?.maxPayableAmount ??
-        dues?.maxPayAmount ??
-        dues?.payableAmount ??
-        summary?.maxPayAmount ??
-        0,
-      suggestedAmounts:
-        raw?.suggestedAmounts ||
-        dues?.suggestedAmounts ||
-        summary?.suggestedAmounts ||
-        []
+      applicationId: this.pickFirstString(
+        application?.applicationId,
+        raw?.applicationId,
+        base?.applicationId,
+        this.applicationId
+      ),
+      borrowerName: this.pickFirstString(
+        borrower?.name,
+        raw?.borrowerName,
+        base?.borrowerName,
+        '--'
+      ),
+      applicationNumber: this.pickFirstString(
+        application?.applicationNumber,
+        raw?.applicationNumber,
+        base?.applicationNumber,
+        '--'
+      ),
+      loanStatus: this.pickFirstString(
+        loan?.status,
+        raw?.loanStatus,
+        base?.loanStatus,
+        '--'
+      ),
+      dueDateRaw,
+      dueDateDisplay: this.formatDisplayDate(dueDateRaw),
+      delayDays: this.toNumber(summary?.dpd ?? raw?.dpd ?? base?.delayDays),
+      payableNow: this.toNumber(summary?.finalDueAmount ?? raw?.finalDueAmount ?? base?.payableNow),
+      scheduledDue: this.toNumber(summary?.nextDueAmount ?? raw?.nextDueAmount ?? base?.scheduledDue),
+      penaltyAmount: this.toNumber(summary?.penaltyAmount ?? raw?.penaltyAmount ?? base?.penaltyAmount),
+      totalPaid: this.toNumber(summary?.totalPaid ?? raw?.totalPaid ?? base?.totalPaid),
+      paymentOptions: {
+        allowPartialPayment:
+          paymentOptions?.allowPartialPayment !== undefined
+            ? !!paymentOptions.allowPartialPayment
+            : fallbackPaymentOptions?.allowPartialPayment !== undefined
+              ? !!fallbackPaymentOptions.allowPartialPayment
+              : true,
+        allowFullPayment:
+          paymentOptions?.allowFullPayment !== undefined
+            ? !!paymentOptions.allowFullPayment
+            : fallbackPaymentOptions?.allowFullPayment !== undefined
+              ? !!fallbackPaymentOptions.allowFullPayment
+              : true,
+        minPayAmount: this.toNumber(
+          paymentOptions?.minPayAmount ??
+          fallbackPaymentOptions?.minPayAmount
+        ),
+        maxPayAmount: this.toNumber(
+          paymentOptions?.maxPayAmount ??
+          fallbackPaymentOptions?.maxPayAmount ??
+          summary?.finalDueAmount ??
+          raw?.finalDueAmount
+        ),
+        suggestedAmounts: suggestedAmountsSource
+      },
+      createOrderEndpoint: this.pickFirstString(
+        raw?.actions?.createOrderEndpoint,
+        base?.createOrderEndpoint
+      )
     };
+  }
+
+  private syncAmountOptionState(): void {
+    if (this.canShowFullOption && this.amountOption === 'FULL') {
+      this.customAmount = null;
+      return;
+    }
+
+    if (this.canShowCustomOption && this.amountOption === 'CUSTOM') {
+      if (!this.customAmount || this.customAmount < this.minPayAmount) {
+        this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
+      }
+      return;
+    }
+
+    if (this.canShowFullOption) {
+      this.amountOption = 'FULL';
+      this.customAmount = null;
+      return;
+    }
+
+    this.amountOption = 'CUSTOM';
+    this.customAmount = this.minPayAmount > 0 ? this.minPayAmount : this.maxPayAmount;
+  }
+
+  private pickFirstString(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const trimmed = candidate.trim();
+      if (trimmed) {
+        return trimmed;
+      }
+    }
+
+    return '';
+  }
+
+  private formatDisplayDate(value: any): string {
+    const rawValue = this.pickFirstString(value);
+
+    if (!rawValue) {
+      return '--';
+    }
+
+    return formatDateForDisplay(rawValue) || rawValue;
   }
 
   private toNumber(value: any): number {
@@ -387,7 +624,8 @@ this.router.navigateByUrl('/dashboard')  }
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      maximumFractionDigits: 0
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     }).format(this.toNumber(value));
   }
 }

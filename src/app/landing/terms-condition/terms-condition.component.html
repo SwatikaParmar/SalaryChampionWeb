@@ -1,0 +1,406 @@
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+  <header class="main-header">
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center" [routerLink]="['/']">
+        <!-- Replace with your logo image -->
+        <img src="assets/images/logo.png" alt="Loan112 Logo" class="brand-logo">
+      </a>
+
+      <!-- Mobile Toggle -->
+      <button (click)="toggleMenu()" class="navbar-toggler border-0 shadow-none" type="button">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Menu + Button -->
+      <div class="collapse navbar-collapse" id="mainNavbar" [class.show]="isMenuOpen">
+
+        <!-- Center Menu -->
+        <ul class="navbar-nav mx-lg-auto align-items-lg-center">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Home
+            </a>
+          </li>
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              About Us
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Company</a></li>
+              <li><a class="dropdown-item" href="#">Our Team</a></li>
+              <li><a class="dropdown-item" href="#">Why Choose Us</a></li>
+            </ul>
+          </li>
+
+     
+
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/contact-us']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Contact Us
+            </a>
+          </li>
+        </ul>
+
+        <!-- Right Button -->
+        <div class="d-flex mt-3 mt-lg-0" style="grid-gap: 10px;">
+            <a [routerLink]="['/auth/login']" class="btn btn-light">Apply Now</a>
+            <a
+              [routerLink]="['/pay-now']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="btn btn-apply"
+            >
+              Pay Now
+            </a>
+        </div>
+
+      </div>
+    </div>
+  </nav>
+</header>
+
+<section class="internal-banner">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h1>Privacy Policy</h1>
+                <p>Last Updated: October 21, 2025</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-8">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-9 content-policy">
+
+                <div class="outer-box">
+                    <div class="tx-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-lock text-blue-700 h-6 w-6 mt-1 mr-3 flex-shrink-0"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                        <div>
+                            <h4>our Privacy Matters to Us</h4>
+                            <p>This Privacy Policy explains how we collect, use, disclose, and safeguard your information. Please read it carefully to understand our practices regarding your personal data.</p>
+                        </div>
+                    </div>
+
+                    <h5>1. Introduction</h5>
+
+                    <p>This website <a href="https://salarychampion.com/">salarychampion.com</a> is owned and operated by <strong>Richman Fincap Limited</strong> (herein after referred to as "Company") having its principal place of business New Delhi - 110 028 and operating under the brand name "SalaryChampion" (which expression shall mean and include its affiliates, successors and permitted assigns).</p>
+
+
+                    <p>At Salary Champion ("we," "us," or "our"), we respect your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our services.</p>
+
+                    <p>Please read this policy carefully. By accessing or using our services, you acknowledge that you have read, understood, and agree to be bound by the terms of this Privacy Policy.</p>
+
+
+                    <h5>2. Information We Collect</h5>
+                    
+                    <p><strong>Richman Fincap Limited</strong> will never sell or rent personal information of its clients to anyone, at any time, for any reason. We collect several types of information, including:</p>
+
+                    <h6>2.1. Personal Identification Information:</h6>
+                    <ul>
+                        <li>Name, email address, postal address, and phone number</li>
+                        <li>Date of birth, gender, and nationality</li>
+                        <li>PAN, Aadhaar, and other government-issued identification details</li>
+                        <li>Photographs for KYC verification</li>
+                    </ul>
+
+                    <h6>2.2. Financial Information:</h6>
+                    <ul>
+                        <li>Bank account details</li>
+                        <li>Income details, including salary slips and tax returns</li>
+                        <li>Employment information</li>
+                        <li>Credit score and credit history</li>
+                        <li>Transaction history with us</li>
+                    </ul>
+
+                    <h6>2.3. Technical Information:</h6>
+                    <ul>
+                        <li>IP address, browser type, and version</li>
+                        <li>Device information</li>
+                        <li>Operating system</li>
+                        <li>Access times and dates</li>
+                        <li>Pages you view</li>
+                        <li>Referring website addresses</li>
+                    </ul>
+
+                    <h5>3. How We Collect Information</h5>                    
+                    <p>We collect information through:</p>
+
+                    <ul>
+                        <li>Direct interactions (when you apply for services, create an account, or contact us)</li>
+                        <li>Automated technologies (cookies, server logs, and similar technologies)</li>
+                        <li>Third-party sources (credit bureaus, identity verification services, and other financial institutions)</li>
+                    </ul>
+
+                    <h5>4. How We Use Your Information</h5>
+                    <ul>
+                        <li>To provide, maintain, and improve our services</li>
+                        <li>To process and evaluate loan applications</li>
+                        <li>To verify your identity and prevent fraud</li>
+                        <li>To communicate with you about your account or transactions</li>
+                        <li>To send you updates, security alerts, and support messages</li>
+                        <li>To respond to your inquiries and provide customer service</li>
+                        <li>To comply with legal obligations and regulatory requirements</li>
+                        <li>To analyze usage patterns and improve our website and services</li>
+                        <li>To personalize your experience</li>
+                    </ul>
+
+                    <h5>5. Disclosure of Your Information</h5>
+                    <p>We may disclose your information to:</p>
+
+                    <ul>
+                        <li><strong>Service Providers:</strong> Third parties that perform services on our behalf, such as payment processing, data analysis, email delivery, hosting services, and customer service.</li>
+                        <li><strong>Financial Partners:</strong> Banks, NBFCs, and other financial institutions that help provide our services.</li>
+                        <li><strong>Credit Bureaus:</strong> To report and obtain information about your credit history and status.</li>
+                        <li><strong>Legal Requirements:</strong> To comply with laws, regulations, or legal processes, such as court orders or subpoenas.</li>
+                        <li><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of assets, your information may be transferred as a business asset.</li>
+                        <li><strong>Protection:</strong> To protect our rights, property, or safety, or that of our users or others.</li>
+                    </ul>
+
+                    <h5>6. Data Security</h5>
+                    <p>We implement appropriate security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. These measures include:</p>
+
+                    <ul>
+                        <li>Encryption of transmitted data</li>
+                        <li>Secure storage of personal information</li>
+                        <li>Access controls for our systems and premises</li>
+                        <li>Regular security assessments</li>
+                    </ul>
+
+                    <p>However, no method of transmission over the Internet or electronic storage is 100% secure, and we cannot guarantee absolute security.</p>
+
+                    <h5>7. Data Retention</h5>
+                    <p>We retain your personal information for as long as necessary to fulfill the purposes outlined in this Privacy Policy, unless a longer retention period is required or permitted by law.</p>
+
+                    <h5>8. Your Data Protection Rights</h5>
+                    <p>Under applicable data protection laws, you may have the right to:</p>
+
+                    <ul>
+                        <li><strong>Access:</strong> Request access to your personal information</li>
+                        <li><strong>Correction:</strong> Request correction of inaccurate data</li>
+                        <li><strong>Deletion:</strong> Request deletion of your personal information</li>
+                        <li><strong>Restriction:</strong> Request restriction of processing of your personal information</li>
+                        <li><strong>Objection:</strong> Object to processing of your personal information</li>
+                        <li><strong>Data Portability:</strong> Request transfer of your personal information</li>
+                    </ul>
+
+                    <h5>9. Cookies and Tracking Technologies</h5>
+
+                    <h6>9.1. Cookies</h6>
+                    <p>We use cookies and similar tracking technologies to track activity on our website and store certain information. Cookies are files with a small amount of data that may include an anonymous unique identifier.</p>
+
+                    <h6>9.2. Types of Cookies We Use:</h6>
+
+                    <ul>
+                        <li>Essential Cookies: Necessary for the website to function properly</li>
+                        <li>Analytical/Performance Cookies: Allow us to recognize and count visitors and see how they move around the website</li>
+                        <li>Functionality Cookies: Enable the website to provide enhanced functionality and personalization</li>
+                        <li>Targeting Cookies: Record your visit, pages visited, and links followed</li>
+                    </ul>
+
+                    <h6>9.3. Cookie Management:</h6>
+                    <p>You can set your browser to refuse all or some browser cookies or to alert you when websites set or access cookies. If you disable or refuse cookies, please note that some parts of the website may become inaccessible or not function properly.</p>
+
+                    <h5>10. Third-Party Links</h5>
+                    <p>Our website may contain links to third-party websites. We are not responsible for the content or privacy practices of these websites. We encourage you to read the privacy policy of each website you visit.</p>
+
+                    <h5>11. Children's Privacy</h5>
+                    <p>Our services are not intended for individuals under the age of 18, and we do not knowingly collect personal information from children under 18. If we learn we have collected personal information from a child under 18, we will delete that information promptly.</p>
+
+                    <h5>12. Changes to This Privacy Policy</h5>
+                    <p>We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date at the top of this policy. You are advised to review this Privacy Policy periodically for any changes. Changes to this Privacy Policy are effective when they are posted on this page.</p>
+
+                    <h5>13. Compliance with Laws</h5>
+                    <p>This Privacy Policy is designed to comply with applicable data protection laws, including relevant provisions of the Information Technology Act, 2000 and the Information Technology (Reasonable Security Practices and Procedures and Sensitive Personal Data or Information) Rules, 2011.</p>
+
+                    <h5>14. Contact Information</h5>
+                    <p>If you have any questions about this Privacy Policy, please contact us at:<br>
+                    Salary Champion<br>
+                    B-52 2ND FLOOR, UNDER PASS, near KIRTI NAGAR<br>
+                    Block B, Naraina Industrial Area Phase 2<br>
+                    New Delhi, Delhi, 110028<br>
+                    Email: <a href="mailto:grievance-richmanfincap.in">grievance-richmanfincap.in</a><br>
+                    Phone: +91 88009 44435</p>
+
+                    <hr>
+
+                    <div class="policy-actions justify-content-end">
+                        <button class="policy-actions__btn policy-actions__btn--primary">
+                            I Accept This Policy
+                        </button>
+
+                        <button class="policy-actions__btn policy-actions__btn--secondary" [routerLink]="['/']" type="button">
+                            Return to Home
+                        </button>
+                    </div>
+
+                </div>           
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="data-protection py-8">
+    <div class="container">
+        <div class="row justify-content-center">            
+            <div class="col-lg-9">
+                <div style="background: #fff; padding: 40px 35px 25px;">
+                <div class="row">
+
+                    <div class="col-lg-9 data-protection__header">
+                        <span class="data-protection__icon">🛡️</span>
+                        <h2>How We Protect Your Data</h2>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <!-- Card -->
+                        <div class="data-protection__card">
+                            <h3>Encryption & Security</h3>
+                            <p>
+                                We use industry-standard encryption protocols to secure your data during
+                                transmission and storage. All personal and financial information is
+                                protected using advanced security measures.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <!-- Card -->
+                        <div class="data-protection__card">
+                            <h3>Access Controls</h3>
+                            <p>
+                                Only authorized personnel with a legitimate business need can access your personal information. We implement strict access controls and authentication systems.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <!-- Card -->
+                        <div class="data-protection__card">
+                            <h3>Regular Audits</h3>
+                            <p>
+                                We conduct regular security audits and vulnerability assessments to ensure our systems remain secure and our data protection measures are effective.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <!-- Card -->
+                        <div class="data-protection__card">
+                            <h3>Employee Training</h3>
+                            <p>
+                                All our employees undergo regular data protection and privacy training to ensure they understand and adhere to our strict privacy standards.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+
+<footer class="footer">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-lg-3 col-md-12 sm-space-bottom-40">
+          <img src="assets/images/logo.png" class="img-fluid" style="max-width: 200px; margin-bottom: 25px; filter: brightness(0) invert(1);">
+          <p>India's most trusted NBFC providing quick salary advances and personal loans with transparent terms and competitive rates.</p>
+
+          <ul class="social-icon">
+            <li><a href="#"><i class="fa-brands fa-facebook-f"></i></a></li>
+            <li><a href="#"><i class="fa-brands fa-linkedin-in"></i></a></li>
+            <li><a href="#"><i class="fa-brands fa-instagram"></i></a></li>
+          </ul>
+
+        </div>
+
+        <div class="col-lg-3 col-md-3 footer-links">
+          <h4>Quick Links</h4>
+          <ul class="link-ft">
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Contact Us</a></li>
+            <li><a href="#">Pay Now</a></li>
+            <li><a href="#">Loan Types</a></li>
+            <li><a href="#">Refund & Cancellation Policy</a></li>
+          </ul>
+        </div>
+
+        <div class="col-lg-3 col-md-5">
+          <h4>Contact Us</h4>
+          <div class="info">
+            <i class="fa-solid fa-location-dot"></i>
+            <p>B-52 2ND FLOOR, UNDER PASS, near KIRTI NAGAR, Block B, Naraina Industrial Area Phase 2, New Delhi, Delhi, 110028</p>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-phone"></i>
+            <a href="tel:+918800944435">+91 88009 44435</a>
+          </div>
+
+          <div class="info">
+            <i class="fa-solid fa-envelope"></i>
+<a href="mailto:grievance@salarychampion.com">{{ 'grievance@salarychampion.com' }}</a>          
+          </div>
+
+          <div class="info" style="grid-template-columns: auto; grid-gap: 0;">
+            <small>Business Hours:</small>
+            <p>Monday - Friday: 10:30 AM - 6:30 PM</p>
+          </div>
+
+        </div>
+
+        <div class="col-lg-3 col-md-4 updates">
+          <h4>Stay Updated</h4>
+          <p>Get the latest updates, offers and financial tips directly in your inbox.</p>
+
+          <input type="text" placeholder="Enter your email" class="form-control">
+          <input type="submit" value="Subscribe" class="form-control">
+
+          <span class="pp-tags mt-2">By subscribing, you agree to our <a [routerLink]="['/privacy-policy']">Privacy Policy</a></span>
+        </div>      
+    
+      </div>
+
+      <div class="row">
+        <div class="col-md-12"><hr></div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
+        <div class="col-md-6 xs-mt-40">
+          <ul class="link-ft small-li">
+            <li><a [routerLink]="['/terms-and-conditions']">Terms & Conditions</a></li>
+            <li><a  [routerLink]="['/privacy-policy']">Privacy Policy</a></li>
+            <li><a href="#">Interest Rate Policy</a></li>
+            <li><a href="#">Fair Practice Code</a></li>
+            <li><a href="#">Refund & Cancellation Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </footer>

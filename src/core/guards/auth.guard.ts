@@ -4,7 +4,6 @@ import {
   CanActivate,
   Router,
   RouterStateSnapshot,
-  UrlTree,
 } from '@angular/router';
 import { AuthServiceService } from '../../service/auth-service.service';
 @Injectable({
@@ -25,9 +24,7 @@ export class AuthGuard implements CanActivate {
       return true;
     }
 
-    localStorage.clear();
-    sessionStorage.clear();
-
+    this.authService.logout({ preserveLoginLocation: true });
     this.router.navigate(['/auth/login']);
     return false;
   }

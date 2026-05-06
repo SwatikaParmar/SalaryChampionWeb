@@ -1,0 +1,430 @@
+- Building...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+X [ERROR] NG9: Property 'showProfileCompletionCard' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.html:20:45:
+      20 │ ... class="col-md-12 profile-card"  *ngIf="showProfileCompletionCard"
+         ╵                                            ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component DashboardComponent.
+
+    src/app/dashboard/dashboard/dashboard.component.ts:15:15:
+      15 │   templateUrl: './dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:121:16:
+      121 │     return this.isPrimaryCardType('BASIC_PROFILE_COMPLETION');
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:125:16:
+      125 │     return this.isPrimaryCardType('NOT_ELIGIBLE', 'RESTRICTED', '...
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:129:16:
+      129 │     return this.isPrimaryCardType('RELOAN_ELIGIBLE');
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:133:16:
+      133 │     return this.isPrimaryCardType('CLOSED_LOAN', 'RELOAN_NOT_ELIG...
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'getPrimaryCardCtaUrl' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:141:18:
+      141 │     return !!this.getPrimaryCardCtaUrl() || !!this.getResolvedRel...
+          ╵                   ~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:145:16:
+      145 │     return this.isPrimaryCardType('CLOSED_LOAN');
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:149:16:
+      149 │     return this.isPrimaryCardType('RELOAN_NOT_ELIGIBLE');
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:190:13:
+      190 │     if (this.isPrimaryCardType('RESTRICTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:197:13:
+      197 │     if (this.isPrimaryCardType('NOT_ELIGIBLE')) {
+          ╵              ~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'isPrimaryCardType' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:287:16:
+      287 │     return this.isPrimaryCardType(
+          ╵                 ~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+X [ERROR] TS2339: Property 'getPrimaryCardCtaUrl' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:141:18:
+      141 │     return !!this.getPrimaryCardCtaUrl() || !!this.getResolvedRel...
+          ╵                   ~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+X [ERROR] TS2339: Property 'getPrimaryCardCtaUrl' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:141:18:
+      141 │     return !!this.getPrimaryCardCtaUrl() || !!this.getResolvedRel...
+          ╵                   ~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+X [ERROR] TS2339: Property 'getPrimaryCardCtaUrl' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:141:18:
+      141 │     return !!this.getPrimaryCardCtaUrl() || !!this.getResolvedRel...
+          ╵                   ~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:125:16:
+      125 │     return this.matchesPrimaryCardTypeOrStatus(
+          ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:202:13:
+      202 │     if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:206:13:
+      206 │     if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:210:13:
+      210 │     if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:218:13:
+      218 │     if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:222:13:
+      222 │     if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:226:13:
+      226 │     if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:234:13:
+      234 │     if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:238:13:
+      238 │     if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:242:13:
+      242 │     if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:291:16:
+      291 │     return this.matchesPrimaryCardTypeOrStatus('NOT_ELIGIBLE') &&...
+          ╵                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:295:13:
+      295 │     if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:299:13:
+      299 │     if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:303:13:
+      303 │     if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:311:13:
+      311 │     if (this.matchesPrimaryCardTypeOrStatus('SYSTEM_REJECTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:315:13:
+      315 │     if (this.matchesPrimaryCardTypeOrStatus('APPLICATION_REJECTED...
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'matchesPrimaryCardTypeOrStatus' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:319:13:
+      319 │     if (this.matchesPrimaryCardTypeOrStatus('RESTRICTED')) {
+          ╵              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+X [ERROR] TS2339: Property 'normalizeCardKey' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:619:30:
+      619 │ ... normalizedType = this.normalizeCardKey(this.dashboardPrimaryC...
+          ╵                           ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'normalizeCardKey' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:620:36:
+      620 │ ...lizedStatusCode = this.normalizeCardKey(this.dashboardPrimaryC...
+          ╵                           ~~~~~~~~~~~~~~~~
+
+
+X [ERROR] TS2339: Property 'normalizeCardKey' does not exist on type 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.ts:623:34:
+      623 │     const normalizedTarget = this.normalizeCardKey(type);
+          ╵                                   ~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+X [ERROR] NG1: Property 'matchesPrimaryCardTypeOrStatus' is private and only accessible within class 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.html:72:51:
+      72 │ ...d--application]="matchesPrimaryCardTypeOrStatus('APPLICATION_RE...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component DashboardComponent.
+
+    src/app/dashboard/dashboard/dashboard.component.ts:15:15:
+      15 │   templateUrl: './dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1: Property 'matchesPrimaryCardTypeOrStatus' is private and only accessible within class 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.html:95:31:
+      95 │ ...container *ngIf="matchesPrimaryCardTypeOrStatus('APPLICATION_RE...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component DashboardComponent.
+
+    src/app/dashboard/dashboard/dashboard.component.ts:15:15:
+      15 │   templateUrl: './dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+X [ERROR] NG1: Property 'matchesPrimaryCardTypeOrStatus' is private and only accessible within class 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.html:72:51:
+      72 │ ...d--application]="matchesPrimaryCardTypeOrStatus('APPLICATION_RE...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component DashboardComponent.
+
+    src/app/dashboard/dashboard/dashboard.component.ts:15:15:
+      15 │   templateUrl: './dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+X [ERROR] NG1: Property 'matchesPrimaryCardTypeOrStatus' is private and only accessible within class 'DashboardComponent'. [plugin angular-compiler]
+
+    src/app/dashboard/dashboard/dashboard.component.html:95:31:
+      95 │ ...container *ngIf="matchesPrimaryCardTypeOrStatus('APPLICATION_RE...
+         ╵                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  Error occurs in the template of component DashboardComponent.
+
+    src/app/dashboard/dashboard/dashboard.component.ts:15:15:
+      15 │   templateUrl: './dashboard.component.html',
+         ╵                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+
+- Changes detected. Rebuilding...
+

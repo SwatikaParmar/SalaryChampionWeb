@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../../service/api-error.util';
 
 @Component({
   selector: 'app-bank-verification',
@@ -36,10 +37,13 @@ export class BankVerificationComponent implements OnInit, OnDestroy {
       this.route.queryParams.subscribe(params => {
 
         const success = params['success'];
+        const reason = params['reason'] || params['message'] || '';
         this.consentId = params['id'];
 
         if (success === 'false') {
-          this.router.navigate(['/dashboard/loan/error-verification']);
+          this.router.navigate(['/dashboard/loan/error-verification'], {
+            queryParams: reason ? { reason } : undefined,
+          });
           return;
         }
 
@@ -61,7 +65,7 @@ if (this.consentId) {
   this.contentService.getConsentStatus(this.consentId!).subscribe((res: any) => {
 
     if (!res?.success) {
-      this.toastr.error('Failed to resume AA flow');
+      this.toastr.error(getFirstApiErrorMessage(res, 'Failed to resume AA flow'));
       this.aaLoading = false;
       return;
     }
@@ -72,7 +76,8 @@ if (this.consentId) {
 
     this.handleNextStep(data); // 🔥 DIRECT ENGINE CALL
 
-  }, () => {
+  }, (err) => {
+    this.toastr.error(getFirstApiErrorMessage(err, 'Failed to resume AA flow'));
     this.aaLoading = false;
   });
 
@@ -87,7 +92,7 @@ if (this.consentId) {
         this.spinner.hide();
 
         if (!res?.success) {
-          this.toastr.error('Failed to load borrower');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower'));
           return;
         }
 
@@ -100,9 +105,9 @@ if (this.consentId) {
 
         callback?.();
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Snapshot failed');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Snapshot failed'));
       }
     });
   }
@@ -112,7 +117,7 @@ if (this.consentId) {
 
     const payload = {
       applicationId: this.applicationId,
-      redirectUrl: window.location.origin + '/dashboard/loan/bank-verification'
+    redirectUrl: 'https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/loan/bank-verification',
     };
 
     this.aaLoading = true;
@@ -123,6 +128,7 @@ if (this.consentId) {
 
         if (!res?.success) {
           this.aaLoading = false;
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to start bank verification'));
           return;
         }
 
@@ -132,7 +138,8 @@ if (this.consentId) {
 
         this.handleNextStep(data); // 🔥 CENTRAL ENGINE
       },
-      error: () => {
+      error: (err) => {
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to start bank verification'));
         this.aaLoading = false;
       }
     });

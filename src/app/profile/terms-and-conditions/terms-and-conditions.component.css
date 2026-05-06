@@ -1,0 +1,97 @@
+.internal-banner {
+  background: linear-gradient(270deg, #023672, #3b6edc);
+  color: #fff;
+  padding: 40px 0;
+}
+
+.internal-banner h1 {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.internal-banner p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.terms-shell {
+  border: 1px solid #eee;
+  padding: 32px;
+  background: #fff;
+}
+
+.terms-content p,
+.terms-content ul li,
+.terms-content ol li {
+  font-size: 15px;
+  line-height: 1.75;
+  color: #444;
+}
+
+.terms-content ul,
+.terms-content ol {
+  padding-left: 18px;
+  margin-bottom: 14px;
+}
+
+.terms-shell h2 {
+  font-size: 29px;
+  line-height: 35px;
+  color: #3a3a3a;
+  font-weight: 700;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.terms-shell h2:first-of-type {
+  margin-top: 24px;
+}
+
+.terms-shell h3 {
+  font-size: 19px;
+  line-height: 23px;
+  color: #3a3a3a;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+.terms-shell a {
+  color: #2d6ad6;
+  text-decoration: none;
+}
+
+.terms-shell a:hover {
+  text-decoration: underline;
+}
+
+.tc-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 10px 0 28px;
+}
+
+.grievance-block {
+  margin-bottom: 20px;
+}
+
+.grievance-block h3 {
+  margin-bottom: 6px;
+}
+
+@media only screen and (max-width: 480px) {
+  .internal-banner h1 {
+    font-size: 32px;
+  }
+
+  .terms-shell {
+    padding: 24px 18px;
+  }
+
+  .terms-shell h2 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+}

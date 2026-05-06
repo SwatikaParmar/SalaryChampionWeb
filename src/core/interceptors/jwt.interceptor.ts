@@ -4,24 +4,29 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-  HttpResponse,
   HttpErrorResponse,
 } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, tap } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { AuthServiceService } from '../../service/auth-service.service';
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   private static isLoggingOut = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authService: AuthServiceService,
+  ) {}
 
   intercept(
     request: HttpRequest<any>,
     next: HttpHandler,
   ): Observable<HttpEvent<any>> {
-    const token = localStorage.getItem('accessToken');
+    const token =
+      typeof localStorage !== 'undefined'
+        ? localStorage.getItem('accessToken')
+        : null;
 
     if (token) {
       request = request.clone({
@@ -40,12 +45,14 @@ export class JwtInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           JwtInterceptor.isLoggingOut = true;
 
-          alert('Session expired. Please login again.');
+          if (typeof window !== 'undefined' && typeof alert !== 'undefined') {
+            alert('Session expired. Please login again.');
+          }
 
-          localStorage.clear();
+          this.authService.logout({ preserveLoginLocation: true });
 
-          this.router.navigate(['/auth/login']).then(() => {
-            window.location.reload();
+          this.router.navigate(['/auth/login']).finally(() => {
+            JwtInterceptor.isLoggingOut = false;
           });
         }
 

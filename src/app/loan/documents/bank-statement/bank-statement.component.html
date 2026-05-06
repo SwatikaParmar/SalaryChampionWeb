@@ -16,12 +16,6 @@
     </button>
   </div>
 
-  <!-- CONTINUE BUTTON -->
-  <div class="mt-4 text-center" *ngIf="uploadCompleted">
-    <button class="btn-primary" (click)="continue()">
-      Continue
-    </button>
-  </div>
 </div>
 
 <!-- ================= MODAL ================= -->
@@ -44,6 +38,14 @@
           class="form-control"
           (change)="onFilePicked($event)"
         />
+
+        <p
+          *ngIf="selectedFile"
+          class="selected-file-name"
+          [title]="selectedFile.name"
+        >
+          {{ selectedFile.name }}
+        </p>
 
         <!-- Password -->
         <label class="form-label mt-3">

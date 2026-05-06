@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay, formatDateInput, normalizeDateForInput } from '../../shared/date-format.util';
 @Component({
   selector: 'app-basic-info',
   templateUrl: './basic-info.component.html',
@@ -12,13 +14,14 @@ import { ToastrService } from 'ngx-toastr';
 export class BasicInfoComponent implements OnInit {
   basicForm!: FormGroup;
   isMarried = false;
+  dobDisplay = '';
 
   constructor(
     private fb: FormBuilder,
     private contentService: ContentService,
     private router: Router,
-       private spinner: NgxSpinnerService,   // ✅ spinner
-    private toastr: ToastrService         // ✅ toaster
+       private spinner: NgxSpinnerService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -37,11 +40,7 @@ this.basicForm = this.fb.group({
     ]
   ],
   officialEmail: [
-    '',
-    [
-      Validators.required,
-      Validators.pattern(/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/)
-    ]
+    ''
   ]
 });
 
@@ -58,7 +57,7 @@ this.basicForm = this.fb.group({
           this.patchBorrowerData(res.data.user);
         }
       },
-      error: () => {
+      error: (err) => {
         console.error('Failed to fetch borrower snapshot');
       },
     });
@@ -66,7 +65,8 @@ this.basicForm = this.fb.group({
 
   patchBasicData(data:any){
 
-const formattedDob = data?.dob?.split('T')[0];
+const formattedDob = normalizeDateForInput(data?.dob);
+this.dobDisplay = formatDateForDisplay(formattedDob);
 
 this.basicForm.patchValue({
   employmentType: data.employmentType,
@@ -84,9 +84,8 @@ this.basicForm.patchValue({
 
   // 🔐 PATCH + LOCK PAN VERIFIED DATA
   patchBorrowerData(user: any) {
-    debugger
-  // Ensure YYYY-MM-DD
-  const formattedDob = user.dob.split('T')[0];
+  const formattedDob = normalizeDateForInput(user?.dob);
+  this.dobDisplay = formatDateForDisplay(formattedDob);
 
   this.basicForm.patchValue({
     dob: formattedDob
@@ -108,6 +107,37 @@ this.basicForm.patchValue({
     }
 
     this.isMarried = user.maritalStatus === 'MARRIED';
+  }
+
+  onDobInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const formattedValue = formatDateInput(input.value);
+
+    this.dobDisplay = formattedValue;
+    input.value = formattedValue;
+
+    this.basicForm.get('dob')?.setValue(normalizeDateForInput(formattedValue), {
+      emitEvent: false
+    });
+  }
+
+  onDobBlur() {
+    this.basicForm.get('dob')?.markAsTouched();
+
+    if (!this.dobDisplay.trim()) {
+      this.basicForm.get('dob')?.setValue('', { emitEvent: false });
+      return;
+    }
+
+    const normalizedDob = normalizeDateForInput(this.dobDisplay);
+
+    if (!normalizedDob) {
+      this.basicForm.get('dob')?.setValue('', { emitEvent: false });
+      return;
+    }
+
+    this.basicForm.get('dob')?.setValue(normalizedDob, { emitEvent: false });
+    this.dobDisplay = formatDateForDisplay(normalizedDob);
   }
 
   watchMaritalStatus() {
@@ -187,14 +217,14 @@ if(res?.success){
   this.checkEligibility();
 this.toastr.success('Basic details saved');
 }else{
-this.toastr.error(res?.message);
+this.toastr.error(getFirstApiErrorMessage(res, 'Failed to save basic details'));
 }
 
 },
 
-error:()=>{
+error:(err)=>{
 this.spinner.hide();
-this.toastr.error('Something went wrong');
+this.toastr.error(getFirstApiErrorMessage(err, 'Failed to save basic details'));
 }
 
 })
@@ -210,24 +240,32 @@ this.toastr.error('Something went wrong');
       next: (res) => {
         // ✅ STOP spinner
         this.spinner.hide();
+         this.handleEligibilityResponse(res);
 
-        if (res?.success === true) {
-          this.router.navigate(['/dashboard/profile/success-eligibility']);
-        } else {
-          this.router.navigate(['/dashboard/profile/error-eligibility'], {
-            state: { message: res?.message || 'Not eligible' },
-          });
-        }
       },
 
-      error: () => {
+      error: (err) => {
         // ✅ STOP spinner
         this.spinner.hide();
         this.router.navigate(['/dashboard/profile/error-eligibility'], {
-          state: { message: 'Something went wrong' },
+          state: { message: getFirstApiErrorMessage(err) },
         });
       },
     });
   }
+
+  handleEligibilityResponse(res: any) {
+  const decision = res?.data?.decision;
+  if (decision === 'ELIGIBLE') {
+    // ✅ success page
+    this.router.navigate(['/dashboard/profile/success-eligibility']);
+
+  } else if (decision === 'NOT_ELIGIBLE') {
+    // ❌ error page
+     this.router.navigate(['/dashboard/profile/error-eligibility'], {
+      state: { message: getFirstApiErrorMessage(res) }
+    });
+  }
+}
 
 }

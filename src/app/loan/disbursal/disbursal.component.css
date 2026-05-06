@@ -64,6 +64,7 @@
 /* Form */
 .form-group {
   margin-bottom: 16px;
+  position: relative;
 }
 
 .form-group label {
@@ -140,4 +141,153 @@
 .form-group small {
   color: red;
   font-size: 12px;
+}
+
+.ifsc-loading {
+  display: block;
+  color: #475569 !important;
+  margin-top: 4px;
+}
+
+.ifsc-suggestions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% - 2px);
+  background: #fff;
+  border: 1px solid #dbe3ee;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.1);
+  z-index: 20;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+.ifsc-option {
+  width: 100%;
+  background: #fff;
+  border: 0;
+  border-bottom: 1px solid #eef2f7;
+  padding: 10px 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ifsc-option:hover {
+  background: #f8fbff;
+}
+
+.ifsc-option:last-child {
+  border-bottom: 0;
+}
+
+.ifsc-option-code {
+  font-weight: 600;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.ifsc-option-meta {
+  font-size: 12px;
+  color: #475569;
+}
+
+.ifsc-input-wrap {
+  position: relative;
+}
+
+.ifsc-input-wrap input.has-verified-ifsc {
+  padding-right: 72px;
+}
+
+.ifsc-icons {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ifsc-verified-icon {
+  color: #16a34a;
+  font-size: 16px;
+}
+
+.ifsc-eye-btn {
+  border: 0;
+  background: transparent;
+  color: #334155;
+  padding: 0;
+  line-height: 1;
+}
+
+.ifsc-eye-btn i {
+  font-size: 15px;
+}
+
+.ifsc-details-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 999;
+}
+
+.ifsc-details-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 420px);
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.2);
+  z-index: 1000;
+  padding: 16px;
+}
+
+.ifsc-details-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.ifsc-details-head h6 {
+  margin: 0;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.ifsc-details-close {
+  border: 0;
+  background: transparent;
+  color: #475569;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.ifsc-details-body p {
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.ifsc-details-body p:last-child {
+  margin-bottom: 0;
+}
+
+.btn-close{
+    position: absolute;
+    right: 0;
+    font-size: 10px;
+    padding: 10px;
+}
+
+@media only screen and (max-width: 767px) {
+    .page-wrapper{
+        padding: 30px 15px !important;
+    }
 }

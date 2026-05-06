@@ -1,10 +1,13 @@
 <div class="loan-repay-page" *ngIf="summary">
   <div class="page-header">
     <div class="header-left">
-      <button class="back-btn" type="button" (click)="goBack()">Back</button>
+      <button class="back-btn" type="button" (click)="goBack()">
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+
       <div>
         <h2>Repay Loan</h2>
-        <p>Use your logged-in borrower session to make a payment.</p>
+        <p>Review your current dues and choose how much you want to pay.</p>
       </div>
     </div>
 
@@ -12,152 +15,178 @@
       class="pay-btn header-pay-btn"
       type="button"
       (click)="createPayment()"
-      [disabled]="!canPay || !!amountError"
+      [disabled]="!canPay"
     >
       {{ creatingOrder ? 'Processing...' : 'Pay Now' }}
     </button>
   </div>
 
-  <div class="summary-grid">
-    <div class="info-card hero-card">
-      <span class="eyebrow">Borrower</span>
-      <h3>{{ borrowerName }}</h3>
-      <div class="meta-row">
-        <div>
-          <label>Application Number</label>
-          <p>{{ applicationNumber }}</p>
-        </div>
-        <div>
-          <label>Loan Status</label>
-          <p>{{ loanStatus }}</p>
-        </div>
+  <div class="compact-card top-summary-card">
+    <div class="card-kicker">Repay Summary</div>
+
+    <div class="top-summary-head">
+      <div>
+        <label>Borrower</label>
+        <h3>{{ borrowerName }}</h3>
+      </div>
+
+      <div class="payable-pill">
+        <span>Payable Now</span>
+        <strong>{{ payableNow | currency:'INR':'symbol':'1.2-2' }}</strong>
       </div>
     </div>
 
-    <div class="info-card amount-card">
-      <label>Payable Amount</label>
-      <h3>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</h3>
-      <small *ngIf="maxPayAmount <= 0">No payment is due for this loan right now.</small>
-    </div>
+    <div class="summary-grid">
+      <div class="summary-stat">
+        <label>Application No</label>
+        <strong>{{ applicationNumber }}</strong>
+      </div>
 
-    <div class="info-card">
-      <label>Next Due Amount</label>
-      <p>{{ nextDueAmount | currency:'INR':'symbol':'1.0-0' }}</p>
-    </div>
+      <div class="summary-stat">
+        <label>Loan Status</label>
+        <strong>{{ loanStatus }}</strong>
+      </div>
 
-    <div class="info-card">
-      <label>Next Due Date</label>
-      <p>{{ summary?.nextDueDate ? (summary?.nextDueDate | date:'mediumDate') : '--' }}</p>
-    </div>
+      <div class="summary-stat">
+        <label>Due Date</label>
+        <strong>{{ dueDateDisplay }}</strong>
+      </div>
 
-    <div class="info-card">
-      <label>Overdue Amount</label>
-      <p>{{ overdueAmount | currency:'INR':'symbol':'1.0-0' }}</p>
-    </div>
-
-    <div class="info-card">
-      <label>Allowed Range</label>
-      <p>{{ minPayAmount | currency:'INR':'symbol':'1.0-0' }} to {{ maxPayAmount | currency:'INR':'symbol':'1.0-0' }}</p>
+      <div class="summary-stat">
+        <label>Delay Days</label>
+        <strong>{{ delayDays }}</strong>
+      </div>
     </div>
   </div>
 
-  <div class="section-card" *ngIf="refreshResult || orderStatus">
+  <div class="compact-card">
+    <div class="section-head">
+      <div>
+        <h3>Amount Breakdown</h3>
+        <p>These amounts come directly from your latest repay summary.</p>
+      </div>
+    </div>
+
+    <div class="breakdown-grid">
+      <div class="breakdown-stat">
+        <label>Scheduled Due</label>
+        <strong>{{ scheduledDue | currency:'INR':'symbol':'1.2-2' }}</strong>
+      </div>
+
+      <div class="breakdown-stat">
+        <label>Penalty / Late Fee</label>
+        <strong>{{ penaltyAmount | currency:'INR':'symbol':'1.2-2' }}</strong>
+      </div>
+
+      <div class="breakdown-stat">
+        <label>Paid Amount</label>
+        <strong>{{ totalPaid | currency:'INR':'symbol':'1.2-2' }}</strong>
+      </div>
+
+      <div class="breakdown-stat breakdown-stat--accent">
+        <label>Payable Now</label>
+        <strong>{{ payableNow | currency:'INR':'symbol':'1.2-2' }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="compact-card" *ngIf="refreshResult || orderStatus">
     <div class="section-head">
       <div>
         <h3>Latest Payment Result</h3>
         <p *ngIf="refreshingStatus">Refreshing payment status...</p>
       </div>
 
-      <button class="secondary-btn" type="button" (click)="refreshPaymentStatus()" [disabled]="refreshingStatus">
+      <button
+        class="secondary-btn"
+        type="button"
+        (click)="refreshPaymentStatus()"
+        [disabled]="refreshingStatus"
+      >
         Refresh Status
       </button>
     </div>
 
     <div class="status-banner success" *ngIf="orderStatus?.paidAt || orderStatus?.paymentStatus === 'SUCCESS'">
       <strong>Payment Successful</strong>
-      <span>Paid {{ (paymentResult?.amount || paymentResult?.paidAmount || selectedAmount) | currency:'INR':'symbol':'1.0-0' }}</span>
+      <span>
+        Paid {{ (paymentResult?.amount || paymentResult?.paidAmount || selectedAmount) | currency:'INR':'symbol':'1.2-2' }}
+      </span>
     </div>
 
     <div class="status-banner failed" *ngIf="orderStatus?.paymentStatus === 'FAILED'">
       <strong>Payment Failed</strong>
-      <span>You can retry the payment using the options below.</span>
+      <span>You can retry with any available payment option below.</span>
     </div>
 
-    <div class="status-grid">
-      <div>
-        <label>Updated Remaining Due</label>
-        <p>{{ refreshResult?.payableAmount | currency:'INR':'symbol':'1.0-0' }}</p>
+    <div class="result-grid">
+      <div class="summary-stat">
+        <label>Scheduled Due</label>
+        <strong>{{ refreshResult?.scheduledDue | currency:'INR':'symbol':'1.2-2' }}</strong>
       </div>
-      <div>
-        <label>Next Due</label>
-        <p>{{ refreshResult?.nextDueAmount | currency:'INR':'symbol':'1.0-0' }}</p>
+
+      <div class="summary-stat">
+        <label>Payable Now</label>
+        <strong>{{ refreshResult?.payableNow | currency:'INR':'symbol':'1.2-2' }}</strong>
       </div>
-      <div>
-        <label>Next Due Date</label>
-        <p>{{ refreshResult?.nextDueDate ? (refreshResult?.nextDueDate | date:'mediumDate') : '--' }}</p>
+
+      <div class="summary-stat">
+        <label>Due Date</label>
+        <strong>{{ refreshResult?.dueDateDisplay || '--' }}</strong>
       </div>
-      <div>
+
+      <div class="summary-stat">
         <label>Loan Status</label>
-        <p>{{ refreshResult?.loanStatus || loanStatus }}</p>
+        <strong>{{ refreshResult?.loanStatus || loanStatus }}</strong>
       </div>
     </div>
-
-    <p class="closed-copy" *ngIf="refreshResult?.payableAmount === 0">
-      No due remains on this loan. It may be fully closed if closure is completed on the backend.
-    </p>
   </div>
 
-  <div class="section-card">
+  <div class="compact-card">
     <div class="section-head">
       <div>
-        <h3>Select Payment Type</h3>
-        <p>Choose full payment, minimum due, or a custom amount within the allowed range.</p>
+        <h3>Payment Options</h3>
+        <p>Select one of the available payment amounts below.</p>
       </div>
     </div>
 
     <div class="option-grid">
       <button
-        class="option-card"
+        class="option-card option-card--primary"
         type="button"
-        [class.active]="amountOption === 'MINIMUM'"
-        (click)="selectAmountOption('MINIMUM')"
-      >
-        <span>Minimum Due</span>
-        <strong>{{ minPayAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
-        <small>Partial payment</small>
-      </button>
-
-      <button
-        class="option-card"
-        type="button"
+        *ngIf="canShowFullOption"
         [class.active]="amountOption === 'FULL'"
         (click)="selectAmountOption('FULL')"
       >
-        <span>Full Due</span>
-        <strong>{{ payableAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
-        <small>Backend resolves full payable amount</small>
+        <span>Full Payable</span>
+        <strong>{{ payableNow | currency:'INR':'symbol':'1.2-2' }}</strong>
+        <small>Uses `finalDueAmount` including penalty and latest dues.</small>
       </button>
 
       <button
         class="option-card"
         type="button"
+        *ngIf="canShowCustomOption"
         [class.active]="amountOption === 'CUSTOM'"
         (click)="selectAmountOption('CUSTOM')"
       >
         <span>Custom Amount</span>
-        <strong>{{ selectedAmount | currency:'INR':'symbol':'1.0-0' }}</strong>
-        <small>Between min and max</small>
+        <strong>{{ selectedAmount | currency:'INR':'symbol':'1.2-2' }}</strong>
+        <small>
+          Min {{ minPayAmount | currency:'INR':'symbol':'1.2-2' }} •
+          Max {{ maxPayAmount | currency:'INR':'symbol':'1.2-2' }}
+        </small>
       </button>
     </div>
 
-    <div class="quick-amounts" *ngIf="quickAmounts.length">
+    <div class="suggested-strip" *ngIf="suggestedAmounts.length">
       <button
-        class="chip-btn"
+        class="suggested-chip"
         type="button"
-        *ngFor="let amount of quickAmounts"
-        (click)="applyQuickAmount(amount)"
+        *ngFor="let amount of suggestedAmounts"
+        (click)="applySuggestedAmount(amount)"
       >
-        {{ amount === maxPayAmount ? 'Full Amount' : (amount | currency:'INR':'symbol':'1.0-0') }}
+        {{ amount | currency:'INR':'symbol':'1.2-2' }}
       </button>
     </div>
 
@@ -172,7 +201,7 @@
         placeholder="Enter amount"
       />
       <small class="helper-text">
-        Allowed range: {{ minPayAmount | currency:'INR':'symbol':'1.0-0' }} to {{ maxPayAmount | currency:'INR':'symbol':'1.0-0' }}
+        Allowed range: {{ minPayAmount | currency:'INR':'symbol':'1.2-2' }} to {{ maxPayAmount | currency:'INR':'symbol':'1.2-2' }}
       </small>
       <small class="error-text" *ngIf="amountError">{{ amountError }}</small>
     </div>
@@ -180,15 +209,15 @@
     <div class="pay-footer">
       <div>
         <label>Selected Amount</label>
-        <h4>{{ selectedAmount | currency:'INR':'symbol':'1.0-0' }}</h4>
-        <p>{{ paymentType === 'FULL' ? 'Full payment' : 'Partial payment' }}</p>
+        <h4>{{ selectedAmount | currency:'INR':'symbol':'1.2-2' }}</h4>
+        <p>{{ selectedAmountLabel }}</p>
       </div>
 
       <button
         class="pay-btn"
         type="button"
         (click)="createPayment()"
-        [disabled]="!canPay || !!amountError"
+        [disabled]="!canPay"
       >
         {{ creatingOrder ? 'Creating Order...' : 'Pay Now' }}
       </button>

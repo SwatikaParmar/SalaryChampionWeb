@@ -1,13 +1,16 @@
 <div class="dashboard-wrapper">
 
   <!-- SIDEBAR -->
-  <app-sidebar></app-sidebar>
+  <app-sidebar
+    [isSidebarOpen]="isSidebarOpen"
+    (sidebarClosed)="closeSidebar()"
+  ></app-sidebar>
 
   <!-- MAIN -->
-  <div class="dashboard-main">
+  <div class="dashboard-main" [class.sidebar-collapsed]="!isSidebarOpen">
 
     <!-- HEADER -->
-    <app-header></app-header>
+    <app-header (sidebarToggle)="toggleSidebar()"></app-header>
 
     <!-- PAGE CONTENT -->
     <div class="dashboard-content">

@@ -1,5 +1,6 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs';
 import { ApiEndPoint } from '../enums/api-end-point';
 import { environment } from '../environments/environment';
 @Injectable({
@@ -10,6 +11,136 @@ export class ContentService {
 
   constructor(private http: HttpClient, private handler: HttpBackend) {
     this.noAuthHttp = new HttpClient(handler);
+  }
+
+  private withFreshParams(params: Record<string, any> = {}): { params: HttpParams } {
+    let httpParams = new HttpParams().set('_ts', Date.now().toString());
+
+    Object.keys(params).forEach((key) => {
+      const value = params[key];
+
+      if (value === null || value === undefined || value === '') {
+        return;
+      }
+
+      httpParams = httpParams.set(key, String(value));
+    });
+
+    return { params: httpParams };
+  }
+
+  private pickFirstText(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const trimmedValue = candidate.trim();
+      if (trimmedValue) {
+        return trimmedValue;
+      }
+    }
+
+    return '';
+  }
+
+  private normalizeLoanStatusContainer(container: any, ...fallbacks: any[]) {
+    const source = container && typeof container === 'object' ? container : {};
+    const loanStatus = this.pickFirstText(
+      source?.loanStatus,
+      source?.customerLoanStatus,
+      ...fallbacks
+    );
+
+    if (!loanStatus) {
+      return container;
+    }
+
+    const normalizedContainer: any = { ...source };
+
+    if (!this.pickFirstText(source?.loanStatus)) {
+      normalizedContainer.loanStatus = loanStatus;
+    }
+
+    if (!this.pickFirstText(source?.customerLoanStatus)) {
+      normalizedContainer.customerLoanStatus = loanStatus;
+    }
+
+    return normalizedContainer;
+  }
+
+  private normalizeLoanHistoryResponse(response: any) {
+    const data = response?.data;
+    const items = Array.isArray(data?.items) ? data.items : null;
+
+    if (!data || typeof data !== 'object' || !items) {
+      return response;
+    }
+
+    return {
+      ...response,
+      data: {
+        ...data,
+        items: items.map((item: any) => {
+          const normalizedStatus = this.normalizeLoanStatusContainer(
+            item?.status,
+            item?.overview?.customerLoanStatus
+          );
+          const normalizedOverview = this.normalizeLoanStatusContainer(
+            item?.overview,
+            normalizedStatus?.loanStatus,
+            item?.status?.customerLoanStatus
+          );
+          const normalizedItem: any = {
+            ...item
+          };
+
+          if (normalizedStatus !== undefined) {
+            normalizedItem.status = normalizedStatus;
+          }
+
+          if (normalizedOverview !== undefined) {
+            normalizedItem.overview = normalizedOverview;
+          }
+
+          return normalizedItem;
+        })
+      }
+    };
+  }
+
+  private normalizeLoanDetailResponse(response: any) {
+    const detail = response?.data;
+
+    if (!detail || typeof detail !== 'object') {
+      return response;
+    }
+
+    const normalizedStatus = this.normalizeLoanStatusContainer(
+      detail?.status,
+      detail?.loan?.customerLoanStatus
+    );
+    const normalizedLoan = this.normalizeLoanStatusContainer(
+      detail?.loan,
+      normalizedStatus?.loanStatus,
+      normalizedStatus?.customerLoanStatus
+    );
+    const normalizedDetail: any = {
+      ...detail
+    };
+
+    if (normalizedStatus !== undefined) {
+      normalizedDetail.status = normalizedStatus;
+    }
+
+    if (normalizedLoan !== undefined) {
+      normalizedDetail.loan = normalizedLoan;
+    }
+
+    return {
+      ...response,
+      data: normalizedDetail
+    };
   }
 
   previewPan(data: any) {
@@ -35,7 +166,28 @@ export class ContentService {
 
   getBorrowerSnapshot() {
     return this.http.get<any>(
-      environment.apiUrl + ApiEndPoint.borrowerSnapshot
+      environment.apiUrl + ApiEndPoint.borrowerSnapshot,
+      this.withFreshParams()
+    );
+  }
+
+  getEmploymentJourneyDetails(applicationId?: string) {
+    let params = new HttpParams();
+
+    if (applicationId) {
+      params = params.set('applicationId', applicationId);
+    }
+
+    return this.http.get<any>(
+      environment.apiUrl + ApiEndPoint.employmentJourneyDetails,
+      { params }
+    );
+  }
+
+  saveEmploymentJourneyDetails(data: any) {
+    return this.http.post<any>(
+      environment.apiUrl + ApiEndPoint.saveEmploymentJourneyDetails,
+      data
     );
   }
 
@@ -166,6 +318,12 @@ pennyDrop(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.pennyDrop,data)
 }
 
+ifscLookup(ifsc: string) {
+  return this.http.get<any>(
+    `${environment.apiUrl}${ApiEndPoint.ifscLookup}?ifsc=${encodeURIComponent(ifsc)}`
+  );
+}
+
 verifyBank(id: any) {
   const url = ApiEndPoint.verifyBank.replace('{id}', id);
   return this.http.get<any>(environment.apiUrl + url);
@@ -262,7 +420,8 @@ refreshBorrowerRepayment(data: any) {
 
 applicationStatus(applicationId: any) {
   return this.http.get<any>(
-    environment.apiUrl + ApiEndPoint.applicationStatus + '?applicationId=' + applicationId
+    environment.apiUrl + ApiEndPoint.applicationStatus,
+    this.withFreshParams({ applicationId })
   );
 }
 
@@ -345,6 +504,20 @@ buildUrl(url: string): string {
   return `${base}/${clean}`;
 }
 
+resolveApiUrl(url: string): string {
+  const normalizedUrl = String(url || '').trim();
+
+  if (/^https?:\/\//i.test(normalizedUrl)) {
+    return normalizedUrl;
+  }
+
+  return this.buildUrl(normalizedUrl);
+}
+
+postToEndpoint(url: string, payload: any) {
+  return this.http.post<any>(this.resolveApiUrl(url), payload);
+}
+
 // ================= CONSENT =================
 createConsent(payload: any) {
   return this.http.post(this.buildUrl('kyc/aa/consents'), payload);
@@ -390,15 +563,18 @@ reloanConsume(payload: any) {
 
 
 getLoanHistory(params: any) {
-  return this.http.get(environment.apiUrl + 'loan/borrower/history', { params });
+  return this.http.get(environment.apiUrl + 'loan/borrower/history', { params }).pipe(
+    map((response) => this.normalizeLoanHistoryResponse(response))
+  );
 }
 
 
   getLoanDetail(applicationId: string) {
-
-      return this.http.get<any>(
-    environment.apiUrl + 'loan/borrower/loan-detail' + '?applicationId=' + applicationId
-  );
+    return this.http.get<any>(
+      environment.apiUrl + 'loan/borrower/loan-detail' + '?applicationId=' + applicationId
+    ).pipe(
+      map((response) => this.normalizeLoanDetailResponse(response))
+    );
 
 
   }

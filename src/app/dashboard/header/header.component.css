@@ -16,6 +16,16 @@
   color: #102b61;
 }
 
+.menu-toggle {
+  border: 0;
+  background: transparent;
+  color: #102b61;
+  font-size: 22px;
+  line-height: 1;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
 /* RIGHT */
 .header-right {
   display: flex;

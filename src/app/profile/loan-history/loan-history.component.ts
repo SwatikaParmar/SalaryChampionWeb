@@ -3,6 +3,8 @@ import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay } from '../../shared/date-format.util';
 
 @Component({
   selector: 'app-loan-history',
@@ -10,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
   styleUrls: ['./loan-history.component.css']
 })
 export class LoanHistoryComponent implements OnInit {
+  private readonly hiddenLoanStatuses = ['INPROCESS', 'IN_PROCESS', 'IN_PROGRESS'];
 
   loanList: any[] = [];
   summary: any = {};
@@ -51,6 +54,156 @@ export class LoanHistoryComponent implements OnInit {
     };
   }
 
+  private pickFirstAmount(...candidates: any[]): number | null {
+    for (const candidate of candidates) {
+      const numericValue = Number(candidate);
+
+      if (Number.isFinite(numericValue) && numericValue >= 0) {
+        return numericValue;
+      }
+    }
+
+    return null;
+  }
+
+  private pickPositiveAmount(...candidates: any[]): number | null {
+    for (const candidate of candidates) {
+      const numericValue = Number(candidate);
+
+      if (Number.isFinite(numericValue) && numericValue > 0) {
+        return numericValue;
+      }
+    }
+
+    return null;
+  }
+
+  private pickFirstString(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const trimmedValue = candidate.trim();
+      if (trimmedValue) {
+        return trimmedValue;
+      }
+    }
+
+    return '';
+  }
+
+  private normalizeStatus(value: any): string {
+    return String(value || '').trim().toUpperCase().replace(/[\s-]+/g, '_');
+  }
+
+  private shouldHideLoanStatus(value: any): boolean {
+    return this.hiddenLoanStatuses.includes(this.normalizeStatus(value));
+  }
+
+  private formatHistoryDate(...candidates: any[]): string {
+    for (const candidate of candidates) {
+      if (typeof candidate !== 'string') {
+        continue;
+      }
+
+      const formattedDate = formatDateForDisplay(candidate);
+      if (formattedDate) {
+        return formattedDate;
+      }
+
+      const trimmedValue = candidate.trim();
+      if (trimmedValue) {
+        return trimmedValue;
+      }
+    }
+
+    return '';
+  }
+
+  private buildHistoryFinancials(item: any) {
+    const overview = item?.overview || {};
+    const status = item?.status || {};
+    const closure = item?.closure || {};
+    const repayment = item?.repayment || {};
+    const settlement = item?.settlement || {};
+
+    return {
+      totalPaidAmount: this.pickFirstAmount(
+        item?.totalPaidAmount,
+        overview?.totalPaidAmount,
+        status?.totalPaidAmount,
+        closure?.totalPaidAmount,
+        repayment?.totalPaidAmount,
+        settlement?.totalPaidAmount,
+        item?.paidAmount,
+        overview?.paidAmount,
+        repayment?.paidAmount
+      ),
+      interestAmount: this.pickFirstAmount(
+        item?.interestAmount,
+        overview?.interestAmount,
+        status?.interestAmount,
+        closure?.interestAmount,
+        repayment?.interestAmount,
+        settlement?.interestAmount
+      ),
+      penaltyAmount: this.pickPositiveAmount(
+        item?.penaltyAmount,
+        overview?.penaltyAmount,
+        status?.penaltyAmount,
+        closure?.penaltyAmount,
+        repayment?.penaltyAmount,
+        settlement?.penaltyAmount
+      ),
+      paidOnDisplay: this.formatHistoryDate(
+        item?.paidOnDisplay,
+        item?.paidOn,
+        overview?.paidOnDisplay,
+        overview?.paidOn,
+        closure?.paidOnDisplay,
+        closure?.paidOn,
+        repayment?.paidOnDisplay,
+        repayment?.paidOn,
+        settlement?.paidOnDisplay,
+        settlement?.paidOn,
+        status?.paidOnDisplay,
+        status?.paidOn,
+        closure?.closedOn,
+        closure?.closedDate
+      )
+    };
+  }
+
+  getHistoryBucketClass(bucket: any): string {
+    if (this.shouldHideLoanStatus(bucket)) {
+      return 'history-pill--neutral';
+    }
+
+    const normalizedBucket = typeof bucket === 'string'
+      ? bucket.trim().toUpperCase()
+      : '';
+
+    switch (normalizedBucket) {
+      case 'ACTIVE':
+        return 'history-pill--active';
+      case 'CLOSED':
+        return 'history-pill--closed';
+      case 'IN_PROGRESS':
+        return 'history-pill--progress';
+      default:
+        return 'history-pill--neutral';
+    }
+  }
+
+  getDisplayLoanStatus(status: any): string {
+    if (this.shouldHideLoanStatus(status)) {
+      return '';
+    }
+
+    return this.pickFirstString(status);
+  }
+
   // 🔥 OVERVIEW CARDS
   get overviewCards() {
     const source = this.overview || this.allSummary;
@@ -59,7 +212,6 @@ export class LoanHistoryComponent implements OnInit {
       { label: 'Total Applications', value: source?.totalApplications, type: 'count' },
       { label: 'Active Loans', value: source?.countsByBucket?.active, type: 'count' },
       { label: 'Closed Loans', value: source?.countsByBucket?.closed, type: 'count' },
-      { label: 'In Progress', value: source?.countsByBucket?.inProgress, type: 'count' },
       { label: 'Approved Amount', value: source?.totalApprovedAmount, type: 'amount' },
       { label: 'Requested Amount', value: source?.totalRequestedAmount, type: 'amount' }
     ];
@@ -87,11 +239,44 @@ export class LoanHistoryComponent implements OnInit {
         this.spinner.hide();
         this.isLoading = false;
 
+        if (res?.success === false) {
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load loan history'));
+          return;
+        }
+
         const data = res?.data;
         if (!data) return;
 
         // 🔥 LIST
-        this.loanList = data.items || [];
+        this.loanList = (data.items || []).map((item: any) => ({
+          ...item,
+          financials: this.buildHistoryFinancials(item),
+          sanctionedAmount:
+            this.pickFirstAmount(
+              item?.overview?.approvedAmount,
+              item?.approvedAmount,
+              item?.overview?.requestedAmount,
+              item?.requestedAmount
+            ) || 0,
+          overview: {
+            ...item?.overview,
+            repayDateDisplay:
+              this.formatHistoryDate(
+                item?.overview?.repayDateDisplay,
+                item?.overview?.repayDate,
+                item?.overview?.maturityDateDisplay,
+                item?.overview?.maturityDate,
+                item?.overview?.nextDueDateDisplay,
+                item?.overview?.nextDueDate
+              ) || '',
+            nextDueDateDisplay:
+              formatDateForDisplay(item?.overview?.nextDueDateDisplay) ||
+              formatDateForDisplay(item?.overview?.nextDueDate) ||
+              item?.overview?.nextDueDateDisplay ||
+              item?.overview?.nextDueDate ||
+              ''
+          }
+        }));
 
         // 🔥 SUMMARY
         const normalized = this.normalizeSummary(data.summary);
@@ -107,10 +292,10 @@ export class LoanHistoryComponent implements OnInit {
         this.totalPages = data.totalPages || 0;
       },
 
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
         this.isLoading = false;
-        this.toastr.error('Failed to load loan history');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load loan history'));
       }
 
     });

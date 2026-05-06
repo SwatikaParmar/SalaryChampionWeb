@@ -13,8 +13,12 @@
       Please click here to verify eKYC.
     </p>
 
-    <button class="ekyc-btn" (click)="verifyEkyc()">
-      Verify eKYC Status
+    <button
+      class="ekyc-btn"
+      (click)="verifyEkyc()"
+      [disabled]="isLoadingApplication || isVerifying || !requestId || !applicationId"
+    >
+      {{ isLoadingApplication ? 'Loading verification details...' : (isVerifying ? 'Verifying...' : 'Verify eKYC Status') }}
     </button>
 
   </div>

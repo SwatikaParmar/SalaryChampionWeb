@@ -66,6 +66,11 @@ body {
   padding-left: 17%;
   flex: 1;
   background: linear-gradient(135deg, #eaf1ff 0%, #f6f9ff 50%, #eef3ff 100%);
+  transition: padding-left 0.25s ease;
+}
+
+.dashboard-main.sidebar-collapsed {
+  padding-left: 0;
 }
 
 /* ===============================
@@ -216,8 +221,8 @@ body {
     margin: 0 0 20px 0;
   }
 
-  .sidebar {
-    width: 200px;
+  .dashboard-main {
+    padding-left: 0 !important;
   }
 }
 

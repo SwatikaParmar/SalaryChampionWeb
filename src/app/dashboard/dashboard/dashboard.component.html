@@ -1,4 +1,9 @@
-<div class="dashboard-home">
+<div class="dashboard-home" [class.dashboard-home--refreshing]="isRepaymentRefreshInProgress">
+  <div
+    class="dashboard-refresh-blanket"
+    *ngIf="isRepaymentRefreshInProgress"
+    aria-hidden="true"
+  ></div>
 
   <!-- TOP BANNER -->
   <img
@@ -12,18 +17,14 @@
     <!-- ================= PROFILE CARD ================= -->
     <!-- SHOW ONLY WHEN PROFILE IS NOT COMPLETE -->
     <div
-      class="col-md-12 profile-card"  *ngIf="profileProgress < 100"
-     
+      class="col-md-12 profile-card" *ngIf="showBasicProfileCard"
     >
 
       <!-- LEFT -->
       <div class="profile-left">
-        <h3>My Profile</h3>
+        <h3>{{ basicProfileCardTitle }}</h3>
 
-        <p>
-          Complete registration to apply for a loan.  
-          Your financial solution awaits.
-        </p>
+        <p>{{ basicProfileCardMessage }}</p>
 
         <!-- PROFILE PROGRESS -->
         <div class="progress-wrapper">
@@ -40,9 +41,10 @@
 
         <button
           class="btn-start"
-          routerLink="/dashboard/profile"
+          type="button"
+          (click)="handleBasicProfileAction()"
         >
-          Let's Start
+          {{ basicProfileCardButtonLabel }}
         </button>
       </div>
 
@@ -64,72 +66,160 @@
 
 
     <!-- ❌ NOT ELIGIBLE CARD -->
-<div class="col-md-12"    *ngIf="profileProgress === 100 && !isEligible">
+<div class="col-md-12" *ngIf="showNotEligibleSimpleCard">
+  <div
+    class="not-eligible-simple-card"
+    [class.not-eligible-simple-card--application]="isApplicationRejectedSimpleCard"
+  >
+    <div class="not-eligible-simple-body">
+      <div class="not-eligible-simple-copy">
+        <h2 class="not-eligible-simple-title">{{ negativeCardTitle }}</h2>
 
-  <div class="not-eligible-card">
+        <p class="not-eligible-simple-message" *ngIf="simpleNegativeMessage">{{ simpleNegativeMessage }}</p>
 
-    <!-- STATUS BADGE -->
-    <div class="status-badge">
-      ● Status: Not eligible
-    </div>
-
-    <div class="not-eligible-content">
-
-      <!-- LEFT -->
-      <div class="text-section">
-        <h2>Not Eligible Right Now</h2>
-
-        <p>
-          You don't meet the loan criteria at this moment.
-          Review your details and try again later.
+        <p class="not-eligible-simple-retry" *ngIf="negativeCardRetryDate">
+          Try again after: {{ negativeCardRetryDate | date:'dd-MM-yyyy' }}
         </p>
 
-        <!-- REASON -->
-        <p class="reason" *ngIf="ineligibleReason">
-          Reason: {{ ineligibleReason }}
-        </p>
-
-        <!-- RETRY -->
-        <p class="retry" *ngIf="retryDate">
-          Try again after: {{ retryDate | date:'mediumDate' }}
-        </p>
-
-        <p class="tip">
-          Tip: update income/KYC to <b>improve your chances</b>.
+        <p class="not-eligible-simple-tip">
+          <ng-container *ngIf="isApplicationRejectedSimpleCard; else improveChancesTip">
+            {{ simpleNegativeTipText }}
+          </ng-container>
+          <ng-template #improveChancesTip>
+            Tip: update income/KYC to <strong>improve your chances</strong>.
+          </ng-template>
         </p>
       </div>
 
-      <!-- RIGHT IMAGE -->
-      <div class="image-section">
+      <div class="not-eligible-simple-visual" aria-hidden="true">
+        <div class="not-eligible-simple-arch"></div>
         <img src="assets/images/not-eligible.png" alt="Not Eligible" />
       </div>
+    </div>
+  </div>
+</div>
 
+<div class="col-md-12" *ngIf="showDecisionNegativeCard">
+
+  <div class="not-eligible-card" [ngClass]="negativeCardThemeClass">
+    <div class="not-eligible-orb not-eligible-orb--one" aria-hidden="true"></div>
+    <div class="not-eligible-orb not-eligible-orb--two" aria-hidden="true"></div>
+
+    <div class="not-eligible-header">
+      <div class="not-eligible-copy">
+        <span class="not-eligible-kicker">{{ negativeCardKicker }}</span>
+        <h2>{{ negativeCardTitle }}</h2>
+        <p>{{ negativeCardMessage }}</p>
+      </div>
+
+      <div class="not-eligible-icon" aria-hidden="true">
+        <i class="fa-solid" [ngClass]="negativeCardIconClass"></i>
+      </div>
     </div>
 
+    <div class="not-eligible-grid">
+      <div class="not-eligible-panel">
+        <span class="not-eligible-panel-label">Case Type</span>
+        <strong>{{ negativeCardCaseType }}</strong>
+      </div>
+
+      <div class="not-eligible-panel" *ngIf="showNegativeRetryPanel">
+        <span class="not-eligible-panel-label">Retry After</span>
+        <strong>{{ negativeCardRetryDate | date:'dd-MM-yyyy' }}</strong>
+      </div>
+
+      <div class="not-eligible-panel not-eligible-panel--wide">
+        <span class="not-eligible-panel-label">What This Means</span>
+        <p>{{ negativeCardResolutionText }}</p>
+      </div>
+    </div>
+
+    <div class="not-eligible-footer">
+      <span class="not-eligible-status-tag">{{ negativeCardStatusLabel }}</span>
+      <p>{{ negativeCardActionHint }}</p>
+    </div>
   </div>
 
+</div>
+
+<div class="col-md-12" *ngIf="showClosedLoanUnavailableCard">
+  <div class="reloan-unavailable-card">
+    <div class="reloan-unavailable-header">
+      <div>
+        <span class="reloan-unavailable-kicker">Loan Status</span>
+        <h3>{{ reloanUnavailableTitle }}</h3>
+      </div>
+
+      <div class="reloan-unavailable-icon" aria-hidden="true">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+    </div>
+
+    <div class="reloan-unavailable-alert">
+      <p>{{ closedLoanCardMessage }}</p>
+
+      <p class="reloan-unavailable-meta" *ngIf="showReloanUnavailableRetryDate">
+        Try again after: {{ closedLoanRetryDate | date:'dd-MM-yyyy' }}
+      </p>
+    </div>
+
+    <div class="reloan-closed-summary" *ngIf="closedLoanSummary as closedLoan">
+      <div class="reloan-closed-stat" *ngIf="closedLoan.loanNumber">
+        <label>Loan ID</label>
+        <strong>{{ closedLoan.loanNumber }}</strong>
+      </div>
+
+      <div class="reloan-closed-stat">
+        <label>Loan Amount</label>
+        <strong>
+          {{ closedLoan.loanAmount !== null ? (closedLoan.loanAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="reloan-closed-stat">
+        <label>Total Paid</label>
+        <strong>
+          {{ closedLoan.totalPaidAmount !== null ? (closedLoan.totalPaidAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="reloan-closed-stat">
+        <label>Closed On</label>
+        <strong>{{ closedLoan.closedDateDisplay || closedLoan.statusLabel || '--' }}</strong>
+      </div>
+
+      <div class="reloan-closed-note" *ngIf="closedLoan.disbursedAmount !== null || closedLoan.currentInterestAmount !== null || closedLoan.penaltyInterestPaidAmount !== null">
+        <span *ngIf="closedLoan.disbursedAmount !== null">
+          Disbursed: {{ closedLoan.disbursedAmount | currency:'INR':'symbol':'1.0-0' }}
+        </span>
+        <span *ngIf="closedLoan.currentInterestAmount !== null">
+          Interest paid: {{ closedLoan.currentInterestAmount | currency:'INR':'symbol':'1.0-0' }}
+        </span>
+        <span *ngIf="closedLoan.penaltyInterestPaidAmount !== null">
+          Penalty interest paid: {{ closedLoan.penaltyInterestPaidAmount | currency:'INR':'symbol':'1.0-0' }}
+        </span>
+      </div>
+    </div>
+  </div>
 </div>
 
     <!-- ================= LOAN CARD ================= -->
     <!-- SHOW ONLY WHEN PROFILE IS COMPLETE -->
 <div
   class="loan-dashboard-card col-md-12"
-   *ngIf="showLoanCard">
+   *ngIf="showLoanCard && !showClosedLoanUnavailableCard">
   <!-- LEFT -->
   <div class="loan-left">
-    <h3>Loan Application</h3>
+    <h3>{{ loanJourneyCardTitle }}</h3>
 
     <!-- 🔁 TEXT CHANGE BASED ON PROGRESS -->
-<p *ngIf="loanProgress < 100">
-  Congratulations! 🎉  
-  You're now successfully eligible. Your gateway to seamless financial solutions is officially open.
-</p>
+<p>{{ loanJourneyCardMessage }}</p>
 
 
 
     <!-- LOAN PROGRESS -->
     <div class="progress-wrapper"
-      *ngIf="loanProgress < 100">
+      *ngIf="showLoanJourneyProgress">
       <div class="progress-bar">
         <div
           class="progress-fill"
@@ -143,21 +233,13 @@
 
     <!-- 🔁 BUTTON CHANGE -->
   <button
-  *ngIf="loanProgress === 0"
-  class="btn-start"
-  routerLink="/dashboard/loan"
->
-  View & Apply
-</button>
-
-<!-- loanProgress between 1 and 99 -->
-<button
-  *ngIf="loanProgress > 0 && loanProgress < 100"
-  class="btn-start"
-  routerLink="/dashboard/loan"
->
-  Continue
-</button>
+    *ngIf="showLoanJourneyProgress"
+    class="btn-start"
+    type="button"
+    (click)="handleLoanJourneyAction()"
+  >
+    {{ loanJourneyButtonLabel }}
+  </button>
 
 
   </div>
@@ -174,83 +256,62 @@
   </div>
 </div>
 
-<div class="active-loan-card col-md-12" *ngIf="showActiveLoanCard && activeLoan && !showReloanActionButton">
+<div class="active-loan-card col-md-12" *ngIf="showActiveLoanCard && activeLoan && !showReloanActionButton && !showClosedLoanUnavailableCard">
   <div class="active-loan-shell">
     <div class="active-loan-hero">
       <div>
         <div class="active-loan-kicker">Live Loan Snapshot</div>
-        <h3>My Loan</h3>
+        <h3>{{ dashboardPrimaryCard?.title || 'My Loan' }}</h3>
         <p>
           <span class="loan-chip">{{ activeLoan?.status || 'ACTIVE' }}</span>
           <span *ngIf="activeLoan?.loanNumber" class="loan-reference">
-            Loan ID: {{ activeLoan?.loanNumber }}
+            Loan Number: {{ activeLoan?.loanNumber }}
           </span>
         </p>
       </div>
 
       <div class="active-loan-highlight">
-        <span>Approved Amount</span>
+        <span>Loan Amount</span>
         <strong>
-          {{ activeLoan?.approvedAmount ? (activeLoan?.approvedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+          {{ activeLoan?.approvedAmount !== null && activeLoan?.approvedAmount !== undefined ? (activeLoan?.approvedAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
         </strong>
-        <small>
-          Disbursed:
-          {{ activeLoan?.netDisbursalAmount ? (activeLoan?.netDisbursalAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </small>
       </div>
     </div>
 
     <div class="repay-cta-strip">
       <div>
         <h4>Repay this loan</h4>
-        <p>Open the repayment screen from your dashboard and pay using your logged-in borrower token.</p>
+        <p>{{ dashboardPrimaryCard?.message || 'Your loan is active. Repayment details are available.' }}</p>
       </div>
 
-      <button class="btn-start repay-now-btn" type="button" (click)="openRepayment()">
+      <button
+        *ngIf="showRepayNowButton"
+        class="btn-start repay-now-btn"
+        type="button"
+        (click)="openRepayment()">
         Repay Now
       </button>
     </div>
 
     <div class="active-loan-grid">
       <div class="active-loan-stat">
-        <label>Outstanding</label>
-        <strong>
-          {{ activeLoan?.outstandingAmount ? (activeLoan?.outstandingAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Total Payable</label>
-        <strong>
-          {{ activeLoan?.repayAmount ? (activeLoan?.repayAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Next Due Amount</label>
-        <strong>
-          {{ activeLoan?.nextDueAmount ? (activeLoan?.nextDueAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Next Due Date</label>
-        <strong>
-          {{ activeLoan?.nextDueDateDisplay || '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Auto Debit</label>
-        <strong [class.success-text]="activeLoan?.autoDebitStatus">
-          {{ activeLoan?.autoDebitStatus || '--' }}
-        </strong>
-      </div>
-
-      <div class="active-loan-stat">
-        <label>Repay By</label>
+        <label>Repay Date</label>
         <strong>
           {{ activeLoan?.repayDateDisplay || '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat">
+        <label>Current Outstanding</label>
+        <strong>
+          {{ activeLoan?.payableNowAmount !== null && activeLoan?.payableNowAmount !== undefined ? (activeLoan?.payableNowAmount | currency:'INR':'symbol':'1.0-0') : '--' }}
+        </strong>
+      </div>
+
+      <div class="active-loan-stat" *ngIf="activeLoan?.delayDays > 0">
+        <label>Delay Days</label>
+        <strong>
+          {{ activeLoan?.delayDays !== null && activeLoan?.delayDays !== undefined ? activeLoan?.delayDays : '--' }}
         </strong>
       </div>
     </div>
@@ -259,7 +320,7 @@
 </div>
 <!-- ✅ STATUS TRACKER -->
 <div class="tracker-card"
-     *ngIf="showTracker && !showActiveLoanCard">
+     *ngIf="showTracker && !showActiveLoanCard && !showClosedLoanUnavailableCard">
 
 <!-- 🔥 HEADER -->
 <div class="tracker-header">
@@ -286,7 +347,9 @@
    <div class="tracker-row">
 
   <!-- Submitted -->
-  <div [ngClass]="'step ' + getStepClass(trackingSteps?.applicationSubmitted)">
+  <div
+    *ngIf="shouldShowTrackerStep('applicationSubmitted')"
+    [ngClass]="'step ' + getStepClass(trackingSteps?.applicationSubmitted)">
     <div class="circle"
          [class.green]="trackingSteps?.applicationSubmitted === 'DONE'">
       <i class="fa-solid"
@@ -297,7 +360,9 @@
   </div>
 
   <!-- In Review -->
-  <div [ngClass]="'step ' + getStepClass(trackingSteps?.applicationInReview)">
+  <div
+    *ngIf="shouldShowTrackerStep('applicationInReview')"
+    [ngClass]="'step ' + getStepClass(trackingSteps?.applicationInReview)">
     <div class="circle"
          [class.green]="trackingSteps?.applicationInReview === 'DONE'">
       <i class="fa-solid"
@@ -310,9 +375,10 @@
   <!-- Video KYC -->
 <!-- Video KYC -->
 <div 
+  *ngIf="shouldShowTrackerStep('videoKyc')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.videoKyc)"
-  (click)="trackingSteps?.videoKyc === 'PENDING' && onVideoKycClick()"
-  [style.cursor]="trackingSteps?.videoKyc === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('videoKyc') && onVideoKycClick()"
+  [style.cursor]="canOpenTrackerStep('videoKyc') ? 'pointer' : 'not-allowed'"
 >
   <div class="circle"
        [class.green]="trackingSteps?.videoKyc === 'DONE'"
@@ -345,19 +411,27 @@
     </div>
 
     <!-- BODY -->
-    <div class="kyc-body">
+    <div class="kyc-body" [class.kyc-body-message]="!!videoKycModalMessage">
 
-<iframe
-  *ngIf="kycUrl"
-  [src]="kycUrlSafe"
-  frameborder="0"
-  allow="geolocation; camera; microphone"
-></iframe>
+      <div *ngIf="videoKycModalMessage; else videoKycFrameBlock" class="fallback fallback-message">
+        <div class="fallback-card fallback-card-message">
+          <p>{{ videoKycModalMessage }}</p>
+        </div>
+      </div>
+
+      <ng-template #videoKycFrameBlock>
+        <iframe
+          *ngIf="kycUrl"
+          [src]="kycUrlSafe"
+          frameborder="0"
+          allow="geolocation; camera; microphone"
+        ></iframe>
 
       <!-- FALLBACK -->
       <div *ngIf="!kycUrl" class="fallback">
         <p>Unable to load KYC. Please try again.</p>
       </div>
+      </ng-template>
 
     </div>
 
@@ -376,9 +450,10 @@
   <!-- Sanction -->
 <!-- Sanction -->
 <div 
+  *ngIf="shouldShowTrackerStep('sanction')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.sanction)"
-  (click)="trackingSteps?.sanction === 'PENDING' && openSanctionLetter()"
-  [style.cursor]="trackingSteps?.sanction === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('sanction') && openSanctionLetter()"
+  [style.cursor]="canOpenTrackerStep('sanction') ? 'pointer' : 'not-allowed'"
 >
 
   <div class="circle"
@@ -432,8 +507,14 @@
 
         <input
           type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          pattern="[0-9]*"
           placeholder="Enter OTP"
           [(ngModel)]="enteredOtp"
+          (ngModelChange)="onSanctionOtpInput($event)"
+          (keydown)="allowOnlyOtpDigits($event)"
+          (paste)="handleSanctionOtpPaste($event)"
           class="otp-input"
         />
 
@@ -453,9 +534,10 @@
   <!-- E-Sign -->
 <!-- E-Sign -->
 <div 
+  *ngIf="shouldShowTrackerStep('esign')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.esign)"
-  (click)="trackingSteps?.esign === 'PENDING' && openEsign()"
-  [style.cursor]="trackingSteps?.esign === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('esign') && openEsign()"
+  [style.cursor]="canOpenTrackerStep('esign') ? 'pointer' : 'not-allowed'"
 >
 
   <div class="circle"
@@ -510,9 +592,10 @@
 
 <!-- ENACH -->
 <div 
+  *ngIf="shouldShowTrackerStep('enach')"
   [ngClass]="'step ' + getStepClass(trackingSteps?.enach)"
-  (click)="trackingSteps?.enach === 'PENDING' && openEnach()"
-  [style.cursor]="trackingSteps?.enach === 'PENDING' ? 'pointer' : 'not-allowed'"
+  (click)="canOpenTrackerStep('enach') && openEnach()"
+  [style.cursor]="canOpenTrackerStep('enach') ? 'pointer' : 'not-allowed'"
 >
 
   <div class="circle"
@@ -575,7 +658,9 @@
 </div>
 
   <!-- Disbursement -->
-  <div [ngClass]="'step ' + getStepClass(trackingSteps?.disbursement)">
+  <div
+    *ngIf="shouldShowTrackerStep('disbursement')"
+    [ngClass]="'step ' + getStepClass(trackingSteps?.disbursement)">
     <div class="circle"
          [class.green]="trackingSteps?.disbursement === 'DONE'">
       <i class="fa-solid"
@@ -596,7 +681,7 @@
 </div>
 
 <div class="credit-wrapper"
-     *ngIf="loanProgress === 100 && creditManager && !showActiveLoanCard">
+     *ngIf="showAssignedContactCard">
 
   <!-- TITLE -->
   <h2 class="section-title">
@@ -656,30 +741,30 @@
     
 
  <!-- RELOAN CTA -->
-  <div *ngIf="showReloanActionButton" class="reloan-eligibility-card">
+  <div *ngIf="showReloanActionButton && !showClosedLoanUnavailableCard" class="reloan-eligibility-card">
     <div class="reloan-eligibility-copy">
       <span class="reloan-badge">Reloan Offer</span>
-      <h3>You are eligible for reloan</h3>
-      <p>
-        Your previous loan journey is complete. You can now continue with a new
-        reloan application.
+      <h3>{{ reloanEligibleCardTitle }}</h3>
+      <p>{{ reloanEligibleCardMessage }}</p>
+      <p class="reloan-eligibility-hint" *ngIf="showReloanEligibilityHint">
+        Your reloan link is being prepared. Please refresh once it is available.
       </p>
     </div>
 
     <div class="reloan-eligibility-action">
-      <button class="btn-start" (click)="applyReloan()">
-        Apply For Reloan
+      <button class="btn-start" type="button" (click)="handleReloanCardAction()" [disabled]="!canApplyReloan || isReloanActionBusy">
+        {{ reloanEligibleCardButtonLabel }}
       </button>
     </div>
   </div>
 
   <div>
 
-      <button class="support-btn">
+      <button class="support-btn" type="button" (click)="handleSupportAction()" *ngIf="dashboardPrimaryCardType">
     Support
   </button>
 &nbsp;
-       <button class="support-btn" (click)="refreshStatus()"   *ngIf="showTracker && !showActiveLoanCard">
+       <button class="support-btn" type="button" (click)="refreshStatus()" *ngIf="showRefreshStatusButton">
     Refresh Status
   </button>
 

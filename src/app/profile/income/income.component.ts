@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ContentService } from '../../../service/content.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 @Component({
   selector: 'app-income',
   templateUrl: './income.component.html',
@@ -58,12 +59,16 @@ export class IncomeComponent implements OnInit {
           this.toastr.success('Income details saved successfully');
           this.router.navigate(['/dashboard/profile/selfie']); // next step
         } else {
-          this.toastr.error(res?.message || 'Failed to save income details');
+          this.toastr.error(
+            getFirstApiErrorMessage(res, 'Failed to save income details'),
+          );
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to save income details');
+        this.toastr.error(
+          getFirstApiErrorMessage(err, 'Failed to save income details'),
+        );
       },
     });
   }

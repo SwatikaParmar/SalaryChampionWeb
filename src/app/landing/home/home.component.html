@@ -11,18 +11,24 @@
       </a>
 
       <!-- Mobile Toggle -->
-      <button class="navbar-toggler border-0 shadow-none" type="button"
-              data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+      <button (click)="toggleMenu()" class="navbar-toggler border-0 shadow-none" type="button">
         <span class="navbar-toggler-icon"></span>
       </button>
 
       <!-- Menu + Button -->
-      <div class="collapse navbar-collapse" id="mainNavbar">
+      <div class="collapse navbar-collapse" id="mainNavbar" [class.show]="isMenuOpen">
 
         <!-- Center Menu -->
         <ul class="navbar-nav mx-lg-auto align-items-lg-center">
           <li class="nav-item">
-            <a class="nav-link active" href="#">Home</a>
+            <a
+              class="nav-link"
+              [routerLink]="['/']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Home
+            </a>
           </li>
 
           <li class="nav-item dropdown">
@@ -39,14 +45,28 @@
      
 
           <li class="nav-item">
-            <a class="nav-link" [routerLink]="['/contact-us']">Contact Us</a>
+            <a
+              class="nav-link"
+              [routerLink]="['/contact-us']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              Contact Us
+            </a>
           </li>
         </ul>
 
         <!-- Right Button -->
         <div class="d-flex mt-3 mt-lg-0" style="grid-gap: 10px;">
             <a [routerLink]="['/auth/login']" class="btn btn-light">Apply Now</a>
-            <a [routerLink]="['/pay-now']" class="btn btn-apply">Pay Now</a>
+            <a
+              [routerLink]="['/pay-now']"
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{ exact: true }"
+              class="btn btn-apply"
+            >
+              Pay Now
+            </a>
         </div>
 
       </div>
@@ -57,7 +77,7 @@
   <!-- ================= HERO ================= -->
   <section class="hero" style="background: url(./assets/images/main_slider_1.webp)no-repeat center; background-size: cover;">
     <div class="container hero-inner">
-      <div class="hero-text col-lg-6 col-md-7">
+      <div class="hero-text col-lg-6 col-md-9">
         <h1>
           Smart Salary Loans.<br />
           <span>Instant. Secure. Stress-Free.</span>
@@ -93,17 +113,17 @@
             <div class="row mb-3">
               <div class="col-md-6">
                 <ul class="listing">
-                  <li>Trowels & Planting Tools</li>
-                  <li>Trugs & Harvest Baskets</li>
-                  <li>Weeders & Cultivators</li>
+                  <li>Instant Loan Approval</li>
+                  <li>Low Interest Rates</li>
+                  <li>100% Secure Transactions</li>
                 </ul>
               </div>
 
               <div class="col-md-6">
                 <ul class="listing">
-                  <li>So easy, anyone can do it</li>
-                  <li>Low weed maintenance</li>
-                  <li>No fertilizer needed</li>
+                  <li>Quick & Hassle-Free Process</li>
+                  <li>Fast Disbursal (within minutes)</li>
+                  <li>Trusted by Thousands of Users</li>
                 </ul>
               </div>
             </div>
@@ -125,16 +145,16 @@
         <!-- Loan Amount -->
   <!-- Loan Amount -->
 <div class="range-labels">
-  <span>₹7000</span>
+  <span>₹{{ minLoanAmount | number }}</span>
   <span class="active">₹{{ loanAmount | number }}</span>
-  <span>₹1,00,000</span>
+  <span>₹{{ maxLoanAmount | number }}</span>
 </div>
 
 <input
   type="range"
-  min="7000"
-  max="100000"
-  step="5000"
+  [min]="minLoanAmount"
+  [max]="maxLoanAmount"
+  [step]="loanAmountStep"
   [(ngModel)]="loanAmount"
   (input)="calculateLoan()"
   class="slider"
@@ -317,7 +337,7 @@
       <div class="row justify-content-around align-items-center sm-reverse">
         
         <div class="col-lg-5 col-md-10 text-center sm-mt-40">
-          <img src="assets/images/thumb-1.png" class="img-fluid">
+          <img src="assets/images/sg.png" class="img-fluid">
         </div>
 
         <div class="col-lg-6 col-md-12">
@@ -361,7 +381,7 @@
 
       <!-- Top Content -->
       <div class="text-center mb-5">
-        <div class="pill-badge mx-auto">
+        <div class="Offering">
           Premium Features
         </div>
 
@@ -519,7 +539,7 @@
     <div class="container">
       <div class="row">
 
-        <div class="col-md-3">
+        <div class="col-lg-3 col-md-12 sm-space-bottom-40">
           <img src="assets/images/logo.png" class="img-fluid" style="max-width: 200px; margin-bottom: 25px; filter: brightness(0) invert(1);">
           <p>India's most trusted NBFC providing quick salary advances and personal loans with transparent terms and competitive rates.</p>
 
@@ -531,7 +551,7 @@
 
         </div>
 
-        <div class="col-md-3 footer-links">
+        <div class="col-lg-3 col-md-3 footer-links">
           <h4>Quick Links</h4>
           <ul class="link-ft">
             <li><a href="#">Home</a></li>
@@ -543,7 +563,7 @@
           </ul>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-lg-3 col-md-5">
           <h4>Contact Us</h4>
           <div class="info">
             <i class="fa-solid fa-location-dot"></i>
@@ -557,7 +577,7 @@
 
           <div class="info">
             <i class="fa-solid fa-envelope"></i>
-            <p>grievancesalarychampion.com</p>
+<a href="mailto:grievance@salarychampion.com">{{ 'grievance@salarychampion.com' }}</a>          
           </div>
 
           <div class="info" style="grid-template-columns: auto; grid-gap: 0;">
@@ -567,14 +587,14 @@
 
         </div>
 
-        <div class="col-md-3 updates">
+        <div class="col-lg-3 col-md-4 updates">
           <h4>Stay Updated</h4>
           <p>Get the latest updates, offers and financial tips directly in your inbox.</p>
 
           <input type="text" placeholder="Enter your email" class="form-control">
           <input type="submit" value="Subscribe" class="form-control">
 
-          <span class="pp-tags mt-2">By subscribing, you agree to our <a href="#">Privacy Policy</a></span>
+          <span class="pp-tags mt-2">By subscribing, you agree to our <a [routerLink]="['/privacy-policy']">Privacy Policy</a></span>
         </div>      
     
       </div>
@@ -585,10 +605,10 @@
 
       <div class="row mt-3">
         <div class="col-md-6 copyright"><p>RBI Registration No: B-14.01639. © 2026 Salary Champion. All rights reserved.</p></div>
-        <div class="col-md-6">
+        <div class="col-md-6 xs-mt-40">
           <ul class="link-ft small-li">
-            <li><a href="#">Terms & Conditions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
+            <li><a [routerLink]="['/terms-and-conditions']">Terms & Conditions</a></li>
+            <li><a  [routerLink]="['/privacy-policy']">Privacy Policy</a></li>
             <li><a href="#">Interest Rate Policy</a></li>
             <li><a href="#">Fair Practice Code</a></li>
             <li><a href="#">Refund & Cancellation Policy</a></li>
@@ -598,3 +618,4 @@
 
     </div>
   </footer>
+

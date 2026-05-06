@@ -3,6 +3,7 @@ import { ContentService } from '../../../service/content.service';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 
 interface DocumentStep {
   label: string;
@@ -51,16 +52,16 @@ export class DocumentsComponent implements OnInit {
       next: (res: any) => {
         if (!res?.success) {
           this.spinner.hide();
-          this.toastr.error('Failed to load borrower data');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower data'));
           return;
         }
 
         this.applicationId = res.data.application.id;
         this.loadDocumentChecklist();
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to fetch borrower snapshot');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'));
       },
     });
   }
@@ -74,7 +75,7 @@ loadDocumentChecklist() {
       this.spinner.hide();
 
       if (!res?.success || !res.data?.checklist) {
-        this.toastr.error('Failed to load document checklist');
+        this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load document checklist'));
         return;
       }
 
@@ -113,9 +114,9 @@ const pendingRequiredDocs = checklist.filter(
 
       this.activeIndex = 0;
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
-      this.toastr.error('Failed to fetch document checklist');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch document checklist'));
     },
   });
 }
@@ -229,7 +230,7 @@ async confirmUpload() {
     this.loadDocumentChecklist();
 
   } catch (err: any) {
-    this.toastr.error(err?.message || 'Upload failed');
+    this.toastr.error(getFirstApiErrorMessage(err, 'Upload failed'));
   } finally {
     this.spinner.hide();
     this.isUploading = false;

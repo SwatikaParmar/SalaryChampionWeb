@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 import { ContentService } from '../../../service/content.service';
 @Component({
   selector: 'app-ekyc',
@@ -11,6 +13,7 @@ export class EkycComponent implements OnInit {
   ekycUrl: any;
   loading = false;
   errorMsg = '';
+  private readonly rootPathUrl = environment.rootPathUrl.replace(/\/+$/, '');
 
   constructor(
     private contentService: ContentService,
@@ -25,12 +28,15 @@ export class EkycComponent implements OnInit {
   getBorrowerSnapshot() {
     this.contentService.getBorrowerSnapshot().subscribe({
       next: (res: any) => {
-        if (!res?.success) return;
+        if (!res?.success) {
+          this.errorMsg = getFirstApiErrorMessage(res);
+          return;
+        }
 
         this.applicationId = res.data?.application?.id || '';
       },
-      error: () => {
-        this.errorMsg = 'Failed to load application';
+      error: (err) => {
+        this.errorMsg = getFirstApiErrorMessage(err);
       },
     });
   }
@@ -44,9 +50,10 @@ export class EkycComponent implements OnInit {
 
     const payload = {
       applicationId: this.applicationId,
-      successRedirectUrl:
+          successRedirectUrl:
         'https://staging.d3vz8sn6l3j2ck.amplifyapp.com/dashboard/loan/ekyc-verification',
       failureRedirectUrl: 'https://staging.d3vz8sn6l3j2ck.amplifyapp.com/dashboard/loan/ekyc-error',
+
     };
 
     this.contentService.ekycStart(payload).subscribe({
@@ -57,12 +64,12 @@ export class EkycComponent implements OnInit {
           // 🔥 SAME TAB REDIRECT (NO NEW TAB)
           window.location.href = res.data.url;
         } else {
-          this.errorMsg = 'Unable to start eKYC';
+          this.errorMsg = getFirstApiErrorMessage(res);
         }
       },
-      error: () => {
+      error: (err) => {
         this.loading = false;
-        this.errorMsg = 'eKYC initiation failed';
+        this.errorMsg = getFirstApiErrorMessage(err);
       },
     });
   }

@@ -17,7 +17,7 @@
         <div [formGroupName]="i" class="row">
 
           <!-- NAME -->
-          <div class="col-md-6">
+          <div class="col-lg-6 col-md-12">
             <div class="form-group">
               <label>Name <span>*</span></label>
               <input
@@ -32,7 +32,7 @@
           </div>
 
           <!-- MOBILE -->
-          <div class="col-md-6">
+          <div class="col-lg-6 col-md-12">
             <div class="form-group">
               <label>Mobile <span>*</span></label>
               <input
@@ -41,7 +41,10 @@
                 placeholder="Enter 10-digit mobile number"
                 maxlength="10"
               />
-              <small *ngIf="submitted && ref.get('phone')?.invalid">
+              <small *ngIf="hasDuplicatePhoneError(i)">
+                Same mobile number is not allowed
+              </small>
+              <small *ngIf="submitted && ref.get('phone')?.invalid && !ref.get('phone')?.hasError('duplicatePhone')">
                 Enter valid mobile number
               </small>
             </div>
@@ -71,17 +74,17 @@
   </div>
 
   <!-- ACTION BUTTON -->
-    <div class="col-md-12">
-      <div class="btn-row">
-        <button
-          type="button"
-          class="btn-save"
-          (click)="save()"
-          [disabled]="isSaving"
-        >
-          {{ isSaving ? 'Saving...' : 'Save References' }}
-        </button>
-      </div>
-    </div>
+<div class="col-md-12 mt-4">
+  <div class="btn-row d-flex justify-content-end">
+    <button
+      type="button"
+      class="btn-save"
+      (click)="save()"
+      [disabled]="isSaving"
+    >
+      {{ isSaving ? 'Saving...' : 'Save References' }}
+    </button>
+  </div>
+</div>
   </form>
 </div>

@@ -1,8 +1,8 @@
 <div class="auth-container">
   <div class="auth-card">
     <div class="left_boxx">
-      <img src="assets/images/logo.png" class="img-fluid logo-login" routerLink="['']">
-<h5 class="text-center">
+      <img src="assets/images/logo.png" class="img-fluid logo-login" [routerLink]="['/']">
+<h5 class="text-center" style="margin-bottom: 15px;">
   When money is your need,<br>
   we are a solution
 </h5>
@@ -33,7 +33,7 @@
       <!-- CHECKBOX -->
       <label class="checkbox">
         <input type="checkbox" formControlName="agree" />
-        I agree to <a href="#">Terms</a> & <a href="#">Privacy Policy</a>
+        I agree to <a [routerLink]="['/terms-and-conditions']">Terms</a> & <a [routerLink]="['/privacy-policy']">Privacy Policy</a>
       </label>
 
       <!-- ERROR -->
@@ -46,15 +46,27 @@
       <button
         class="theme-btn"
         type="submit"
-        [disabled]="mobileForm.invalid"
+        [disabled]="mobileForm.invalid || isLoading || isLocationLoading"
       >
-        Send OTP
+        <span
+          *ngIf="isLoading || isLocationLoading"
+          class="spinner-border spinner-border-sm me-2"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        {{
+          isLocationLoading
+            ? 'Fetching location...'
+            : isLoading
+              ? 'Sending OTP...'
+              : 'Send OTP'
+        }}
       </button>
 
     </form>
     </div>
     <figure>
-      <img src="assets/images/login_form.jpg" class="img-fluid">
+      <img src="assets/images/login_form.png" class="img-fluid">
     </figure>
   </div>
   

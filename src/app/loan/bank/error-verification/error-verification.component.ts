@@ -1,17 +1,24 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-error-verification',
   templateUrl: './error-verification.component.html',
   styleUrls: ['./error-verification.component.css']
 })
-export class ErrorVerificationComponent {
+export class ErrorVerificationComponent implements OnInit {
+  errorMessage = '';
 
-  errorMessage =
-    'We were unable to fetch your bank statement. Please try again.';
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.errorMessage = params['reason'] || history.state?.message || '';
+    });
+  }
 
   goToLoanDashboard() {
     this.router.navigate(['/dashboard/loan']);

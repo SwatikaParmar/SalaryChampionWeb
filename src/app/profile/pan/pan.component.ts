@@ -4,7 +4,8 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../service/content.service';
-import { error } from 'console';
+import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { formatDateForDisplay, normalizeDateForInput } from '../../shared/date-format.util';
 @Component({
   selector: 'app-pan',
   templateUrl: './pan.component.html',
@@ -52,7 +53,7 @@ export class PanComponent {
 
     this.basicForm.patchValue({
       name: pan.fullName || '',
-      dob: pan.dob || '',
+      dob: normalizeDateForInput(pan.dob),
       gender: this.mapGender(pan.gender),
     });
   }
@@ -99,17 +100,19 @@ export class PanComponent {
     };
 
     this.spinner.show();
-debugger
     this.ContentService.previewPan(payload).subscribe({
       next: (res: any) => {
         this.spinner.hide();
 
         if (!res?.success) {
-          this.toastr.error('PAN verification failed');
+          this.toastr.error(getFirstApiErrorMessage(res, 'PAN verification failed'));
           return;
         }
 
-        this.panData = res.data;
+        this.panData = {
+          ...res.data,
+          dobDisplay: formatDateForDisplay(res?.data?.dob)
+        };
         this.showModal = true;
 
         // ✅ store PAN preview for next screen
@@ -117,14 +120,18 @@ debugger
 
         this.toastr.success('PAN preview fetched successfully');
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Server error while verifying PAN');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Server error while verifying PAN'));
       },
     });
   }
 
   closeModal() {
+    if (this.isLoading) {
+      return;
+    }
+
     this.showModal = false;
   }
   // 🔹 STEP 2: VERIFY PAN (FINAL)
@@ -149,7 +156,7 @@ debugger
           !res?.success ||
           res?.statusCode !== 200
         ) {
-          this.toastr.error(res?.message || 'PAN verification failed');
+          this.toastr.error(getFirstApiErrorMessage(res, 'PAN verification failed'));
                   this.showModal = false;
 
           return;
@@ -159,9 +166,9 @@ debugger
         this.showModal = false;
         this.router.navigate(['/dashboard/profile/basic-info']);
       },
-      error: () => {
+      error: (err) => {
         this.isLoading = false;
-        this.toastr.error('PAN verification error');
+        this.toastr.error(getFirstApiErrorMessage(err, 'PAN verification error'));
       },
     });
   }

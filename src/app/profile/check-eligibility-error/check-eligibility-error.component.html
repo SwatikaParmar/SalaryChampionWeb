@@ -13,9 +13,7 @@
       class="img-fluid loan-illustration"
     />
 
-    <p class="loan-desc">
-      You are currently ineligible for a loan based on the information provided.
-    </p>
+    <p class="loan-desc" *ngIf="message">{{ message }}</p>
 
     <button class="btn btn-close-custom" [routerLink]="['/dashboard']">Close</button>
 

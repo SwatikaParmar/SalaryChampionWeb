@@ -33,7 +33,7 @@
     *ngIf="!month.uploaded"
     (click)="openUpload(i)"
   >
-    ⬆
+    <i class="fa-solid fa-angle-up"></i>
   </button>
 
   <div class="success-icon" *ngIf="month.uploaded">
@@ -57,6 +57,14 @@
       accept=".pdf,.jpg,.jpeg,.png"
       (change)="onFileChange($event)"
     />
+
+    <p
+      *ngIf="selectedFile"
+      class="selected-file-name"
+      [title]="selectedFile.name"
+    >
+      {{ selectedFile.name }}
+    </p>
 
     <input
       type="password"

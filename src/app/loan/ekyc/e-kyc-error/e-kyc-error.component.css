@@ -4,10 +4,19 @@
     padding: 30px;
 }
 
+.ekyc-row {
+    row-gap: 24px;
+    align-items: stretch;
+}
+
+.ekyc-panel {
+    display: flex;
+}
+
 /* CARD */
 .ekyc-card {
     background: #ffffff;
-    padding: 30px 30px;
+    padding: 30px;
     width: 100%;
     text-align: center;
     height: 100%;
@@ -15,6 +24,11 @@
 
 .error-card {
     border-top: 5px solid #7c4fe0;
+    min-height: 230px;
+    padding: 34px 36px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* TITLE */
@@ -22,10 +36,11 @@
   font-family: "Poppins", sans-serif;
   font-size: 24px;
   color: #7c4fe0;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
-.ekyc-illustration{
-    margin: 20px auto 10px;
+
+.ekyc-illustration {
+    margin: 14px auto 10px;
     display: grid;
     grid-gap: 10px;
     justify-items: center;
@@ -38,6 +53,26 @@
 /* IMAGE */
 .ekyc-illustration img {
     display: block;
+    max-width: 72px;
+    width: 100%;
+}
+
+.visual-card {
+    padding: 0;
+    min-height: 230px;
+    height: 100%;
+    align-self: stretch;
+    background: #ffffff;
+    overflow: hidden;
+}
+
+.visual-image {
+    width: 100%;
+    height: 100%;
+    max-height: none;
+    object-fit: cover;
+    object-position: center;
+    display: block;
 }
 
 /* TEXT */
@@ -45,7 +80,7 @@
     font-family: "Poppins", sans-serif;
     font-size: 15px;
     color: #555;
-    margin-bottom: 25px;
+    margin-bottom: 18px;
     line-height: 1.5;
 }
 
@@ -67,6 +102,7 @@
     font-weight: 400;
     cursor: pointer;
 }
+
 .btn-primary:hover {
   background: #3c3c3c;
 }
@@ -85,4 +121,33 @@
 
 .btn-outline:hover {
   background: #f5f5f5;
+}
+
+@media only screen and (max-width: 767px) {
+    .ekyc-container {
+        padding: 30px 15px;
+    }
+
+    .error-card,
+    .visual-card {
+        min-height: auto;
+        height: auto;
+    }
+
+    .visual-image {
+        height: auto;
+        max-height: none;
+        object-fit: contain;
+    }
+
+    .action-buttons {
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+    }
+}
+
+@media only screen and (min-width: 320px) and (max-width: 480px) {
+    .action-buttons button {
+        width: 100%;
+    }
 }

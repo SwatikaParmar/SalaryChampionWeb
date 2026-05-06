@@ -1,5 +1,4 @@
 <div class="company-details-wrapper">
-
   <div class="action-arr mb-3">
     <a [routerLink]="['/dashboard/loan']" class="back-lk">
       <i class="fa-solid fa-arrow-left"></i>
@@ -8,20 +7,16 @@
   </div>
 
   <form [formGroup]="employmentForm">
-
     <div class="company-grid">
-
-      <!-- ================= LEFT CARD ================= -->
       <div class="company-card">
         <div class="row">
-
-          <!-- OFFICE / HOME -->
-          <div class="col-md-12">
+          <div class="col-md-12" [formGroup]="companyDetailGroup">
             <div class="toggle-group">
               <label>Are You Working From Office Or Home? *</label>
               <div class="toggle-btns">
                 <button
                   type="button"
+                  [disabled]="isReadOnly"
                   [class.active]="workingFromHomeCtrl?.value === false"
                   (click)="workingFromHomeCtrl?.setValue(false)">
                   OFFICE
@@ -29,216 +24,385 @@
 
                 <button
                   type="button"
+                  [disabled]="isReadOnly"
                   [class.active]="workingFromHomeCtrl?.value === true"
                   (click)="workingFromHomeCtrl?.setValue(true)">
                   HOME
                 </button>
               </div>
+              <small *ngIf="hasError('companyDetail.workingFromHome', 'required')">
+                Please select where you work from
+              </small>
             </div>
           </div>
 
-    
-
-          <!-- COMPANY NAME -->
-          <div class="col-md-6">
+          <div class="col-md-6" [formGroup]="companyDetailGroup">
             <div class="form-group">
               <label>Company Name *</label>
               <input
                 formControlName="companyName"
                 placeholder="Enter company name" />
-              <small *ngIf="submitted && companyNameCtrl?.errors?.['required']">
+              <small *ngIf="hasError('companyDetail.companyName', 'required')">
                 Company name is required
               </small>
-              <small *ngIf="submitted && companyNameCtrl?.errors?.['minlength']">
+              <small *ngIf="hasError('companyDetail.companyName', 'minlength')">
                 Minimum 2 characters required
               </small>
             </div>
           </div>
 
-          <!-- COMPANY TYPE -->
-          <div class="col-md-6">
+          <div class="col-md-6" [formGroup]="companyDetailGroup">
             <div class="form-group">
               <label>Company Type *</label>
               <select formControlName="companyType">
                 <option value="">Select company type</option>
-                <option>PRIVATE</option>
-                <option>GOVERNMENT</option>
-                <option>PUBLIC</option>
-                <option>PSU</option>
-                <option>NGO</option>
-                <option>OTHER</option>
+                <option *ngFor="let option of companyTypeOptions" [value]="option">
+                  {{ option }}
+                </option>
               </select>
-              <small *ngIf="submitted && companyTypeCtrl?.errors?.['required']">
+              <small *ngIf="hasError('companyDetail.companyType', 'required')">
                 Company type is required
               </small>
             </div>
           </div>
 
-          <!-- DESIGNATION -->
-          <div class="col-md-6">
+          <div class="col-md-6" [formGroup]="companyDetailGroup">
             <div class="form-group">
               <label>Designation *</label>
               <input
                 formControlName="designation"
                 placeholder="Enter Designation" />
-              <small *ngIf="submitted && designationCtrl?.errors?.['required']">
+              <small *ngIf="hasError('companyDetail.designation', 'required')">
                 Designation is required
               </small>
-              <small *ngIf="submitted && designationCtrl?.errors?.['minlength']">
+              <small *ngIf="hasError('companyDetail.designation', 'minlength')">
                 Minimum 2 characters required
               </small>
             </div>
           </div>
 
-          <!-- DOJ -->
-<div class="col-md-6">
-  <div class="form-group">
-    <label>Previous Salary Date *</label>
+          <div class="col-md-6" [formGroup]="companyDetailGroup">
+            <div class="form-group">
+              <label>Previous Salary Date *</label>
+              <div class="date-field">
+                <input
+                  type="text"
+                  class="date-text-input"
+                  inputmode="numeric"
+                  maxlength="10"
+                  placeholder="dd-MM-yyyy"
+                  [value]="getDateDisplayValue('dateOfJoining')"
+                  [disabled]="control('companyDetail.dateOfJoining')?.disabled"
+                  (input)="onDateInput('dateOfJoining', $event)"
+                  (blur)="onDateBlur('dateOfJoining')" />
+                <button
+                  type="button"
+                  class="date-picker-trigger"
+                  [disabled]="control('companyDetail.dateOfJoining')?.disabled"
+                  (click)="openNativeDatePicker(joiningDatePicker)">
+                  <i class="fa-regular fa-calendar"></i>
+                </button>
+                <input
+                  #joiningDatePicker
+                  type="date"
+                  class="native-date-picker"
+                  [value]="control('companyDetail.dateOfJoining')?.value || ''"
+                  [max]="today"
+                  [disabled]="control('companyDetail.dateOfJoining')?.disabled"
+                  (change)="onNativeDateChange('dateOfJoining', $event)" />
+              </div>
+              <small *ngIf="getDateErrorMessage('dateOfJoining')">
+                {{ getDateErrorMessage('dateOfJoining') }}
+              </small>
+            </div>
+          </div>
 
-    <input
-      type="date"
-      formControlName="dateOfJoining"
-      [max]="today"
-      (keydown)="blockTyping($event)"
-    />
+          <div class="col-md-6" [formGroup]="employmentGroup">
+            <div class="form-group">
+              <label>Net Monthly Income *</label>
+              <input
+                type="number"
+                formControlName="netMonthlyIncome"
+                min="0"
+                placeholder="Enter monthly income" />
+              <small *ngIf="hasError('employment.netMonthlyIncome', 'required')">
+                Monthly income is required
+              </small>
+              <small *ngIf="hasError('employment.netMonthlyIncome', 'min')">
+                Enter a valid income amount
+              </small>
+            </div>
+          </div>
 
-    <small *ngIf="submitted && f['dateOfJoining']?.errors?.['required']">
-      Previous salary date is required
-    </small>
-
-  </div>
-</div>
-
-
-<div class="col-md-6">
-  <div class="form-group">
-    <label>Net Monthly Income *</label>
-
-    <input
-      type="number"
-      formControlName="monthlyIncome"
-      placeholder="Enter monthly income"
-    />
-
-    <small *ngIf="submitted && f['monthlyIncome']?.errors?.['required']">
-      Monthly income is required
-    </small>
-  </div>
-</div>
-
-<div class="col-md-6">
-  <div class="form-group">
-    <label>Next Salary Date *</label>
-
-    <input
-      type="date"
-      formControlName="nextSalaryDate"
-      [min]="today"
-      (keydown)="blockTyping($event)"
-    />
-
-    <small *ngIf="submitted && f['nextSalaryDate']?.errors?.['required']">
-      Next salary date is required
-    </small>
-
-  </div>
-</div>
-
-       
-  
-
-          
+          <div class="col-md-6" [formGroup]="employmentGroup">
+            <div class="form-group">
+              <label>Next Salary Date *</label>
+              <div class="date-field">
+                <input
+                  type="text"
+                  class="date-text-input"
+                  inputmode="numeric"
+                  maxlength="10"
+                  placeholder="dd-MM-yyyy"
+                  [value]="getDateDisplayValue('nextSalaryDate')"
+                  [disabled]="control('employment.nextSalaryDate')?.disabled"
+                  (input)="onDateInput('nextSalaryDate', $event)"
+                  (blur)="onDateBlur('nextSalaryDate')" />
+                <button
+                  type="button"
+                  class="date-picker-trigger"
+                  [disabled]="control('employment.nextSalaryDate')?.disabled"
+                  (click)="openNativeDatePicker(nextSalaryDatePicker)">
+                  <i class="fa-regular fa-calendar"></i>
+                </button>
+                <input
+                  #nextSalaryDatePicker
+                  type="date"
+                  class="native-date-picker"
+                  [value]="control('employment.nextSalaryDate')?.value || ''"
+                  [disabled]="control('employment.nextSalaryDate')?.disabled"
+                  (change)="onNativeDateChange('nextSalaryDate', $event)" />
+              </div>
+              <small *ngIf="getDateErrorMessage('nextSalaryDate')">
+                {{ getDateErrorMessage('nextSalaryDate') }}
+              </small>
+            </div>
+          </div>
 
         </div>
       </div>
 
-      <!-- ================= RIGHT CARD ================= -->
-      <div class="company-card" formGroupName="address">
-        <div class="row">
+      <div class="company-card">
+        <div formGroupName="companyDetail">
+          <div formGroupName="address">
+            <div class="row">
+              <div class="col-md-12">
+                <h4 class="sub-title">Company Address</h4>
+              </div>
 
-          <div class="col-md-12">
-            <h4 class="sub-title">Company Address</h4>
-          </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Address Line 1 *</label>
+                  <input
+                    formControlName="line1"
+                    placeholder="Enter Address Line 1" />
+                  <small *ngIf="hasError('companyDetail.address.line1', 'required')">
+                    Address Line 1 is required
+                  </small>
+                </div>
+              </div>
 
-          <div class="col-md-12">
-            <div class="form-group">
-              <label>Address Line 1 *</label>
-              <input
-                formControlName="line1"
-                placeholder="Enter Address Line 1" />
-              <small *ngIf="addr['line1']?.invalid && (addr['line1']?.touched || submitted)">
-                Address Line 1 is required
-              </small>
-            </div>
-          </div>
-
-          <div class="col-md-12">
-            <div class="form-group">
-              <label>Address Line 2</label>
-              <input
-                formControlName="line2"
-                placeholder="Enter Address Line 2"/>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Landmark *</label>
-              <input
-                formControlName="landmark"
-                placeholder="Enter Landmark" />
-              <small *ngIf="addr['landmark']?.invalid && (addr['landmark']?.touched || submitted)">
-                Landmark is required
-              </small>
-            </div>
-          </div>
-
-          <div class="col-md-6">
-            <div class="form-group">
-              <label>Pincode *</label>
-              <input
-                formControlName="pincode"
-                placeholder="Enter Pin Code"
-                (keyup)="onPincodeChange()" />
-              <small *ngIf="addr['pincode']?.errors?.['required'] && submitted">
-                Pincode is required
-              </small>
-              <small *ngIf="addr['pincode']?.errors?.['pattern'] && submitted">
-                Enter valid 6-digit pincode
-              </small>
-            </div>
-          </div>
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label>Address Line 2</label>
+                  <input
+                    formControlName="line2"
+                    placeholder="Enter Address Line 2" />
+                </div>
+              </div>
 
               <div class="col-md-6">
-            <div class="form-group half">
-              <label>City</label>
-              <input
-                formControlName="city"
-                placeholder="Enter city" />
+                <div class="form-group">
+                  <label>Landmark</label>
+                  <input
+                    formControlName="landmark"
+                    placeholder="Enter Landmark" />
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Pincode *</label>
+                  <input
+                    type="text"
+                    formControlName="pincode"
+                    maxlength="6"
+                    inputmode="numeric"
+                    placeholder="Enter Pin Code"
+                    (keypress)="allowOnlyDigits($event)"
+                    (input)="onCompanyAddressPincodeInput()" />
+                  <small *ngIf="hasError('companyDetail.address.pincode', 'required')">
+                    Pincode is required
+                  </small>
+                  <small *ngIf="hasError('companyDetail.address.pincode', 'pattern')">
+                    Enter valid 6-digit pincode
+                  </small>
+                </div>
+              </div>
+
+            <div class="col-md-6">
+              <div class="form-group half">
+                <label>City *</label>
+                <input
+                  formControlName="city"
+                    placeholder="Enter city" />
+                  <small *ngIf="hasError('companyDetail.address.city', 'required')">
+                    City is required
+                  </small>
+                </div>
+              </div>
+
+            <div class="col-md-6">
+              <div class="form-group half">
+                <label>State *</label>
+                <input
+                  formControlName="state"
+                    placeholder="Select State" />
+                  <small *ngIf="hasError('companyDetail.address.state', 'required')">
+                    State is required
+                  </small>
+                </div>
+              </div>
             </div>
           </div>
-
-          <div class="col-md-6">
-            <div class="form-group half">
-              <label>State</label>
-              <input
-                formControlName="state"
-                placeholder="Select State"
-                readonly />
-            </div>
-          </div>
-
-      
-
         </div>
-
-        <!-- BUTTONS -->
-          <div class="btn-row justify-content-end">
-            <button type="button" class="btn-save" (click)="save()">Save</button>
-            <button type="button" class="btn-black">Back</button>
-          </div>
       </div>
 
+      <div class="company-card company-card-full">
+        <div formGroupName="currentAddress">
+          <div class="row">
+            <div class="col-md-12">
+              <h4 class="sub-title">Current Address</h4>
+              <span class="section-note" *ngIf="isCurrentAddressDraft && !currentAddressCompleted">
+                Please complete your current address
+              </span>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Address Line 1 *</label>
+                <input
+                  formControlName="line1"
+                  placeholder="Enter Address Line 1" />
+                <small *ngIf="hasError('currentAddress.line1', 'required')">
+                  Address Line 1 is required
+                </small>
+                <small *ngIf="hasError('currentAddress.line1', 'placeholderValue')">
+                  Please enter a real address instead of NA or N/A
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Address Line 2</label>
+                <input
+                  formControlName="line2"
+                  placeholder="Enter Address Line 2" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Landmark</label>
+                <input
+                  formControlName="landmark"
+                  placeholder="Enter Landmark" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Pincode *</label>
+                <input
+                  type="text"
+                  formControlName="pincode"
+                  maxlength="6"
+                  inputmode="numeric"
+                  placeholder="Enter Pin Code"
+                  (keypress)="allowOnlyDigits($event)"
+                  (input)="onCurrentAddressPincodeInput()" />
+                <small *ngIf="hasError('currentAddress.pincode', 'required')">
+                  Pincode is required
+                </small>
+                <small *ngIf="hasError('currentAddress.pincode', 'pattern')">
+                  Enter valid 6-digit pincode
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group half">
+                <label>City *</label>
+                <input
+                  formControlName="city"
+                  placeholder="Enter city" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group half">
+                <label>State *</label>
+                <input
+                  formControlName="state"
+                  placeholder="Select State" />
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Residence Type *</label>
+                <select formControlName="residenceType">
+                  <option value="">Select residence type</option>
+                  <option *ngFor="let option of residenceTypeOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                <small *ngIf="hasError('currentAddress.residenceType', 'required')">
+                  Residence type is required
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Residing Since *</label>
+                <div class="date-field">
+                  <input
+                    type="text"
+                    class="date-text-input"
+                    inputmode="numeric"
+                    maxlength="10"
+                    placeholder="dd-MM-yyyy"
+                    [value]="getDateDisplayValue('residingSince')"
+                    [disabled]="control('currentAddress.residingSince')?.disabled"
+                    (input)="onDateInput('residingSince', $event)"
+                    (blur)="onDateBlur('residingSince')" />
+                  <button
+                    type="button"
+                    class="date-picker-trigger"
+                    [disabled]="control('currentAddress.residingSince')?.disabled"
+                    (click)="openNativeDatePicker(residingSincePicker)">
+                    <i class="fa-regular fa-calendar"></i>
+                  </button>
+                  <input
+                    #residingSincePicker
+                    type="date"
+                    class="native-date-picker"
+                    [value]="control('currentAddress.residingSince')?.value || ''"
+                    [max]="today"
+                    [disabled]="control('currentAddress.residingSince')?.disabled"
+                    (change)="onNativeDateChange('residingSince', $event)" />
+                </div>
+                <small *ngIf="getDateErrorMessage('residingSince')">
+                  {{ getDateErrorMessage('residingSince') }}
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row justify-content-end">
+          <button
+            type="button"
+            class="btn-save"
+            (click)="saveAndContinue()"
+            [disabled]="isReadOnly">
+            Save
+          </button>
+          <a [routerLink]="['/dashboard/loan']" class="btn-black">Back</a>
+        </div>
+      </div>
     </div>
   </form>
 </div>

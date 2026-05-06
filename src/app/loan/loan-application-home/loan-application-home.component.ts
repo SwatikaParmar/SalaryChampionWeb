@@ -15,6 +15,7 @@ export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
 
   flowSteps: any = {};
   flowPercent = 0;
+  currentNextActionCode = '';
 
   applicationId: string = '';
   routeSub!: Subscription;
@@ -27,6 +28,9 @@ export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
   documents: 6,
   disbursalBankDetails: 7
 };
+  stepActionCodes: any = {
+    employmentDetails: 'EMPLOYMENT_DETAILS',
+  };
   constructor(
     private contentService: ContentService,
     private router: Router,
@@ -75,6 +79,7 @@ getStepNumber(step: string): number {
 
         this.flowSteps = appFlow?.steps || {};
         this.flowPercent = appFlow?.percent || 0;
+        this.currentNextActionCode = this.resolveNextActionCode(appFlow?.nextAction);
       },
       error: () => {
         this.spinner.hide();
@@ -90,6 +95,10 @@ getStepNumber(step: string): number {
   }
 
   isActive(step: string): boolean {
+    if (this.isNextActionStep(step)) {
+      return true;
+    }
+
     for (const key of Object.keys(this.flowSteps)) {
       if (!this.flowSteps[key]) {
         return key === step;
@@ -99,6 +108,9 @@ getStepNumber(step: string): number {
   }
 
   isLocked(step: string): boolean {
+    if (this.isNextActionStep(step)) {
+      return false;
+    }
 
     let foundActive = false;
 
@@ -119,6 +131,23 @@ getStepNumber(step: string): number {
     }
 
     return true;
+  }
+
+  private isNextActionStep(step: string): boolean {
+    return this.stepActionCodes?.[step] === this.currentNextActionCode;
+  }
+
+  private resolveNextActionCode(nextAction: any): string {
+    if (typeof nextAction === 'string') {
+      return nextAction;
+    }
+
+    return (
+      nextAction?.code ||
+      nextAction?.name ||
+      nextAction?.action ||
+      ''
+    );
   }
 
   navigate(step: string, route: string) {

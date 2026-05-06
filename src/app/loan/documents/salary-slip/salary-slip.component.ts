@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ContentService } from '../../../../service/content.service';
+import { getFirstApiErrorMessage } from '../../../../service/api-error.util';
 
 interface SalaryMonth {
   label: string;
@@ -45,16 +46,16 @@ export class SalarySlipComponent implements OnInit {
       next: (res: any) => {
         if (!res?.success) {
           this.spinner.hide();
-          this.toastr.error('Failed to load borrower data');
+          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower data'));
           return;
         }
 
         this.applicationId = res.data.application.id;
         this.loadSalaryChecklist();
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to fetch borrower snapshot');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'));
       },
     });
   }
@@ -86,9 +87,9 @@ export class SalarySlipComponent implements OnInit {
           this.router.navigate(['/dashboard/loan/documents']);
         }
       },
-      error: () => {
+      error: (err) => {
         this.spinner.hide();
-        this.toastr.error('Failed to load salary checklist');
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to load salary checklist'));
       },
     });
   }
@@ -171,7 +172,7 @@ async uploadSalarySlip() {
     }
 
   } catch (err: any) {
-    this.toastr.error(err?.message || 'Upload failed');
+    this.toastr.error(getFirstApiErrorMessage(err, 'Upload failed'));
   } finally {
     this.spinner.hide();
     this.isUploading = false;
@@ -193,7 +194,7 @@ skipSalarySlipProcess() {
       this.spinner.hide();
 
       if (!res?.success) {
-        this.toastr.error(res?.message || 'Skip failed');
+        this.toastr.error(getFirstApiErrorMessage(res, 'Skip failed'));
         return;
       }
 
@@ -204,9 +205,9 @@ skipSalarySlipProcess() {
         queryParams: { refresh: true }
       });
     },
-    error: () => {
+    error: (err) => {
       this.spinner.hide();
-      this.toastr.error('Skip failed');
+      this.toastr.error(getFirstApiErrorMessage(err, 'Skip failed'));
     }
   });
 }
