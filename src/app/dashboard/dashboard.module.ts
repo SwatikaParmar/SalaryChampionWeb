@@ -8,6 +8,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { HeaderComponent } from './header/header.component';
 import { FormsModule } from '@angular/forms';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { SupportComponent } from './support/support.component';
 import { TermsConditionsComponent } from './terms-conditions/terms-conditions.component';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { TermsConditionsComponent } from './terms-conditions/terms-conditions.co
     SidebarComponent,
     HeaderComponent,
     PrivacyPolicyComponent,
+    SupportComponent,
     TermsConditionsComponent,
   ],
   imports: [CommonModule, DashboardRoutingModule, FormsModule],

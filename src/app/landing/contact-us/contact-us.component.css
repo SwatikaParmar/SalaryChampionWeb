@@ -1,0 +1,6 @@
+.contact-card a,
+.contact-card a:hover,
+.contact-card a:focus,
+.contact-card a:visited {
+  color: #fff;
+}
