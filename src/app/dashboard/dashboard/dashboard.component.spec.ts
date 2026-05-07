@@ -332,6 +332,36 @@ describe('DashboardComponent', () => {
     expect(snapshotSpy).toHaveBeenCalled();
   });
 
+  it('should hide the video kyc tracker step when borrower snapshot journey type is reloan', () => {
+    (component as any).applyBorrowerSnapshotData({
+      journeyType: 'RELOAN',
+      dashboard: {
+        primaryCard: {
+          type: 'LOAN_APPLICATION_TRACKING'
+        }
+      },
+      applicationFlow: {
+        steps: {
+          applicationSubmitted: 'DONE',
+          applicationInReview: 'DONE',
+          sanction: 'PENDING'
+        }
+      },
+      loanTracking: {
+        steps: {
+          applicationSubmitted: 'DONE',
+          applicationInReview: 'DONE',
+          sanction: 'PENDING'
+        }
+      }
+    }, false, undefined, true);
+
+    expect(component.isReloanJourney).toBeTrue();
+    expect(component.shouldShowTrackerStep('videoKyc')).toBeFalse();
+    expect(component.trackerFlow).not.toContain('videoKyc');
+    expect(component.trackingSteps.videoKyc).toBeUndefined();
+  });
+
   it('should skip video kyc refresh while refreshing tracker steps on the dashboard', async () => {
     component.showTracker = true;
 

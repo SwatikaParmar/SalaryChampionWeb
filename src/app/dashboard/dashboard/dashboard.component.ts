@@ -934,7 +934,7 @@ private applyBorrowerSnapshotData(
     this.loanTracking?.nextAction?.url ||
     this.loanTracking?.videoKyc?.customerUrl ||
     '';
-  this.isReloanJourney = !!(data?.isReloanJourney || data?.applicationFlow?.isReloanJourney);
+  this.syncJourneyContext(true, data, this.loanTracking, this.currentLoanRequest);
   this.steps = data?.applicationFlow?.steps || {};
   this.updateTrackerFlow(
     this.loanTracking?.statusFlow ||
@@ -1247,6 +1247,7 @@ private syncTrackerRuntimeState(statusData: any) {
     incomingVideoKyc?.url ||
     this.videoKycCustomerUrl ||
     '';
+  this.syncJourneyContext(false, statusData, mergedTracking, mergedCurrentLoanRequest);
 }
 
 private patchActiveLoanFromSnapshot() {
@@ -1932,6 +1933,10 @@ getStepClass(status: string) {
   return 'locked';
 }
 
+private isTrackerStepHidden(stepKey: string): boolean {
+  return stepKey === 'videoKyc' && this.isReloanJourney;
+}
+
 private updateTrackerFlow(flow: any) {
   const normalizedFlow = Array.isArray(flow)
     ? flow
@@ -1947,9 +1952,14 @@ private updateTrackerFlow(flow: any) {
     }
   });
 
-  this.trackerFlow = mergedFlow.length
-    ? mergedFlow
-    : [...this.defaultTrackerFlow];
+  const visibleFlow = mergedFlow.filter(
+    (step, index) => mergedFlow.indexOf(step) === index && !this.isTrackerStepHidden(step)
+  );
+  const fallbackFlow = this.defaultTrackerFlow.filter((step) => !this.isTrackerStepHidden(step));
+
+  this.trackerFlow = visibleFlow.length
+    ? visibleFlow
+    : fallbackFlow;
 }
 
 private normalizeTrackerStepKey(step: any): string | null {
@@ -1988,7 +1998,7 @@ private buildTrackerSteps(steps: any): Record<string, 'DONE' | 'PENDING' | 'LOCK
     Object.keys(steps).forEach((stepKey) => {
       const normalizedStepKey = this.normalizeTrackerStepKey(stepKey);
 
-      if (!normalizedStepKey) return;
+      if (!normalizedStepKey || this.isTrackerStepHidden(normalizedStepKey)) return;
 
       normalizedSteps[normalizedStepKey] = this.normalizeTrackerStatus(steps[stepKey]);
     });
@@ -2006,8 +2016,77 @@ private buildTrackerSteps(steps: any): Record<string, 'DONE' | 'PENDING' | 'LOCK
 }
 
 shouldShowTrackerStep(stepKey: string): boolean {
+  if (this.isTrackerStepHidden(stepKey)) {
+    return false;
+  }
+
   const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
   return flow.includes(stepKey);
+}
+
+private syncJourneyContext(resetWhenMissing: boolean, ...sources: any[]) {
+  const resolved = this.resolveReloanJourneyState(...sources);
+
+  if (resolved === null) {
+    if (resetWhenMissing) {
+      this.isReloanJourney = false;
+    }
+    return;
+  }
+
+  this.isReloanJourney = resolved;
+}
+
+private resolveReloanJourneyState(...sources: any[]): boolean | null {
+  let hasExplicitFalseFlag = false;
+
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') continue;
+
+    const reloanFlags = [
+      source?.isReloanJourney,
+      source?.applicationFlow?.isReloanJourney,
+      source?.loanTracking?.isReloanJourney,
+      source?.currentLoanRequest?.isReloanJourney,
+      source?.application?.isReloanJourney
+    ];
+
+    if (reloanFlags.some((flag) => flag === true)) {
+      return true;
+    }
+
+    if (reloanFlags.some((flag) => flag === false)) {
+      hasExplicitFalseFlag = true;
+    }
+  }
+
+  const journeyType = this.resolveJourneyType(...sources);
+  if (journeyType) {
+    return journeyType === 'RELOAN';
+  }
+
+  return hasExplicitFalseFlag ? false : null;
+}
+
+private resolveJourneyType(...sources: any[]): string {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') continue;
+
+    const journeyType = this.pickFirstString(
+      source?.journeyType,
+      source?.journey?.type,
+      source?.applicationFlow?.journeyType,
+      source?.loanTracking?.journeyType,
+      source?.currentLoanRequest?.journeyType,
+      source?.application?.journeyType
+    );
+
+    if (journeyType) {
+      return journeyType.trim().toUpperCase();
+    }
+  }
+
+  return '';
 }
 
 canOpenTrackerStep(stepKey: string): boolean {
