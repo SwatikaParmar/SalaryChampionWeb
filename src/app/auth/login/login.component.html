@@ -9,25 +9,34 @@
     <form [formGroup]="mobileForm" (ngSubmit)="sendOtp()">
 
       <!-- MOBILE INPUT -->
-      <div class="mobile-input">
+      <div
+        class="mobile-input"
+        [class.input-invalid]="
+          mobileForm.get('mobile')?.touched && mobileForm.get('mobile')?.invalid
+        "
+      >
         <span>+91</span>
-      <input
-  type="text"
-  formControlName="mobile"
-  placeholder="Enter 10-digit mobile number"
-  maxlength="10"
-  inputmode="numeric"
-  pattern="[0-9]*"
-  (keypress)="allowNumbersOnly($event)"
-  (input)="removeNonNumeric($event)"
-/>
+        <input
+          type="text"
+          formControlName="mobile"
+          placeholder="Enter 10-digit mobile number"
+          maxlength="10"
+          inputmode="numeric"
+          pattern="[0-9]*"
+          (keypress)="allowNumbersOnly($event)"
+          (input)="removeNonNumeric($event)"
+        />
 
       </div>
 
       <!-- ERROR -->
       <small class="error"
         *ngIf="mobileForm.get('mobile')?.touched && mobileForm.get('mobile')?.invalid">
-        Enter valid 10-digit mobile number
+        {{
+          mobileForm.get('mobile')?.hasError('required')
+            ? 'Mobile number is required.'
+            : 'Enter valid 10-digit mobile number.'
+        }}
       </small>
 
       <!-- CHECKBOX -->
@@ -39,14 +48,14 @@
       <!-- ERROR -->
       <small class="error"
         *ngIf="mobileForm.get('agree')?.touched && mobileForm.get('agree')?.invalid">
-        You must accept terms
+        You must accept terms & privacy policy.
       </small>
 
       <!-- BUTTON -->
       <button
         class="theme-btn"
         type="submit"
-        [disabled]="mobileForm.invalid || isLoading || isLocationLoading"
+        [disabled]="isLoading || isLocationLoading"
       >
         <span
           *ngIf="isLoading || isLocationLoading"

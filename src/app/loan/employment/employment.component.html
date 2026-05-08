@@ -160,6 +160,7 @@
                   type="date"
                   class="native-date-picker"
                   [value]="control('employment.nextSalaryDate')?.value || ''"
+                  [min]="getNextSalaryDateMin()"
                   [disabled]="control('employment.nextSalaryDate')?.disabled"
                   (change)="onNativeDateChange('nextSalaryDate', $event)" />
               </div>

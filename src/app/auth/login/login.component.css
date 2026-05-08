@@ -34,11 +34,15 @@
   font-size: 14px;
 }
 
+.mobile-input.input-invalid {
+  border-color: #e53935;
+}
+
 .checkbox {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 16px 0;
+  margin: 2px 0;
   font-size: 14px;
   color: #3c3c3c;
 }

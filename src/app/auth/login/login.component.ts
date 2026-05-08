@@ -68,7 +68,12 @@ export class LoginComponent implements OnInit {
   }
 
   async sendOtp() {
-    if (this.mobileForm.invalid || this.isLoading) {
+    if (this.isLoading || this.isLocationLoading) {
+      return;
+    }
+
+    if (this.mobileForm.invalid) {
+      this.mobileForm.markAllAsTouched();
       this.toastr.warning('Please enter valid mobile & accept terms');
       return;
     }

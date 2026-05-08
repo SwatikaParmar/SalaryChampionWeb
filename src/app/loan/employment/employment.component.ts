@@ -108,7 +108,7 @@ export class EmploymentComponent implements OnInit {
       employment: this.fb.group({
         employmentType: ['SALARIED', Validators.required],
         netMonthlyIncome: ['', [Validators.required, Validators.min(1)]],
-        nextSalaryDate: [''],
+        nextSalaryDate: ['', Validators.required],
         modeOfIncome: [''],
         existingEmiTotal: ['', Validators.min(0)],
       }),
@@ -417,10 +417,22 @@ export class EmploymentComponent implements OnInit {
       return;
     }
 
+    if (this.isNextSalaryDateOutOfRange(field, normalizedValue)) {
+      this.dateDisplayErrors[field] =
+        'Next salary date should be after previous salary date';
+      control?.setValue('', { emitEvent: false });
+      control?.updateValueAndValidity({ emitEvent: false });
+      return;
+    }
+
     this.dateDisplayErrors[field] = '';
     this.dateDisplayValues[field] = formatDateForDisplay(normalizedValue);
     control?.setValue(normalizedValue, { emitEvent: false });
     control?.updateValueAndValidity({ emitEvent: false });
+
+    if (field === 'dateOfJoining') {
+      this.revalidateNextSalaryDate();
+    }
   }
 
   getDateDisplayValue(field: EmploymentDateField): string {
@@ -437,6 +449,10 @@ export class EmploymentComponent implements OnInit {
     const controlPath = this.getDateControlPath(field);
 
     if (this.hasError(controlPath, 'required')) {
+      if (field === 'nextSalaryDate') {
+        return 'Next salary date is required';
+      }
+
       if (field === 'dateOfJoining') {
         return 'Previous salary date is required';
       }
@@ -471,11 +487,38 @@ export class EmploymentComponent implements OnInit {
     const normalizedValue = normalizeDateForInput(input.value);
     const control = this.control(this.getDateControlPath(field));
 
+    if (this.isNextSalaryDateOutOfRange(field, normalizedValue)) {
+      this.dateDisplayErrors[field] =
+        'Next salary date should be after previous salary date';
+      this.dateDisplayValues[field] = '';
+      control?.setValue('', { emitEvent: false });
+      control?.markAsTouched();
+      control?.updateValueAndValidity({ emitEvent: false });
+      input.value = '';
+      return;
+    }
+
     this.dateDisplayErrors[field] = '';
     this.dateDisplayValues[field] = formatDateForDisplay(normalizedValue);
     control?.setValue(normalizedValue, { emitEvent: false });
     control?.markAsTouched();
     control?.updateValueAndValidity({ emitEvent: false });
+
+    if (field === 'dateOfJoining') {
+      this.revalidateNextSalaryDate();
+    }
+  }
+
+  getNextSalaryDateMin(): string {
+    const previousSalaryDate = normalizeDateForInput(
+      this.control('companyDetail.dateOfJoining')?.value,
+    );
+
+    if (!previousSalaryDate) {
+      return '';
+    }
+
+    return this.addDaysToIsoDate(previousSalaryDate, 1);
   }
 
   allowOnlyDigits(event: KeyboardEvent) {
@@ -733,6 +776,57 @@ export class EmploymentComponent implements OnInit {
     return field === 'residingSince' || field === 'dateOfJoining';
   }
 
+  private isNextSalaryDateOutOfRange(
+    field: EmploymentDateField,
+    normalizedValue: string,
+  ): boolean {
+    if (field !== 'nextSalaryDate' || !normalizedValue) {
+      return false;
+    }
+
+    const minimumNextSalaryDate = this.getNextSalaryDateMin();
+    return !!minimumNextSalaryDate && normalizedValue < minimumNextSalaryDate;
+  }
+
+  private revalidateNextSalaryDate() {
+    const nextSalaryDateControl = this.control('employment.nextSalaryDate');
+    const nextSalaryDateValue = normalizeDateForInput(nextSalaryDateControl?.value);
+
+    if (!nextSalaryDateValue) {
+      this.dateDisplayErrors.nextSalaryDate = '';
+      return;
+    }
+
+    if (!this.isNextSalaryDateOutOfRange('nextSalaryDate', nextSalaryDateValue)) {
+      this.dateDisplayErrors.nextSalaryDate = '';
+      return;
+    }
+
+    this.dateDisplayErrors.nextSalaryDate =
+      'Next salary date should be after previous salary date';
+    this.dateDisplayValues.nextSalaryDate = '';
+    nextSalaryDateControl?.setValue('', { emitEvent: false });
+    nextSalaryDateControl?.markAsTouched();
+    nextSalaryDateControl?.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private addDaysToIsoDate(value: string, days: number): string {
+    const normalizedValue = normalizeDateForInput(value);
+
+    if (!normalizedValue) {
+      return '';
+    }
+
+    const parsedDate = new Date(`${normalizedValue}T00:00:00`);
+    parsedDate.setDate(parsedDate.getDate() + days);
+
+    const year = parsedDate.getFullYear();
+    const month = String(parsedDate.getMonth() + 1).padStart(2, '0');
+    const day = String(parsedDate.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   private syncDateDisplays() {
     this.dateDisplayValues.nextSalaryDate = formatDateForDisplay(
       this.control('employment.nextSalaryDate')?.value,
@@ -747,5 +841,7 @@ export class EmploymentComponent implements OnInit {
     this.dateDisplayErrors.nextSalaryDate = '';
     this.dateDisplayErrors.residingSince = '';
     this.dateDisplayErrors.dateOfJoining = '';
+
+    this.revalidateNextSalaryDate();
   }
 }
