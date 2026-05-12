@@ -934,6 +934,7 @@ private applyBorrowerSnapshotData(
     this.loanTracking?.nextAction?.url ||
     this.loanTracking?.videoKyc?.customerUrl ||
     '';
+  this.hydrateEnachRuntimeState(data, this.loanTracking, this.currentLoanRequest);
   this.syncJourneyContext(true, data, this.loanTracking, this.currentLoanRequest);
   this.steps = data?.applicationFlow?.steps || {};
   this.updateTrackerFlow(
@@ -1247,7 +1248,71 @@ private syncTrackerRuntimeState(statusData: any) {
     incomingVideoKyc?.url ||
     this.videoKycCustomerUrl ||
     '';
+  this.hydrateEnachRuntimeState(statusData, mergedTracking, mergedCurrentLoanRequest);
   this.syncJourneyContext(false, statusData, mergedTracking, mergedCurrentLoanRequest);
+}
+
+private hydrateEnachRuntimeState(...sources: any[]) {
+  const mandateRowId = this.resolveEnachMandateRowId(...sources);
+  if (mandateRowId) {
+    this.mandateRowId = mandateRowId;
+    this.persistPendingEnachMandateRowId(mandateRowId);
+  }
+
+  const authUrl = this.resolveEnachAuthUrl(...sources);
+  if (authUrl) {
+    this.enachUrl = authUrl;
+    this.enachUrlSafe =
+      this.sanitizer.bypassSecurityTrustResourceUrl(authUrl);
+  }
+}
+
+private resolveEnachAuthUrl(...sources: any[]): string {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    const authUrl = this.pickFirstString(
+      source?.authUrl,
+      source?.enachAuthUrl,
+      source?.mandate?.authUrl,
+      source?.enach?.authUrl,
+      source?.enachDetails?.authUrl,
+      source?.journeyLinks?.enachAuthUrl,
+      source?.journey?.links?.enachAuthUrl,
+      source?.journey?.journeyLinks?.enachAuthUrl
+    );
+
+    if (authUrl) {
+      return authUrl;
+    }
+  }
+
+  return '';
+}
+
+private resolveEnachMandateRowId(...sources: any[]): string {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    const mandateRowId = this.pickFirstString(
+      source?.mandateRowId,
+      source?.mandate?.mandateRowId,
+      source?.mandate?.rowId,
+      source?.enach?.mandateRowId,
+      source?.enach?.rowId,
+      source?.enachDetails?.mandateRowId
+    );
+
+    if (mandateRowId) {
+      return mandateRowId;
+    }
+  }
+
+  return '';
 }
 
 private patchActiveLoanFromSnapshot() {
@@ -2529,7 +2594,7 @@ enachUrl: string = '';
 
 mandateRowId: string = '';
 
-openEnach() {
+private openEnachLegacy() {
   if (!this.applicationId) return;
 
   const payload = {
@@ -2562,6 +2627,57 @@ openEnach() {
       this.spinner.hide();
     }
   });
+}
+
+
+async openEnach() {
+  if (!this.applicationId) return;
+
+  this.spinner.show();
+
+  try {
+    const hasFreshEnachLink = await this.prefetchEnachFromApplicationStatus();
+    const needsMandateFallback = !hasFreshEnachLink || !this.mandateRowId;
+
+    if (needsMandateFallback) {
+      const isMandateReady = await this.ensureEnachMandateReady(true);
+      if (!isMandateReady) {
+        this.toastr.error('Unable to start eNACH right now. Please try again.');
+        return;
+      }
+    }
+
+    if (!this.enachUrl) {
+      this.toastr.error('eNACH link is not available right now. Please try again.');
+      return;
+    }
+
+    this.openEnachInNewTab();
+  } finally {
+    this.spinner.hide();
+  }
+}
+
+private async prefetchEnachFromApplicationStatus(): Promise<boolean> {
+  if (!this.applicationId) {
+    return false;
+  }
+
+  try {
+    const res = await firstValueFrom(
+      this.contentService.applicationStatus(this.applicationId)
+    );
+
+    if (!res?.success) {
+      return false;
+    }
+
+    this.applyApplicationStatusData(res?.data || {});
+    return !!this.enachUrl;
+  } catch (error) {
+    console.error('Application status prefetch failed before eNACH open', error);
+    return false;
+  }
 }
 
 
@@ -2614,7 +2730,6 @@ openEnachInNewTab() {
     const enachWindow = window.open(this.enachUrl, '_blank', 'noopener');
 
     if (!enachWindow) {
-      this.toastr.error('Please allow popups to continue eNACH');
       return;
     }
 
@@ -2832,14 +2947,14 @@ private async prefetchEsignSilently(): Promise<boolean> {
   }
 }
 
-private async ensureEnachMandateReady(): Promise<boolean> {
+private async ensureEnachMandateReady(requireAuthUrl = false): Promise<boolean> {
   if (!this.applicationId) {
     return false;
   }
 
   this.restorePendingEnachMandateRowId();
 
-  if (this.mandateRowId) {
+  if (this.mandateRowId && (!requireAuthUrl || !!this.enachUrl)) {
     return true;
   }
 

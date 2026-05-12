@@ -1,4 +1,5 @@
 import { DashboardComponent } from './dashboard.component';
+import { of } from 'rxjs';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -400,5 +401,62 @@ describe('DashboardComponent', () => {
     (component as any).refreshStatusOnTabReturn();
 
     expect(refreshSpy).toHaveBeenCalled();
+  });
+
+  it('should use application status auth url before falling back to create mandate on eNACH open', async () => {
+    const applicationStatus = jasmine.createSpy('applicationStatus').and.returnValue(of({
+      success: true,
+      data: {
+        authUrl: 'https://example.com/enach',
+        mandateRowId: 'MANDATE123',
+        steps: {
+          enach: 'PENDING'
+        }
+      }
+    }));
+    const createMandate = jasmine.createSpy('createMandate').and.returnValue(of({
+      success: true,
+      data: {
+        authUrl: 'https://example.com/fallback',
+        mandateRowId: 'MANDATE999'
+      }
+    }));
+    const spinner = {
+      show: jasmine.createSpy('show'),
+      hide: jasmine.createSpy('hide')
+    } as any;
+    const sanitizer = {
+      bypassSecurityTrustResourceUrl: (value: string) => value
+    } as any;
+    const toastr = {
+      error: jasmine.createSpy('error'),
+      info: jasmine.createSpy('info')
+    } as any;
+    const componentWithDeps = new DashboardComponent(
+      {} as any,
+      {} as any,
+      {
+        applicationStatus,
+        createMandate
+      } as any,
+      spinner,
+      sanitizer,
+      toastr,
+      {} as any
+    );
+
+    componentWithDeps.applicationId = 'APP123';
+    const openSpy = spyOn(componentWithDeps, 'openEnachInNewTab');
+
+    await componentWithDeps.openEnach();
+
+    expect(applicationStatus).toHaveBeenCalledWith('APP123');
+    expect(createMandate).not.toHaveBeenCalled();
+    expect(componentWithDeps.mandateRowId).toBe('MANDATE123');
+    expect(componentWithDeps.enachUrl).toBe('https://example.com/enach');
+    expect(openSpy).toHaveBeenCalled();
+    expect(spinner.show).toHaveBeenCalled();
+    expect(spinner.hide).toHaveBeenCalled();
+    expect(toastr.error).not.toHaveBeenCalled();
   });
 });
