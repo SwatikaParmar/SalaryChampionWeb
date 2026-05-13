@@ -1,5 +1,5 @@
 import { DashboardComponent } from './dashboard.component';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
@@ -9,6 +9,9 @@ describe('DashboardComponent', () => {
   beforeEach(() => {
     contentService = {
       applicationStatus: jasmine.createSpy('applicationStatus').and.returnValue(
+        of({ success: true, data: {} })
+      ),
+      acceptSanction: jasmine.createSpy('acceptSanction').and.returnValue(
         of({ success: true, data: {} })
       ),
       createMandate: jasmine.createSpy('createMandate').and.returnValue(
@@ -447,6 +450,33 @@ describe('DashboardComponent', () => {
     expect(component.enachUrl).toBe('https://example.com/enach-auth');
     expect((component as any).mandateRowId).toBe('MANDATE123');
     expect(openEnachInNewTabSpy).toHaveBeenCalled();
+  });
+
+  it('should refresh application status after sanction accept even when a status call is already in flight', () => {
+    component.applicationId = 'APP123';
+
+    const firstStatusRequest = new Subject<any>();
+    contentService.applicationStatus.and.returnValues(
+      firstStatusRequest.asObservable(),
+      of({ success: true, data: {} })
+    );
+
+    component.applicationStatusApi(false);
+
+    expect(contentService.applicationStatus).toHaveBeenCalledTimes(1);
+
+    component.acceptSanction('123456');
+
+    expect(contentService.acceptSanction).toHaveBeenCalledWith({
+      applicationId: 'APP123',
+      otpCode: '123456'
+    });
+    expect(contentService.applicationStatus).toHaveBeenCalledTimes(1);
+
+    firstStatusRequest.next({ success: true, data: {} });
+    firstStatusRequest.complete();
+
+    expect(contentService.applicationStatus).toHaveBeenCalledTimes(2);
   });
 
   it('should not create mandate during silent enach refresh', async () => {

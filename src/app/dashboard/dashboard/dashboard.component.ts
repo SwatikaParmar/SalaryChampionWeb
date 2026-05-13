@@ -99,11 +99,15 @@ hasActiveApplication: boolean = false;
   private lastTabReturnRefreshAt = 0;
   private readonly tabReturnRefreshCooldownMs = 1000;
   private isApplicationStatusInFlight = false;
+  private shouldReplayApplicationStatusRefresh = false;
+  private queuedApplicationStatusShowLoader = false;
   private shouldRefreshEnachOnReturn = false;
   private isEnachRefreshInFlight = false;
   private isVideoKycRefreshInFlight = false;
   private isRefreshStatusInFlight = false;
   private hasTriggeredReloanSnapshotRefresh = false;
+  private hasAutoTriggeredEnachRefresh = false;
+  private hasObservedEsignDone = false;
 
 showKycModal: boolean = false;
 kycUrl: string = '';
@@ -944,6 +948,7 @@ private applyBorrowerSnapshotData(
   );
   this.applyEligibilityState(offer, eligibility);
   this.applyDashboardPrimaryCardState();
+  this.syncStickyEsignCompletionState(data, this.loanTracking, this.currentLoanRequest);
   this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
 
   this.triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible);
@@ -2097,8 +2102,18 @@ canOpenTrackerStep(stepKey: string): boolean {
 
 videoKycData: any = null;
 
-applicationStatusApi(showLoader = true, onComplete?: () => void) {
-  if (!this.applicationId || this.isApplicationStatusInFlight) {
+applicationStatusApi(showLoader = true, onComplete?: () => void, queueIfBusy = false) {
+  if (!this.applicationId) {
+    onComplete?.();
+    return;
+  }
+
+  if (this.isApplicationStatusInFlight) {
+    if (queueIfBusy) {
+      this.shouldReplayApplicationStatusRefresh = true;
+      this.queuedApplicationStatusShowLoader =
+        this.queuedApplicationStatusShowLoader || showLoader;
+    }
     onComplete?.();
     return;
   }
@@ -2108,29 +2123,40 @@ applicationStatusApi(showLoader = true, onComplete?: () => void) {
   }
   this.isApplicationStatusInFlight = true;
 
+  const finalizeStatusRequest = () => {
+    if (showLoader) {
+      this.spinner.hide();
+    }
+
+    this.isApplicationStatusInFlight = false;
+
+    const shouldReplayRequest = this.shouldReplayApplicationStatusRefresh;
+    const replayShowLoader = this.queuedApplicationStatusShowLoader;
+
+    this.shouldReplayApplicationStatusRefresh = false;
+    this.queuedApplicationStatusShowLoader = false;
+
+    onComplete?.();
+
+    if (shouldReplayRequest) {
+      this.applicationStatusApi(replayShowLoader);
+    }
+  };
+
   this.contentService.applicationStatus(this.applicationId).subscribe({
     next: (res: any) => {
-      if (showLoader) {
-        this.spinner.hide();
-      }
-      this.isApplicationStatusInFlight = false;
+      finalizeStatusRequest();
 
       if (!res?.success) {
-        onComplete?.();
         return;
       }
 
       const data = res?.data || {};
       this.applyApplicationStatusData(data);
-      onComplete?.();
     },
     error: () => {
-      if (showLoader) {
-        this.spinner.hide();
-      }
-      this.isApplicationStatusInFlight = false;
+      finalizeStatusRequest();
       console.error('Application status failed');
-      onComplete?.();
     }
   });
 }
@@ -2154,7 +2180,9 @@ private applyApplicationStatusData(data: any) {
     '';
   this.videoKycData = data?.videoKyc;
   this.applyDashboardPrimaryCardState();
+  this.syncStickyEsignCompletionState(data, this.loanTracking, this.currentLoanRequest);
   this.clearPendingEnachMandateIfCompleted(this.trackingSteps);
+  this.maybeAutoRefreshEnachAfterEsign();
 
   this.triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible);
 
@@ -2216,32 +2244,78 @@ private extractEnachMandateRowId(...sources: any[]): string {
 
     const mandateRowId = this.pickFirstString(
       source?.mandateRowId,
+      source?.mandate?.id,
       source?.mandate?.mandateRowId,
       source?.mandate?.rowId,
       source?.mandateDetails?.mandateRowId,
+      source?.mandateDetails?.id,
       source?.mandateDetails?.rowId,
+      source?.enach?.id,
       source?.enach?.mandateRowId,
       source?.enach?.rowId,
+      source?.enachDetails?.id,
       source?.enachDetails?.mandateRowId,
       source?.enachDetails?.rowId,
       source?.loanTracking?.mandateRowId,
+      source?.loanTracking?.mandate?.id,
       source?.loanTracking?.mandate?.mandateRowId,
       source?.loanTracking?.mandate?.rowId,
+      source?.loanTracking?.mandateDetails?.id,
       source?.loanTracking?.mandateDetails?.mandateRowId,
       source?.loanTracking?.mandateDetails?.rowId,
+      source?.loanTracking?.enach?.id,
       source?.loanTracking?.enach?.mandateRowId,
       source?.loanTracking?.enach?.rowId,
+      source?.loanTracking?.enachDetails?.id,
       source?.loanTracking?.enachDetails?.mandateRowId,
       source?.loanTracking?.enachDetails?.rowId,
       source?.currentLoanRequest?.mandateRowId,
+      source?.currentLoanRequest?.mandate?.id,
       source?.currentLoanRequest?.mandate?.mandateRowId,
       source?.currentLoanRequest?.mandate?.rowId,
+      source?.currentLoanRequest?.enach?.id,
       source?.currentLoanRequest?.enach?.mandateRowId,
-      source?.currentLoanRequest?.enach?.rowId
+      source?.currentLoanRequest?.enach?.rowId,
+      source?.mandateApis?.status?.body?.mandateRowId,
+      source?.loanTracking?.mandateApis?.status?.body?.mandateRowId,
+      source?.dashboard?.primaryCard?.data?.mandateApis?.status?.body?.mandateRowId,
+      source?.dashboard?.primaryCard?.data?.stagePayload?.mandateApis?.status?.body?.mandateRowId,
+      source?.dashboard?.primaryCard?.data?.mandate?.id,
+      source?.dashboard?.primaryCard?.data?.stagePayload?.mandate?.id,
+      source?.loanTracking?.trackingCardData?.mandateApis?.status?.body?.mandateRowId,
+      source?.loanTracking?.trackingCardData?.stagePayload?.mandateApis?.status?.body?.mandateRowId,
+      source?.loanTracking?.trackingCardData?.mandate?.id,
+      source?.loanTracking?.trackingCardData?.stagePayload?.mandate?.id
     );
 
     if (mandateRowId) {
       return mandateRowId;
+    }
+
+    const mandateUrl = this.pickFirstString(
+      source?.cta?.url,
+      source?.cta?.endpoint,
+      source?.nextAction?.url,
+      source?.nextAction?.endpoint,
+      source?.mandate?.launchUrl,
+      source?.mandate?.returnUrl,
+      source?.loanTracking?.nextAction?.url,
+      source?.loanTracking?.nextAction?.endpoint,
+      source?.loanTracking?.mandate?.launchUrl,
+      source?.loanTracking?.mandate?.returnUrl,
+      source?.dashboard?.primaryCard?.cta?.url,
+      source?.dashboard?.primaryCard?.cta?.endpoint,
+      source?.dashboard?.primaryCard?.data?.nextAction?.url,
+      source?.dashboard?.primaryCard?.data?.nextAction?.endpoint,
+      source?.dashboard?.primaryCard?.data?.stageDetail?.primaryAction?.url,
+      source?.dashboard?.primaryCard?.data?.stageDetail?.primaryAction?.endpoint,
+      source?.dashboard?.primaryCard?.data?.stagePayload?.mandate?.launchUrl,
+      source?.dashboard?.primaryCard?.data?.stagePayload?.mandate?.returnUrl
+    );
+    const mandateRowIdFromUrl = this.getQueryParam(mandateUrl, 'mandateRowId');
+
+    if (mandateRowIdFromUrl) {
+      return mandateRowIdFromUrl;
     }
   }
 
@@ -2510,7 +2584,7 @@ acceptSanction(otp: string) {
         this.enteredOtp = '';
 
         // 🔥 refresh tracker
-        this.applicationStatusApi();
+        this.applicationStatusApi(true, undefined, true);
 
       }
     },
@@ -2619,18 +2693,18 @@ mandateRowId: string = '';
 openEnach() {
   if (!this.applicationId) return;
 
-  this.applicationStatusApi(true, () => {
-    if (!this.canOpenTrackerStep('enach')) {
-      return;
-    }
+  this.syncEnachRuntimeState(this.borrowerSnapshot, this.loanTracking, this.currentLoanRequest);
 
-    if (!this.enachUrl) {
-      this.toastr.error('Mandate URL not found');
-      return;
-    }
+  if (!this.canOpenTrackerStep('enach')) {
+    return;
+  }
 
-    this.openEnachInNewTab();
-  });
+  if (!this.enachUrl) {
+    this.toastr.error('Mandate URL not found');
+    return;
+  }
+
+  this.openEnachInNewTab();
 }
 
 
@@ -2638,6 +2712,10 @@ verifyEnach(refreshApplicationStatusAfterSuccess = true) {
   this.restorePendingEnachMandateRowId();
 
   if (this.isEnachRefreshInFlight) {
+    return;
+  }
+
+  if (!this.isEsignCompletedForEnachRefresh()) {
     return;
   }
 
@@ -2784,10 +2862,10 @@ openRepayment(): void {
 }
 
 private async refreshTrackerStepsSequentially() {
-  await this.refreshBorrowerSnapshotSilently();
+  await this.refreshBorrowerSnapshotSilently(true);
 
   for (const stepKey of this.refreshableTrackerSteps) {
-    if (!this.shouldShowTrackerStep(stepKey) || !this.isTrackerStepPending(stepKey)) {
+    if (!this.shouldShowTrackerStep(stepKey) || !this.shouldRefreshTrackerStep(stepKey)) {
       continue;
     }
 
@@ -2804,9 +2882,21 @@ private isTrackerStepPending(stepKey: string): boolean {
   return this.normalizeTrackerStatus(this.trackingSteps?.[stepKey]) === 'PENDING';
 }
 
-private refreshBorrowerSnapshotSilently(): Promise<void> {
+private shouldRefreshTrackerStep(stepKey: RefreshableTrackerStep): boolean {
+  if (stepKey === 'esign') {
+    return !this.isEsignCompletedForEnachRefresh() && this.isTrackerStepPending(stepKey);
+  }
+
+  if (stepKey === 'enach') {
+    return this.canRefreshEnachAfterEsign();
+  }
+
+  return this.isTrackerStepPending(stepKey);
+}
+
+private refreshBorrowerSnapshotSilently(skipApplicationStatusRefresh = false): Promise<void> {
   return new Promise((resolve) => {
-    this.getBorrowerSnapshotWithOptions(false, resolve);
+    this.getBorrowerSnapshotWithOptions(false, resolve, skipApplicationStatusRefresh);
   });
 }
 
@@ -2814,6 +2904,83 @@ private refreshApplicationStatusSilently(): Promise<void> {
   return new Promise((resolve) => {
     this.applicationStatusApi(false, resolve);
   });
+}
+
+private syncStickyEsignCompletionState(...sources: any[]) {
+  if (!this.hasObservedEsignDone && this.hasEsignDoneSignal(...sources)) {
+    this.hasObservedEsignDone = true;
+  }
+
+  if (this.hasObservedEsignDone && this.shouldShowTrackerStep('esign')) {
+    this.trackingSteps = {
+      ...(this.trackingSteps || {}),
+      esign: 'DONE'
+    };
+  }
+}
+
+private hasEsignDoneSignal(...sources: any[]): boolean {
+  const statusCandidates = [
+    this.trackingSteps?.esign
+  ];
+
+  sources.forEach((source) => {
+    if (!source || typeof source !== 'object') {
+      return;
+    }
+
+    statusCandidates.push(
+      source?.steps?.esign,
+      source?.applicationFlow?.steps?.esign,
+      source?.loanTracking?.steps?.esign,
+      source?.currentLoanRequest?.steps?.esign,
+      source?.data?.steps?.esign
+    );
+  });
+
+  return statusCandidates.some((status) => this.normalizeTrackerStatus(status) === 'DONE');
+}
+
+private isEsignCompletedForEnachRefresh(): boolean {
+  return this.hasObservedEsignDone ||
+    this.normalizeTrackerStatus(this.trackingSteps?.esign) === 'DONE';
+}
+
+private canRefreshEnachAfterEsign(): boolean {
+  return this.isEsignCompletedForEnachRefresh() &&
+    this.normalizeTrackerStatus(this.trackingSteps?.enach) !== 'DONE';
+}
+
+private maybeAutoRefreshEnachAfterEsign() {
+  if (
+    this.hasAutoTriggeredEnachRefresh ||
+    this.isRefreshStatusInFlight ||
+    this.isEnachRefreshInFlight ||
+    !this.canRefreshEnachAfterEsign()
+  ) {
+    return;
+  }
+
+  this.restorePendingEnachMandateRowId();
+  this.syncEnachRuntimeState(this.borrowerSnapshot, this.loanTracking, this.currentLoanRequest);
+
+  if (!this.mandateRowId) {
+    return;
+  }
+
+  this.hasAutoTriggeredEnachRefresh = true;
+  void this.triggerDirectEnachRefreshAfterEsign();
+}
+
+private async triggerDirectEnachRefreshAfterEsign(): Promise<void> {
+  const didRefresh = await this.refreshEnachSilently();
+
+  if (!didRefresh) {
+    this.hasAutoTriggeredEnachRefresh = false;
+    return;
+  }
+
+  await this.refreshApplicationStatusSilently();
 }
 
 private async refreshTrackerStepSilently(stepKey: RefreshableTrackerStep): Promise<boolean> {
@@ -2917,14 +3084,13 @@ private async refreshEnachSilently(): Promise<boolean> {
     return false;
   }
 
-  if (!this.shouldRefreshEnachOnReturn) {
+  if (!this.canRefreshEnachAfterEsign()) {
     return false;
   }
 
   const isMandateReady = await this.ensureEnachMandateReady();
   if (!isMandateReady || !this.mandateRowId) {
-    // Fall back to application status refresh without recreating the mandate.
-    return true;
+    return false;
   }
 
   this.isEnachRefreshInFlight = true;

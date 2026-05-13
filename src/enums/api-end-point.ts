@@ -34,7 +34,6 @@ export enum ApiEndPoint {
     videoRefresh = "loan/video-kyc/refresh-status",
       sanctionEsignLink = 'loan/borrower/esign-link',
         esignLink = 'loan/borrower/agreement-esign-link',
-          createMandate = 'loan/mandate/create',
           mendateRefresh = "loan/mandate/refresh-status",
           disbursement ='loan/disbursement/initiate',
             skipSalarySlip = 'loan/borrower/salary-slip/skip'

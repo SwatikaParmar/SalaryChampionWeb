@@ -460,15 +460,6 @@ esignLink(applicationId: string) {
   );
 }
 
-
-
-createMandate(payload: any) {
-  return this.http.post<any>(
-    environment.apiUrl + ApiEndPoint.createMandate,
-    payload
-  );
-}
-
 mendateRefresh(data:any){
   return this.http.post<any>(environment.apiUrl + ApiEndPoint.mendateRefresh,data)
 
