@@ -935,6 +935,7 @@ private applyBorrowerSnapshotData(
     this.loanTracking?.videoKyc?.customerUrl ||
     '';
   this.syncJourneyContext(true, data, this.loanTracking, this.currentLoanRequest);
+  this.syncEnachRuntimeState(data, this.loanTracking, this.currentLoanRequest);
   this.steps = data?.applicationFlow?.steps || {};
   this.updateTrackerFlow(
     this.loanTracking?.statusFlow ||
@@ -2139,6 +2140,7 @@ private applyApplicationStatusData(data: any) {
   const wasDisbursementCompleted = this.isDisbursementCompleted();
 
   this.syncTrackerRuntimeState(data);
+  this.syncEnachRuntimeState(data, this.loanTracking, this.currentLoanRequest);
   this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
   this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
   this.currentTitle =
@@ -2159,6 +2161,91 @@ private applyApplicationStatusData(data: any) {
   if (!wasDisbursementCompleted && this.isDisbursementCompleted()) {
     this.getBorrowerSnapshotWithOptions(false);
   }
+}
+
+private syncEnachRuntimeState(...sources: any[]) {
+  const mandateRowId = this.extractEnachMandateRowId(...sources);
+  if (mandateRowId) {
+    this.mandateRowId = mandateRowId;
+    this.persistPendingEnachMandateRowId(this.mandateRowId);
+  }
+
+  const authUrl = this.extractEnachAuthUrl(...sources);
+  if (authUrl) {
+    this.enachUrl = authUrl;
+    this.enachUrlSafe =
+      this.sanitizer.bypassSecurityTrustResourceUrl(authUrl);
+  }
+}
+
+private extractEnachAuthUrl(...sources: any[]): string {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    const authUrl = this.pickFirstString(
+      source?.authUrl,
+      source?.mandate?.authUrl,
+      source?.mandateDetails?.authUrl,
+      source?.enach?.authUrl,
+      source?.enachDetails?.authUrl,
+      source?.loanTracking?.authUrl,
+      source?.loanTracking?.mandate?.authUrl,
+      source?.loanTracking?.mandateDetails?.authUrl,
+      source?.loanTracking?.enach?.authUrl,
+      source?.loanTracking?.enachDetails?.authUrl,
+      source?.currentLoanRequest?.authUrl,
+      source?.currentLoanRequest?.mandate?.authUrl,
+      source?.currentLoanRequest?.enach?.authUrl
+    );
+
+    if (authUrl) {
+      return authUrl;
+    }
+  }
+
+  return '';
+}
+
+private extractEnachMandateRowId(...sources: any[]): string {
+  for (const source of sources) {
+    if (!source || typeof source !== 'object') {
+      continue;
+    }
+
+    const mandateRowId = this.pickFirstString(
+      source?.mandateRowId,
+      source?.mandate?.mandateRowId,
+      source?.mandate?.rowId,
+      source?.mandateDetails?.mandateRowId,
+      source?.mandateDetails?.rowId,
+      source?.enach?.mandateRowId,
+      source?.enach?.rowId,
+      source?.enachDetails?.mandateRowId,
+      source?.enachDetails?.rowId,
+      source?.loanTracking?.mandateRowId,
+      source?.loanTracking?.mandate?.mandateRowId,
+      source?.loanTracking?.mandate?.rowId,
+      source?.loanTracking?.mandateDetails?.mandateRowId,
+      source?.loanTracking?.mandateDetails?.rowId,
+      source?.loanTracking?.enach?.mandateRowId,
+      source?.loanTracking?.enach?.rowId,
+      source?.loanTracking?.enachDetails?.mandateRowId,
+      source?.loanTracking?.enachDetails?.rowId,
+      source?.currentLoanRequest?.mandateRowId,
+      source?.currentLoanRequest?.mandate?.mandateRowId,
+      source?.currentLoanRequest?.mandate?.rowId,
+      source?.currentLoanRequest?.enach?.mandateRowId,
+      source?.currentLoanRequest?.enach?.rowId
+    );
+
+    if (mandateRowId) {
+      return mandateRowId;
+    }
+  }
+
+  return '';
 }
 
 private triggerReloanSnapshotRefreshOnFirstCardShow(wasReloanCardVisible: boolean) {
@@ -2532,35 +2619,17 @@ mandateRowId: string = '';
 openEnach() {
   if (!this.applicationId) return;
 
-  const payload = {
-    applicationId: this.applicationId
-  };
-
-  this.spinner.show();
-
-  this.contentService.createMandate(payload).subscribe({
-    next: (res: any) => {
-      this.spinner.hide();
-
-      if (!res?.success) return;
-
-      const url = res?.data?.authUrl;
-
-      // 🔥 STORE mandateRowId
-      this.mandateRowId = res?.data?.mandateRowId;
-      this.persistPendingEnachMandateRowId(this.mandateRowId);
-
-      if (url) {
-        this.enachUrl = url;
-        this.openEnachInNewTab();
-
-      } else {
-        console.error('Mandate URL not found');
-      }
-    },
-    error: () => {
-      this.spinner.hide();
+  this.applicationStatusApi(true, () => {
+    if (!this.canOpenTrackerStep('enach')) {
+      return;
     }
+
+    if (!this.enachUrl) {
+      this.toastr.error('Mandate URL not found');
+      return;
+    }
+
+    this.openEnachInNewTab();
   });
 }
 
@@ -2838,39 +2907,9 @@ private async ensureEnachMandateReady(): Promise<boolean> {
   }
 
   this.restorePendingEnachMandateRowId();
+  this.syncEnachRuntimeState(this.borrowerSnapshot, this.loanTracking, this.currentLoanRequest);
 
-  if (this.mandateRowId) {
-    return true;
-  }
-
-  try {
-    const res = await firstValueFrom(
-      this.contentService.createMandate({ applicationId: this.applicationId })
-    );
-
-    if (!res?.success) {
-      return false;
-    }
-
-    this.mandateRowId = String(res?.data?.mandateRowId || '').trim();
-    if (!this.mandateRowId) {
-      return false;
-    }
-
-    this.persistPendingEnachMandateRowId(this.mandateRowId);
-
-    const url = res?.data?.authUrl;
-    if (url) {
-      this.enachUrl = url;
-      this.enachUrlSafe =
-        this.sanitizer.bypassSecurityTrustResourceUrl(url);
-    }
-
-    return true;
-  } catch (error) {
-    console.error('Create mandate failed during refresh', error);
-    return false;
-  }
+  return !!this.mandateRowId;
 }
 
 private async refreshEnachSilently(): Promise<boolean> {
@@ -2878,9 +2917,14 @@ private async refreshEnachSilently(): Promise<boolean> {
     return false;
   }
 
+  if (!this.shouldRefreshEnachOnReturn) {
+    return false;
+  }
+
   const isMandateReady = await this.ensureEnachMandateReady();
   if (!isMandateReady || !this.mandateRowId) {
-    return false;
+    // Fall back to application status refresh without recreating the mandate.
+    return true;
   }
 
   this.isEnachRefreshInFlight = true;

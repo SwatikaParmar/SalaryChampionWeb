@@ -1,17 +1,31 @@
 import { DashboardComponent } from './dashboard.component';
+import { of } from 'rxjs';
 
 describe('DashboardComponent', () => {
   let component: DashboardComponent;
   let nativeElement: HTMLElement;
+  let contentService: any;
 
   beforeEach(() => {
+    contentService = {
+      applicationStatus: jasmine.createSpy('applicationStatus').and.returnValue(
+        of({ success: true, data: {} })
+      ),
+      createMandate: jasmine.createSpy('createMandate').and.returnValue(
+        of({ success: true, data: {} })
+      ),
+      mendateRefresh: jasmine.createSpy('mendateRefresh').and.returnValue(
+        of({ success: true, data: {} })
+      )
+    };
+
     component = new DashboardComponent(
       {} as any,
       {} as any,
-      {} as any,
+      contentService,
       { show: () => undefined, hide: () => undefined } as any,
-      {} as any,
-      {} as any,
+      { bypassSecurityTrustResourceUrl: (url: string) => url } as any,
+      { info: () => undefined, error: () => undefined } as any,
       {} as any
     );
     nativeElement = document.createElement('div');
@@ -400,5 +414,56 @@ describe('DashboardComponent', () => {
     (component as any).refreshStatusOnTabReturn();
 
     expect(refreshSpy).toHaveBeenCalled();
+  });
+
+  it('should open enach from application status without calling create mandate on click', () => {
+    component.applicationId = 'APP123';
+    component.trackingSteps = {
+      enach: 'PENDING'
+    };
+    contentService.applicationStatus.and.returnValue(
+      of({
+        success: true,
+        data: {
+          steps: {
+            enach: 'PENDING'
+          },
+          loanTracking: {
+            mandate: {
+              authUrl: 'https://example.com/enach-auth',
+              mandateRowId: 'MANDATE123'
+            }
+          }
+        }
+      })
+    );
+
+    const openEnachInNewTabSpy = spyOn<any>(component, 'openEnachInNewTab');
+
+    component.openEnach();
+
+    expect(contentService.applicationStatus).toHaveBeenCalledWith('APP123');
+    expect(contentService.createMandate).not.toHaveBeenCalled();
+    expect(component.enachUrl).toBe('https://example.com/enach-auth');
+    expect((component as any).mandateRowId).toBe('MANDATE123');
+    expect(openEnachInNewTabSpy).toHaveBeenCalled();
+  });
+
+  it('should not create mandate during silent enach refresh', async () => {
+    component.applicationId = 'APP123';
+    (component as any).shouldRefreshEnachOnReturn = true;
+    (component as any).borrowerSnapshot = {
+      loanTracking: {
+        mandate: {
+          authUrl: 'https://example.com/enach-auth'
+        }
+      }
+    };
+
+    const didRefresh = await (component as any).refreshEnachSilently();
+
+    expect(didRefresh).toBeTrue();
+    expect(contentService.createMandate).not.toHaveBeenCalled();
+    expect(contentService.mendateRefresh).not.toHaveBeenCalled();
   });
 });
