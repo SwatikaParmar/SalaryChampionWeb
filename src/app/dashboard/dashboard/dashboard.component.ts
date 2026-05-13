@@ -2614,7 +2614,7 @@ openEnachInNewTab() {
     const enachWindow = window.open(this.enachUrl, '_blank', 'noopener');
 
     if (!enachWindow) {
-      this.toastr.error('Please allow popups to continue eNACH');
+      // this.toastr.error('Please allow popups to continue eNACH');
       return;
     }
 
