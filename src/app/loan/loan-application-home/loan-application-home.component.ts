@@ -13,6 +13,9 @@ import { Subscription } from 'rxjs';
 })
 export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
 
+  private readonly firstVisitHardRefreshStorageKey =
+    'loanApplicationHome.firstVisitHardRefreshDone';
+
   flowSteps: any = {};
   flowPercent = 0;
   currentNextActionCode = '';
@@ -39,6 +42,9 @@ export class LoanApplicationHomeComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    if (this.triggerFirstVisitHardRefresh()) {
+      return;
+    }
 
     // 🔥 get applicationId
 
@@ -62,6 +68,28 @@ getStepNumber(step: string): number {
   }
 
 
+
+  private triggerFirstVisitHardRefresh(): boolean {
+    if (!this.canUseSessionStorage()) {
+      return false;
+    }
+
+    if (sessionStorage.getItem(this.firstVisitHardRefreshStorageKey) === 'true') {
+      return false;
+    }
+
+    sessionStorage.setItem(this.firstVisitHardRefreshStorageKey, 'true');
+    this.reloadCurrentPage();
+    return true;
+  }
+
+  private reloadCurrentPage(): void {
+    window.location.reload();
+  }
+
+  private canUseSessionStorage(): boolean {
+    return typeof window !== 'undefined' && typeof sessionStorage !== 'undefined';
+  }
 
   /* ================= SNAPSHOT ================= */
   getBorrowerSnapshot() {

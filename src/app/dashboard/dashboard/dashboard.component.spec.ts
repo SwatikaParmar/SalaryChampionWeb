@@ -457,7 +457,7 @@ describe('DashboardComponent', () => {
       'disbursement'
     ]);
     expect(component.trackerFlow).not.toContain('esign');
-    expect(component.trackerDisplaySteps.map((step) => step.label)).toContain('Sanction & Agreement eSign');
+    expect(component.trackerDisplaySteps.map((step) => step.label)).toContain('Sanction & Agreement');
     expect(component.trackingSteps.esign).toBeUndefined();
   });
 
@@ -472,7 +472,7 @@ describe('DashboardComponent', () => {
       {
         key: 'sanction',
         code: 'SANCTION',
-        label: 'Sanction & Agreement eSign',
+        label: 'Sanction & Agreement',
         status: 'PENDING',
         iconImage: ''
       }

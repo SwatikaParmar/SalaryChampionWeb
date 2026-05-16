@@ -2277,7 +2277,11 @@ private rebuildTrackerDisplaySteps(trackerStepItems?: any[]) {
     .map((stepKey) => ({
       key: stepKey,
       code: this.trackerStepCodeMap[stepKey] || stepKey,
-      label: this.trackerStepLabelMap[stepKey] || this.formatStatusLabel(stepKey),
+      label: this.getTrackerStepLabel(
+        stepKey,
+        this.trackerStepCodeMap[stepKey] || stepKey,
+        this.trackerStepLabelMap[stepKey] || this.formatStatusLabel(stepKey)
+      ),
       status: this.normalizeTrackerStatus(this.trackingSteps?.[stepKey]),
       iconImage: ''
     }));
@@ -2299,17 +2303,39 @@ private toTrackerDisplayStep(step: any): TrackerDisplayStep | null {
   return {
     key,
     code,
-    label: this.pickFirstString(
-      step?.normalizedName,
-      step?.label,
-      step?.name,
-      step?.displayName,
-      this.trackerStepLabelMap[key],
-      this.formatStatusLabel(code)
+    label: this.getTrackerStepLabel(
+      key,
+      code,
+      this.pickFirstString(
+        step?.normalizedName,
+        step?.label,
+        step?.name,
+        step?.displayName,
+        this.trackerStepLabelMap[key],
+        this.formatStatusLabel(code)
+      )
     ),
     status: this.normalizeTrackerArrayStepStatus(step),
     iconImage: this.pickFirstString(step?.iconImage, step?.iconUrl, step?.icon)
   };
+}
+
+private getTrackerStepLabel(key: string, code: string, fallbackLabel: string): string {
+  const resolvedLabel = this.pickFirstString(
+    fallbackLabel,
+    this.trackerStepLabelMap[key],
+    this.formatStatusLabel(code)
+  );
+
+  return this.normalizeCombinedSanctionStepLabel(key, resolvedLabel);
+}
+
+private normalizeCombinedSanctionStepLabel(key: string, label: string): string {
+  if (key !== 'sanction') {
+    return label;
+  }
+
+  return label.replace(/\s+e-?sign\s*$/i, '').trim();
 }
 
 private normalizeTrackerArrayStepStatus(step: any): TrackerStepStatus {
