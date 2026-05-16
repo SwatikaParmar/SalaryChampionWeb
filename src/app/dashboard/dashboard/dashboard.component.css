@@ -1126,6 +1126,13 @@
   font-size: 13px;
 }
 
+.tracker-step-icon-img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
 
 /* HEADER */
 .tracker-header h2 {

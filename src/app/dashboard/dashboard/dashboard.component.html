@@ -346,51 +346,29 @@
   <div class="col-lg-12">
    <div class="tracker-row">
 
-  <!-- Submitted -->
   <div
-    *ngIf="shouldShowTrackerStep('applicationSubmitted')"
-    [ngClass]="'step ' + getStepClass(trackingSteps?.applicationSubmitted)">
+    *ngFor="let step of trackerDisplaySteps; trackBy: trackTrackerStep"
+    [ngClass]="'step ' + getStepClass(step.status)"
+    (click)="onTrackerStepClick(step)"
+    [style.cursor]="canOpenTrackerStep(step.key) ? 'pointer' : 'not-allowed'"
+  >
     <div class="circle"
-         [class.green]="trackingSteps?.applicationSubmitted === 'DONE'">
-      <i class="fa-solid"
-         [ngClass]="getStepIcon('applicationSubmitted', trackingSteps?.applicationSubmitted)">
-      </i>
+         [class.green]="step.status === 'DONE'"
+         [class.locked-circle]="step.status === 'LOCKED'">
+      <img
+        *ngIf="shouldUseTrackerStepImage(step); else trackerStepFontIcon"
+        class="tracker-step-icon-img"
+        [src]="step.iconImage"
+        [alt]="step.label"
+      />
+      <ng-template #trackerStepFontIcon>
+        <i class="fa-solid"
+           [ngClass]="getStepIcon(step.key, step.status)">
+        </i>
+      </ng-template>
     </div>
-    <p>Submitted</p>
+    <p>{{ step.label }}</p>
   </div>
-
-  <!-- In Review -->
-  <div
-    *ngIf="shouldShowTrackerStep('applicationInReview')"
-    [ngClass]="'step ' + getStepClass(trackingSteps?.applicationInReview)">
-    <div class="circle"
-         [class.green]="trackingSteps?.applicationInReview === 'DONE'">
-      <i class="fa-solid"
-         [ngClass]="getStepIcon('applicationInReview', trackingSteps?.applicationInReview)">
-      </i>
-    </div>
-    <p>In Review</p>
-  </div>
-
-  <!-- Video KYC -->
-<!-- Video KYC -->
-<div 
-  *ngIf="shouldShowTrackerStep('videoKyc')"
-  [ngClass]="'step ' + getStepClass(trackingSteps?.videoKyc)"
-  (click)="canOpenTrackerStep('videoKyc') && onVideoKycClick()"
-  [style.cursor]="canOpenTrackerStep('videoKyc') ? 'pointer' : 'not-allowed'"
->
-  <div class="circle"
-       [class.green]="trackingSteps?.videoKyc === 'DONE'"
-       [class.locked-circle]="trackingSteps?.videoKyc === 'LOCKED'">
-
-    <i class="fa-solid"
-       [ngClass]="getStepIcon('videoKyc', trackingSteps?.videoKyc)">
-    </i>
-
-  </div>
-  <p>Video KYC</p>
-</div>
 
 <!-- VIDEO KYC MODAL -->
 <!-- 🔥 VIDEO KYC MODAL -->
@@ -444,29 +422,6 @@
 
   </div>
 
-</div>
-
-
-  <!-- Sanction -->
-<!-- Sanction -->
-<div 
-  *ngIf="shouldShowTrackerStep('sanction')"
-  [ngClass]="'step ' + getStepClass(trackingSteps?.sanction)"
-  (click)="canOpenTrackerStep('sanction') && openSanctionLetter()"
-  [style.cursor]="canOpenTrackerStep('sanction') ? 'pointer' : 'not-allowed'"
->
-
-  <div class="circle"
-       [class.green]="trackingSteps?.sanction === 'DONE'"
-       [class.locked-circle]="trackingSteps?.sanction === 'LOCKED'">
-
-    <i class="fa-solid"
-       [ngClass]="getStepIcon('sanction', trackingSteps?.sanction)">
-    </i>
-
-  </div>
-
-  <p>Sanction</p>
 </div>
 
 <!-- 🔥 SANCTION MODAL -->
@@ -530,31 +485,6 @@
 
 </div>
 
-
-  <!-- E-Sign -->
-<!-- E-Sign -->
-<div 
-  *ngIf="shouldShowTrackerStep('esign')"
-  [ngClass]="'step ' + getStepClass(trackingSteps?.esign)"
-  (click)="canOpenTrackerStep('esign') && openEsign()"
-  [style.cursor]="canOpenTrackerStep('esign') ? 'pointer' : 'not-allowed'"
->
-
-  <div class="circle"
-       [class.green]="trackingSteps?.esign === 'DONE'"
-       [class.locked-circle]="trackingSteps?.esign === 'LOCKED'">
-
-    <i class="fa-solid"
-       [ngClass]="getStepIcon('esign', trackingSteps?.esign)">
-    </i>
-
-  </div>
-
-  <p>E-Sign</p>
-</div>
-
-
-
 <!-- 🔥 ESIGN MODAL -->
 <div class="kyc-overlay" *ngIf="showEsignModal">
 
@@ -587,28 +517,6 @@
 
   </div>
 
-</div>
-
-
-<!-- ENACH -->
-<div 
-  *ngIf="shouldShowTrackerStep('enach')"
-  [ngClass]="'step ' + getStepClass(trackingSteps?.enach)"
-  (click)="canOpenTrackerStep('enach') && openEnach()"
-  [style.cursor]="canOpenTrackerStep('enach') ? 'pointer' : 'not-allowed'"
->
-
-  <div class="circle"
-       [class.green]="trackingSteps?.enach === 'DONE'"
-       [class.locked-circle]="trackingSteps?.enach === 'LOCKED'">
-
-    <i class="fa-solid"
-       [ngClass]="getStepIcon('enach', trackingSteps?.enach)">
-    </i>
-
-  </div>
-
-  <p>eNACH</p>
 </div>
 
 <!-- 🔥 ENACH MODAL -->
@@ -656,20 +564,6 @@
   </div>
 
 </div>
-
-  <!-- Disbursement -->
-  <div
-    *ngIf="shouldShowTrackerStep('disbursement')"
-    [ngClass]="'step ' + getStepClass(trackingSteps?.disbursement)">
-    <div class="circle"
-         [class.green]="trackingSteps?.disbursement === 'DONE'">
-      <i class="fa-solid"
-         [ngClass]="getStepIcon('disbursement', trackingSteps?.disbursement)">
-      </i>
-    </div>
-    <p>Disbursement</p>
-  </div>
-
 </div>
     
   </div>

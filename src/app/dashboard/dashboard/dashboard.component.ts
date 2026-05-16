@@ -11,6 +11,16 @@ import { firstValueFrom, Subscription } from 'rxjs';
 import { DashboardRefreshService } from '../dashboard-refresh.service';
 
 type RefreshableTrackerStep = 'sanction' | 'esign' | 'enach';
+type TrackerStepStatus = 'DONE' | 'PENDING' | 'LOCKED';
+
+interface TrackerDisplayStep {
+  key: string;
+  code: string;
+  label: string;
+  status: TrackerStepStatus;
+  iconImage: string;
+  primaryAction?: any;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -53,6 +63,24 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ENACH: 'enach',
     DISBURSEMENT: 'disbursement'
   };
+  private readonly trackerStepCodeMap: Record<string, string> = {
+    applicationSubmitted: 'APPLICATION_SUBMITTED',
+    applicationInReview: 'APPLICATION_IN_REVIEW',
+    videoKyc: 'VIDEO_KYC',
+    sanction: 'SANCTION',
+    esign: 'ESIGN',
+    enach: 'ENACH',
+    disbursement: 'DISBURSEMENT'
+  };
+  private readonly trackerStepLabelMap: Record<string, string> = {
+    applicationSubmitted: 'Submitted',
+    applicationInReview: 'In Review',
+    videoKyc: 'Video KYC',
+    sanction: 'Sanction',
+    esign: 'E-Sign',
+    enach: 'eNACH',
+    disbursement: 'Disbursement'
+  };
   private readonly refreshableTrackerSteps: RefreshableTrackerStep[] = [
     // Video KYC should stay read-only on the dashboard refresh flow.
     'sanction',
@@ -76,6 +104,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
 trackingSteps: any = {};
 trackerFlow: string[] = [...this.defaultTrackerFlow];
+trackerDisplaySteps: TrackerDisplayStep[] = [];
 currentTitle: string = '';
 currentMessage: string = '';
 
@@ -1145,17 +1174,34 @@ private mapIneligibleReason(reasons: string[] = []): string {
 
 private patchTrackerFromSnapshot() {
   if (this.dashboardPrimaryCardType && !this.showTracker) {
+    this.trackerDisplaySteps = [];
     return;
   }
 
   if (this.showTracker) {
-    const trackerSteps =
-      this.dashboardPrimaryCard?.data?.steps ||
-      this.loanTracking?.steps ||
-      this.steps;
+    const trackerStepItems = this.extractTrackingStepItems(
+      this.loanTracking,
+      this.dashboardPrimaryCard?.data,
+      this.borrowerSnapshot
+    );
 
-    if (trackerSteps && Object.keys(trackerSteps).length > 0) {
-      this.trackingSteps = this.buildTrackerSteps(trackerSteps);
+    if (trackerStepItems.length > 0) {
+      this.applyTrackingStepItems(trackerStepItems);
+    } else {
+      const trackerSteps =
+        this.dashboardPrimaryCard?.data?.steps ||
+        this.loanTracking?.steps ||
+        this.steps;
+
+      if (trackerSteps && Object.keys(trackerSteps).length > 0) {
+        this.updateTrackerFlow(
+          this.loanTracking?.statusFlow ||
+          this.dashboardPrimaryCard?.data?.stepProgress?.statusFlow ||
+          this.dashboardPrimaryCard?.data?.statusFlow
+        );
+        this.trackingSteps = this.buildTrackerSteps(trackerSteps);
+        this.rebuildTrackerDisplaySteps();
+      }
     }
 
     this.currentTitle =
@@ -1170,10 +1216,34 @@ private patchTrackerFromSnapshot() {
     return;
   }
 
+  const trackerStepItems = this.extractTrackingStepItems(
+    this.loanTracking,
+    this.dashboardPrimaryCard?.data,
+    this.borrowerSnapshot
+  );
+
+  if (trackerStepItems.length > 0) {
+    this.applyTrackingStepItems(trackerStepItems);
+    this.currentTitle =
+      this.loanTracking?.currentTitle ||
+      this.loanTracking?.currentStage ||
+      this.currentTitle;
+    this.currentMessage =
+      this.loanTracking?.currentMessage ||
+      this.currentMessage;
+    return;
+  }
+
   const snapshotSteps = this.loanTracking?.steps || this.steps;
   if (!snapshotSteps || Object.keys(snapshotSteps).length === 0) return;
 
+  this.updateTrackerFlow(
+    this.loanTracking?.statusFlow ||
+    this.dashboardPrimaryCard?.data?.stepProgress?.statusFlow ||
+    this.dashboardPrimaryCard?.data?.statusFlow
+  );
   this.trackingSteps = this.buildTrackerSteps(snapshotSteps);
+  this.rebuildTrackerDisplaySteps();
   this.currentTitle =
     this.loanTracking?.currentTitle ||
     this.loanTracking?.currentStage ||
@@ -1221,6 +1291,17 @@ private syncTrackerRuntimeState(statusData: any) {
       ...(existingTracking?.videoKyc || {}),
       ...(incomingVideoKyc || {})
     },
+    steps: statusData?.steps ?? incomingTracking?.steps ?? existingTracking?.steps,
+    trackingSteps: Array.isArray(statusData?.trackingSteps)
+      ? statusData.trackingSteps
+      : incomingTracking?.trackingSteps ?? existingTracking?.trackingSteps,
+    statusFlow: Array.isArray(statusData?.statusFlow)
+      ? statusData.statusFlow
+      : incomingTracking?.statusFlow ?? existingTracking?.statusFlow,
+    guidance: statusData?.borrowerGuidance ?? incomingTracking?.guidance ?? existingTracking?.guidance,
+    currentStep: statusData?.borrowerGuidance?.code ?? incomingTracking?.currentStep ?? existingTracking?.currentStep,
+    currentTitle: statusData?.borrowerGuidance?.title ?? incomingTracking?.currentTitle ?? existingTracking?.currentTitle,
+    currentMessage: statusData?.borrowerGuidance?.message ?? incomingTracking?.currentMessage ?? existingTracking?.currentMessage,
     nextAction: this.resolveNextAction(existingTracking?.nextAction, incomingNextAction)
   };
   const mergedCurrentLoanRequest =
@@ -1939,6 +2020,106 @@ getStepClass(status: string) {
   return 'locked';
 }
 
+trackTrackerStep(_index: number, step: TrackerDisplayStep): string {
+  return step.key;
+}
+
+shouldUseTrackerStepImage(step: TrackerDisplayStep): boolean {
+  return !!step?.iconImage && this.normalizeTrackerStatus(step.status) === 'PENDING';
+}
+
+onTrackerStepClick(step: TrackerDisplayStep) {
+  if (!step?.key || !this.canOpenTrackerStep(step.key)) {
+    return;
+  }
+
+  switch (step.key) {
+    case 'videoKyc':
+      this.onVideoKycClick();
+      return;
+    case 'sanction':
+      this.openSanctionTrackerStep(step);
+      return;
+    case 'esign':
+      this.openEsign();
+      return;
+    case 'enach':
+      this.openEnach();
+      return;
+    default:
+      return;
+  }
+}
+
+private openSanctionTrackerStep(step: TrackerDisplayStep) {
+  const primaryAction = this.getCurrentTrackerPrimaryAction();
+
+  if (this.shouldOpenEsignForSanctionStep(step, primaryAction)) {
+    this.openEsignFromAction(primaryAction);
+    return;
+  }
+
+  this.openSanctionLetter();
+}
+
+private shouldOpenEsignForSanctionStep(step: TrackerDisplayStep, primaryAction: any): boolean {
+  if (!this.isCombinedSanctionAgreementStep(step)) {
+    return false;
+  }
+
+  const actionLabel = this.pickFirstString(primaryAction?.label).toUpperCase();
+
+  if (actionLabel.includes('SANCTION') && !actionLabel.includes('AGREEMENT')) {
+    return false;
+  }
+
+  if (actionLabel.includes('ESIGN') || actionLabel.includes('E-SIGN') || actionLabel.includes('AGREEMENT')) {
+    return true;
+  }
+
+  const actionTarget = this.pickFirstString(primaryAction?.url, primaryAction?.endpoint).toUpperCase();
+  return actionTarget.includes('AGREEMENT');
+}
+
+private isCombinedSanctionAgreementStep(step: TrackerDisplayStep): boolean {
+  const label = this.pickFirstString(step?.label, step?.code).toUpperCase();
+  const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
+
+  return step?.key === 'sanction' &&
+    !flow.includes('esign') &&
+    (label.includes('AGREEMENT') || label.includes('ESIGN') || label.includes('E-SIGN'));
+}
+
+private openEsignFromAction(primaryAction: any) {
+  const url = this.pickFirstString(primaryAction?.url);
+
+  if (!url) {
+    this.openEsign();
+    return;
+  }
+
+  this.esignUrl = url;
+  this.esignUrlSafe =
+    this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  this.showEsignModal = true;
+}
+
+private getCurrentTrackerPrimaryAction(): any {
+  const candidates = [
+    this.loanTracking?.guidance?.primaryAction,
+    this.loanTracking?.trackingCardData?.stageDetail?.primaryAction,
+    this.dashboardPrimaryCard?.data?.stageDetail?.primaryAction,
+    this.dashboardPrimaryCard?.data?.nextAction,
+    this.dashboardPrimaryCard?.cta,
+    this.loanTracking?.nextAction,
+    this.borrowerSnapshot?.loanTracking?.guidance?.primaryAction,
+    this.borrowerSnapshot?.dashboard?.primaryCard?.data?.stageDetail?.primaryAction,
+    this.borrowerSnapshot?.dashboard?.primaryCard?.cta
+  ];
+
+  return candidates.find((candidate) => candidate && typeof candidate === 'object') || null;
+}
+
 private isTrackerStepHidden(stepKey: string): boolean {
   return stepKey === 'videoKyc' && this.isReloanJourney;
 }
@@ -1950,32 +2131,40 @@ private updateTrackerFlow(flow: any) {
         .filter((step): step is string => !!step)
     : [];
 
-  const mergedFlow = [...normalizedFlow];
-
-  this.defaultTrackerFlow.forEach((step) => {
-    if (!mergedFlow.includes(step)) {
-      mergedFlow.push(step);
-    }
-  });
-
-  const visibleFlow = mergedFlow.filter(
-    (step, index) => mergedFlow.indexOf(step) === index && !this.isTrackerStepHidden(step)
+  const explicitFlow = normalizedFlow.filter(
+    (step, index) => normalizedFlow.indexOf(step) === index && !this.isTrackerStepHidden(step)
   );
   const fallbackFlow = this.defaultTrackerFlow.filter((step) => !this.isTrackerStepHidden(step));
 
-  this.trackerFlow = visibleFlow.length
-    ? visibleFlow
+  this.trackerFlow = explicitFlow.length
+    ? explicitFlow
     : fallbackFlow;
 }
 
 private normalizeTrackerStepKey(step: any): string | null {
-  if (typeof step !== 'string') return null;
+  const stepValue =
+    typeof step === 'string'
+      ? step
+      : this.pickFirstString(step?.key, step?.code);
 
-  const normalizedStep = step.trim();
-  return this.trackerFlowKeyMap[normalizedStep.toUpperCase()] || normalizedStep;
+  if (!stepValue) return null;
+
+  const normalizedStep = stepValue.trim();
+  const mappedStep = this.trackerFlowKeyMap[normalizedStep.toUpperCase()];
+
+  if (mappedStep) {
+    return mappedStep;
+  }
+
+  const compactStep = normalizedStep.replace(/[-_\s]/g, '').toLowerCase();
+  const knownStep = this.defaultTrackerFlow.find(
+    (stepKey) => stepKey.toLowerCase() === compactStep
+  );
+
+  return knownStep || normalizedStep;
 }
 
-private normalizeTrackerStatus(status: any): 'DONE' | 'PENDING' | 'LOCKED' {
+private normalizeTrackerStatus(status: any): TrackerStepStatus {
   if (typeof status !== 'string') return 'LOCKED';
 
   switch (status.trim().toUpperCase()) {
@@ -2000,7 +2189,15 @@ private normalizeTrackerStatus(status: any): 'DONE' | 'PENDING' | 'LOCKED' {
 private buildTrackerSteps(steps: any): Record<string, 'DONE' | 'PENDING' | 'LOCKED'> {
   const normalizedSteps: Record<string, 'DONE' | 'PENDING' | 'LOCKED'> = {};
 
-  if (steps && typeof steps === 'object') {
+  if (Array.isArray(steps)) {
+    steps.forEach((step) => {
+      const normalizedStepKey = this.normalizeTrackerStepKey(step);
+
+      if (!normalizedStepKey || this.isTrackerStepHidden(normalizedStepKey)) return;
+
+      normalizedSteps[normalizedStepKey] = this.normalizeTrackerArrayStepStatus(step);
+    });
+  } else if (steps && typeof steps === 'object') {
     Object.keys(steps).forEach((stepKey) => {
       const normalizedStepKey = this.normalizeTrackerStepKey(stepKey);
 
@@ -2019,6 +2216,126 @@ private buildTrackerSteps(steps: any): Record<string, 'DONE' | 'PENDING' | 'LOCK
   });
 
   return normalizedSteps;
+}
+
+private extractTrackingStepItems(...sources: any[]): any[] {
+  for (const source of sources) {
+    const items = this.getTrackingStepItemsFromSource(source);
+
+    if (items.length > 0) {
+      return items;
+    }
+  }
+
+  return [];
+}
+
+private getTrackingStepItemsFromSource(source: any): any[] {
+  if (!source || typeof source !== 'object') {
+    return [];
+  }
+
+  const candidates = [
+    source,
+    source?.trackingSteps,
+    source?.stepProgress?.trackingSteps,
+    source?.loanTracking?.trackingSteps,
+    source?.loanTracking?.trackingCardData?.trackingSteps,
+    source?.loanTracking?.trackingCardData?.stepProgress?.trackingSteps,
+    source?.trackingCardData?.trackingSteps,
+    source?.trackingCardData?.stepProgress?.trackingSteps,
+    source?.dashboard?.primaryCard?.data?.trackingSteps,
+    source?.dashboard?.primaryCard?.data?.stepProgress?.trackingSteps
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate) && candidate.length > 0) {
+      return candidate;
+    }
+  }
+
+  return [];
+}
+
+private applyTrackingStepItems(trackerStepItems: any[]) {
+  this.updateTrackerFlow(trackerStepItems);
+  this.trackingSteps = this.buildTrackerSteps(trackerStepItems);
+  this.rebuildTrackerDisplaySteps(trackerStepItems);
+}
+
+private rebuildTrackerDisplaySteps(trackerStepItems?: any[]) {
+  if (Array.isArray(trackerStepItems) && trackerStepItems.length > 0) {
+    this.trackerDisplaySteps = trackerStepItems
+      .map((step) => this.toTrackerDisplayStep(step))
+      .filter((step): step is TrackerDisplayStep => !!step);
+    return;
+  }
+
+  const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
+  this.trackerDisplaySteps = flow
+    .filter((stepKey) => this.shouldShowTrackerStep(stepKey))
+    .map((stepKey) => ({
+      key: stepKey,
+      code: this.trackerStepCodeMap[stepKey] || stepKey,
+      label: this.trackerStepLabelMap[stepKey] || this.formatStatusLabel(stepKey),
+      status: this.normalizeTrackerStatus(this.trackingSteps?.[stepKey]),
+      iconImage: ''
+    }));
+}
+
+private toTrackerDisplayStep(step: any): TrackerDisplayStep | null {
+  const key = this.normalizeTrackerStepKey(step);
+
+  if (!key || this.isTrackerStepHidden(key)) {
+    return null;
+  }
+
+  const code = this.pickFirstString(
+    step?.code,
+    this.trackerStepCodeMap[key],
+    key
+  );
+
+  return {
+    key,
+    code,
+    label: this.pickFirstString(
+      step?.normalizedName,
+      step?.label,
+      step?.name,
+      step?.displayName,
+      this.trackerStepLabelMap[key],
+      this.formatStatusLabel(code)
+    ),
+    status: this.normalizeTrackerArrayStepStatus(step),
+    iconImage: this.pickFirstString(step?.iconImage, step?.iconUrl, step?.icon)
+  };
+}
+
+private normalizeTrackerArrayStepStatus(step: any): TrackerStepStatus {
+  const explicitStatus = this.pickFirstString(
+    step?.status,
+    step?.state,
+    step?.value
+  );
+
+  if (explicitStatus) {
+    return this.normalizeTrackerStatus(explicitStatus);
+  }
+
+  if (step?.completed === true || step?.done === true) {
+    return 'DONE';
+  }
+
+  if (step?.locked === true) {
+    return 'LOCKED';
+  }
+
+  if (step?.completed === false || step?.locked === false) {
+    return 'PENDING';
+  }
+
+  return 'LOCKED';
 }
 
 shouldShowTrackerStep(stepKey: string): boolean {
@@ -2167,8 +2484,14 @@ private applyApplicationStatusData(data: any) {
 
   this.syncTrackerRuntimeState(data);
   this.syncEnachRuntimeState(data, this.loanTracking, this.currentLoanRequest);
-  this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
-  this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
+  const trackerStepItems = this.extractTrackingStepItems(data, this.loanTracking);
+  if (trackerStepItems.length > 0) {
+    this.applyTrackingStepItems(trackerStepItems);
+  } else {
+    this.updateTrackerFlow(data?.statusFlow || this.loanTracking?.statusFlow);
+    this.trackingSteps = this.buildTrackerSteps(data?.steps || this.trackingSteps || {});
+    this.rebuildTrackerDisplaySteps();
+  }
   this.currentTitle =
     data?.borrowerGuidance?.title ||
     this.loanTracking?.currentTitle ||
@@ -2231,9 +2554,43 @@ private extractEnachAuthUrl(...sources: any[]): string {
     if (authUrl) {
       return authUrl;
     }
+
+    const primaryActions = [
+      source?.dashboard?.primaryCard?.data?.stageDetail?.primaryAction,
+      source?.loanTracking?.trackingCardData?.stageDetail?.primaryAction,
+      source?.loanTracking?.guidance?.primaryAction,
+      source?.guidance?.primaryAction,
+      source?.trackingCardData?.stageDetail?.primaryAction
+    ];
+    const enachAction = primaryActions.find((action) => this.isEnachPrimaryAction(action));
+    const enachActionUrl = this.pickFirstString(enachAction?.url, enachAction?.endpoint);
+
+    if (enachActionUrl) {
+      return enachActionUrl;
+    }
   }
 
   return '';
+}
+
+private isEnachPrimaryAction(action: any): boolean {
+  if (!action || typeof action !== 'object') {
+    return false;
+  }
+
+  const actionText = [
+    action?.label,
+    action?.url,
+    action?.endpoint
+  ]
+    .filter((value) => typeof value === 'string' && value.trim())
+    .join(' ')
+    .toUpperCase();
+
+  return actionText.includes('ENACH') ||
+    actionText.includes('E-NACH') ||
+    actionText.includes('MANDATE') ||
+    actionText.includes('EMANDATE');
 }
 
 private extractEnachMandateRowId(...sources: any[]): string {
@@ -2942,8 +3299,22 @@ private hasEsignDoneSignal(...sources: any[]): boolean {
 }
 
 private isEsignCompletedForEnachRefresh(): boolean {
+  if (this.isCombinedSanctionAgreementCompleted()) {
+    return true;
+  }
+
   return this.hasObservedEsignDone ||
     this.normalizeTrackerStatus(this.trackingSteps?.esign) === 'DONE';
+}
+
+private isCombinedSanctionAgreementCompleted(): boolean {
+  const flow = this.trackerFlow?.length ? this.trackerFlow : this.defaultTrackerFlow;
+  const sanctionStep = this.trackerDisplaySteps.find((step) => step.key === 'sanction');
+
+  return !flow.includes('esign') &&
+    !!sanctionStep &&
+    this.isCombinedSanctionAgreementStep(sanctionStep) &&
+    this.normalizeTrackerStatus(this.trackingSteps?.sanction) === 'DONE';
 }
 
 private canRefreshEnachAfterEsign(): boolean {
@@ -2986,6 +3357,14 @@ private async triggerDirectEnachRefreshAfterEsign(): Promise<void> {
 private async refreshTrackerStepSilently(stepKey: RefreshableTrackerStep): Promise<boolean> {
   switch (stepKey) {
     case 'sanction':
+      {
+        const sanctionStep = this.trackerDisplaySteps.find((step) => step.key === 'sanction');
+        const primaryAction = this.getCurrentTrackerPrimaryAction();
+
+        if (sanctionStep && this.shouldOpenEsignForSanctionStep(sanctionStep, primaryAction)) {
+          return this.prefetchEsignSilently();
+        }
+      }
       return this.prefetchSanctionSilently();
     case 'esign':
       return this.prefetchEsignSilently();

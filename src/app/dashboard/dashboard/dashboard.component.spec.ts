@@ -17,6 +17,12 @@ describe('DashboardComponent', () => {
       createMandate: jasmine.createSpy('createMandate').and.returnValue(
         of({ success: true, data: {} })
       ),
+      sanctionEsignLink: jasmine.createSpy('sanctionEsignLink').and.returnValue(
+        of({ success: true, data: { sanctionLetterUrl: 'https://example.com/sanction.pdf' } })
+      ),
+      esignLink: jasmine.createSpy('esignLink').and.returnValue(
+        of({ success: true, data: { esignUrl: 'https://example.com/esign' } })
+      ),
       mendateRefresh: jasmine.createSpy('mendateRefresh').and.returnValue(
         of({ success: true, data: {} })
       )
@@ -377,6 +383,115 @@ describe('DashboardComponent', () => {
     expect(component.shouldShowTrackerStep('videoKyc')).toBeFalse();
     expect(component.trackerFlow).not.toContain('videoKyc');
     expect(component.trackingSteps.videoKyc).toBeUndefined();
+  });
+
+  it('should render tracker steps from borrower snapshot trackingSteps array', () => {
+    (component as any).applyBorrowerSnapshotData({
+      dashboard: {
+        primaryCard: {
+          type: 'LOAN_APPLICATION_TRACKING'
+        }
+      },
+      loanTracking: {
+        statusFlow: [
+          'APPLICATION_SUBMITTED',
+          'APPLICATION_IN_REVIEW',
+          'VIDEO_KYC',
+          'SANCTION',
+          'ENACH',
+          'DISBURSEMENT'
+        ],
+        trackingSteps: [
+          {
+            key: 'applicationSubmitted',
+            code: 'APPLICATION_SUBMITTED',
+            normalizedName: 'Application Submitted',
+            locked: false,
+            completed: true
+          },
+          {
+            key: 'applicationInReview',
+            code: 'APPLICATION_IN_REVIEW',
+            normalizedName: 'Application In Review',
+            locked: false,
+            completed: true
+          },
+          {
+            key: 'videoKyc',
+            code: 'VIDEO_KYC',
+            normalizedName: 'Video KYC',
+            locked: true,
+            completed: false
+          },
+          {
+            key: 'sanction',
+            code: 'SANCTION',
+            normalizedName: 'Sanction & Agreement eSign',
+            locked: true,
+            completed: false
+          },
+          {
+            key: 'enach',
+            code: 'ENACH',
+            normalizedName: 'eNACH',
+            locked: true,
+            completed: false
+          },
+          {
+            key: 'disbursement',
+            code: 'DISBURSEMENT',
+            normalizedName: 'Disbursement',
+            locked: true,
+            completed: false
+          }
+        ]
+      }
+    }, false, undefined, true);
+
+    expect(component.trackerFlow).toEqual([
+      'applicationSubmitted',
+      'applicationInReview',
+      'videoKyc',
+      'sanction',
+      'enach',
+      'disbursement'
+    ]);
+    expect(component.trackerFlow).not.toContain('esign');
+    expect(component.trackerDisplaySteps.map((step) => step.label)).toContain('Sanction & Agreement eSign');
+    expect(component.trackingSteps.esign).toBeUndefined();
+  });
+
+  it('should open combined sanction agreement action from primary action url', () => {
+    (component as any).trackerFlow = ['applicationSubmitted', 'sanction', 'enach'];
+    component.trackingSteps = {
+      applicationSubmitted: 'DONE',
+      sanction: 'PENDING',
+      enach: 'LOCKED'
+    };
+    component.trackerDisplaySteps = [
+      {
+        key: 'sanction',
+        code: 'SANCTION',
+        label: 'Sanction & Agreement eSign',
+        status: 'PENDING',
+        iconImage: ''
+      }
+    ];
+    component.loanTracking = {
+      guidance: {
+        primaryAction: {
+          label: 'Proceed to eSign',
+          url: 'https://example.com/contract360',
+          method: 'OPEN_URL'
+        }
+      }
+    };
+
+    component.onTrackerStepClick(component.trackerDisplaySteps[0]);
+
+    expect(component.showEsignModal).toBeTrue();
+    expect(component.esignUrl).toBe('https://example.com/contract360');
+    expect(contentService.esignLink).not.toHaveBeenCalled();
   });
 
   it('should skip video kyc refresh while refreshing tracker steps on the dashboard', async () => {
