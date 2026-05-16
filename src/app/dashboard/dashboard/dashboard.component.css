@@ -1133,6 +1133,53 @@
   filter: brightness(0) invert(1);
 }
 
+.tracker-card .tracker-row .step {
+  display: flex;
+  flex: 0 0 120px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.tracker-card .tracker-row .step .circle {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  flex-shrink: 0;
+  border: 3px solid #ffffff;
+  background: linear-gradient(180deg, #1E3957, #55A1DB);
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(28, 70, 133, 0.18);
+}
+
+.tracker-card .tracker-row .step.done .circle,
+.tracker-card .tracker-row .step .circle.green {
+  background: #01A207;
+  color: #ffffff;
+}
+
+.tracker-card .tracker-row .step .circle i,
+.tracker-card .tracker-row .step .tracker-step-icon-img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  line-height: 1;
+}
+
+.tracker-card .tracker-row .step .circle i {
+  font-size: 22px;
+}
+
+.tracker-card .tracker-row .step p {
+  margin: 0;
+  min-height: 36px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  line-height: 1.35;
+}
+
 
 /* HEADER */
 .tracker-header h2 {

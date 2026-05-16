@@ -81,6 +81,15 @@ export class DashboardComponent implements OnInit, OnDestroy {
     enach: 'eNACH',
     disbursement: 'Disbursement'
   };
+  private readonly trackerStepsWithBuiltInIcons = new Set<string>([
+    'applicationSubmitted',
+    'applicationInReview',
+    'videoKyc',
+    'sanction',
+    'esign',
+    'enach',
+    'disbursement'
+  ]);
   private readonly refreshableTrackerSteps: RefreshableTrackerStep[] = [
     // Video KYC should stay read-only on the dashboard refresh flow.
     'sanction',
@@ -2025,7 +2034,9 @@ trackTrackerStep(_index: number, step: TrackerDisplayStep): string {
 }
 
 shouldUseTrackerStepImage(step: TrackerDisplayStep): boolean {
-  return !!step?.iconImage && this.normalizeTrackerStatus(step.status) === 'PENDING';
+  return !!step?.iconImage &&
+    this.normalizeTrackerStatus(step.status) === 'PENDING' &&
+    !this.trackerStepsWithBuiltInIcons.has(step.key);
 }
 
 onTrackerStepClick(step: TrackerDisplayStep) {
