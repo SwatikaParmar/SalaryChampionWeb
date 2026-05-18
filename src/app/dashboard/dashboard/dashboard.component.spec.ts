@@ -257,6 +257,26 @@ describe('DashboardComponent', () => {
     });
   });
 
+  it('should hide the dashboard loan button when the CTA label is Enter OTP', () => {
+    component.dashboardPrimaryCard = {
+      cta: {
+        label: 'Enter OTP'
+      }
+    };
+
+    expect(component.showLoanJourneyButton).toBeFalse();
+  });
+
+  it('should keep the dashboard loan button for other CTA labels', () => {
+    component.dashboardPrimaryCard = {
+      cta: {
+        label: 'Continue'
+      }
+    };
+
+    expect(component.showLoanJourneyButton).toBeTrue();
+  });
+
   it('should retry refresh flow when api returns invalid reloan token message', () => {
     expect((component as any).shouldRetryReloanToken('Invalid reloanToken.')).toBeTrue();
   });
@@ -569,6 +589,7 @@ describe('DashboardComponent', () => {
 
   it('should refresh application status after sanction accept even when a status call is already in flight', () => {
     component.applicationId = 'APP123';
+    component.showSanctionModal = true;
 
     const firstStatusRequest = new Subject<any>();
     contentService.applicationStatus.and.returnValues(
@@ -586,12 +607,29 @@ describe('DashboardComponent', () => {
       applicationId: 'APP123',
       otpCode: '123456'
     });
+    expect(contentService.esignLink).toHaveBeenCalledWith('APP123');
+    expect(component.showSanctionModal).toBeFalse();
+    expect(component.showEsignModal).toBeTrue();
     expect(contentService.applicationStatus).toHaveBeenCalledTimes(1);
 
     firstStatusRequest.next({ success: true, data: {} });
     firstStatusRequest.complete();
 
     expect(contentService.applicationStatus).toHaveBeenCalledTimes(2);
+  });
+
+  it('should allow sanction accept without a manual otp entry', () => {
+    component.applicationId = 'APP123';
+    component.showSanctionModal = true;
+
+    component.acceptSanction();
+
+    expect(contentService.acceptSanction).toHaveBeenCalledWith({
+      applicationId: 'APP123'
+    });
+    expect(contentService.esignLink).toHaveBeenCalledWith('APP123');
+    expect(component.showSanctionModal).toBeFalse();
+    expect(component.showEsignModal).toBeTrue();
   });
 
   it('should not create mandate during silent enach refresh', async () => {

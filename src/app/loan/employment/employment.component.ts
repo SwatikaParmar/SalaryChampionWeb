@@ -11,7 +11,7 @@ import {
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
 import { ContentService } from '../../../service/content.service';
 
-const PLACEHOLDER_ADDRESS_VALUES = new Set(['NA', 'N/A', 'NOTAVAILABLE']);
+const PLACEHOLDER_ADDRESS_VALUES = new Set(['', '', '']);
 type EmploymentDateField = 'nextSalaryDate' | 'residingSince' | 'dateOfJoining';
 
 function normalizePlaceholderToken(value: unknown): string {
@@ -79,6 +79,7 @@ export class EmploymentComponent implements OnInit {
     { value: 'COMPANY_PROVIDED', label: 'Company Provided' },
     { value: 'OTHER', label: 'Other' },
   ];
+  readonly residingSinceYearOptions = this.buildResidingSinceYearOptions();
 
   readonly companyTypeOptions = [
     'PRIVATE',
@@ -140,6 +141,8 @@ export class EmploymentComponent implements OnInit {
         }),
       }),
     });
+
+    this.setupCurrentAddressLine1Sanitization();
   }
 
   loadBorrowerSnapshot() {
@@ -284,14 +287,15 @@ export class EmploymentComponent implements OnInit {
     const companyEmployer = companyDetail?.employer || {};
     const companyAddress = companyDetail?.address || {};
     const completion = data?.completion || {};
-    const line1 = currentAddress?.line1 || '';
+    const rawCurrentAddressLine1 = currentAddress?.line1 || '';
+    const line1 = this.normalizeCurrentAddressLine1(rawCurrentAddressLine1);
 
     this.isReadOnly = !!data?.application?.personalTabLocked;
     this.isEmploymentStepCompleted =
       !!completion?.employmentDetailsCompleted || this.isEmploymentStepCompleted;
     this.currentAddressCompleted = !!completion?.currentAddressCompleted;
     this.isCurrentAddressDraft =
-      !!currentAddress?.isPrefilledDraft || this.isPlaceholderAddress(line1);
+      !!currentAddress?.isPrefilledDraft || this.isPlaceholderAddress(rawCurrentAddressLine1);
 
     this.employmentForm.patchValue({
       employment: {
@@ -309,7 +313,7 @@ export class EmploymentComponent implements OnInit {
         city: currentAddress?.city || '',
         state: currentAddress?.state || '',
         residenceType: currentAddress?.residenceType || '',
-        residingSince: normalizeDateForInput(currentAddress?.residingSince),
+        residingSince: this.normalizeResidingSinceYear(currentAddress?.residingSince),
       },
       companyDetail: {
         workingFromHome:
@@ -330,6 +334,10 @@ export class EmploymentComponent implements OnInit {
         },
       },
     });
+
+    this.applyCurrentAddressLine1Sanitization(
+      this.currentAddressGroup.get('line1')?.value,
+    );
 
     this.syncDateDisplays();
 
@@ -758,6 +766,50 @@ export class EmploymentComponent implements OnInit {
       .slice(0, 6);
   }
 
+  private setupCurrentAddressLine1Sanitization() {
+    this.currentAddressGroup.get('line1')?.valueChanges.subscribe((value) => {
+      this.applyCurrentAddressLine1Sanitization(value);
+    });
+  }
+
+  private applyCurrentAddressLine1Sanitization(value: any) {
+    const line1Control = this.currentAddressGroup.get('line1');
+
+    if (!line1Control) {
+      return;
+    }
+
+    const sanitizedValue = this.normalizeCurrentAddressLine1(value);
+
+    if (value === sanitizedValue) {
+      return;
+    }
+
+    line1Control.setValue(sanitizedValue, { emitEvent: false });
+    line1Control.updateValueAndValidity({ emitEvent: false });
+  }
+
+  private normalizeCurrentAddressLine1(value: any): string {
+    const normalizedValue = this.normalizeText(value);
+
+    if (!normalizedValue || this.isPlaceholderAddress(normalizedValue)) {
+      return '';
+    }
+
+    return normalizedValue;
+  }
+
+  private normalizeResidingSinceYear(value: any): string {
+    const normalizedValue = normalizeDateForInput(value);
+
+    if (!normalizedValue) {
+      return '';
+    }
+
+    const [year] = normalizedValue.split('-');
+    return `${year}-01-01`;
+  }
+
   private isPlaceholderAddress(value: any): boolean {
     return PLACEHOLDER_ADDRESS_VALUES.has(normalizePlaceholderToken(value));
   }
@@ -825,6 +877,19 @@ export class EmploymentComponent implements OnInit {
     const day = String(parsedDate.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+  }
+
+  private buildResidingSinceYearOptions() {
+    const currentYear = new Date().getFullYear();
+
+    return Array.from({ length: 60 }, (_, index) => {
+      const year = currentYear - index;
+
+      return {
+        value: `${year}-01-01`,
+        label: String(year),
+      };
+    });
   }
 
   private syncDateDisplays() {

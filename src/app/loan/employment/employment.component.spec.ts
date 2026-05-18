@@ -81,4 +81,61 @@ describe('EmploymentComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should expose the last 60 years for residing since', () => {
+    const currentYear = new Date().getFullYear();
+
+    expect(component.residingSinceYearOptions.length).toBe(60);
+    expect(component.residingSinceYearOptions[0]).toEqual({
+      value: `${currentYear}-01-01`,
+      label: String(currentYear),
+    });
+  });
+
+  it('should normalize residing since to the selected year value', () => {
+    component.bindJourneyResponse({
+      application: {
+        personalTabLocked: false,
+      },
+      currentAddress: {
+        residingSince: '2024-05-13',
+      },
+      companyDetail: {
+        application: {},
+        employment: {},
+        employer: {},
+        address: {},
+      },
+      completion: {},
+    });
+
+    expect(component.currentAddressGroup.get('residingSince')?.value).toBe('2024-01-01');
+  });
+
+  it('should not prefill current address line 1 with placeholder values like NA', () => {
+    component.bindJourneyResponse({
+      application: {
+        personalTabLocked: false,
+      },
+      currentAddress: {
+        line1: 'NA',
+      },
+      companyDetail: {
+        application: {},
+        employment: {},
+        employer: {},
+        address: {},
+      },
+      completion: {},
+    });
+
+    expect(component.currentAddressGroup.get('line1')?.value).toBe('');
+    expect(component.isCurrentAddressDraft).toBeTrue();
+  });
+
+  it('should clear current address line 1 if NA is set later on the control', () => {
+    component.currentAddressGroup.get('line1')?.setValue('NA');
+
+    expect(component.currentAddressGroup.get('line1')?.value).toBe('');
+  });
 });

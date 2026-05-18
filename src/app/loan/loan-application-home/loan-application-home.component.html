@@ -134,9 +134,11 @@
   <!-- SKIP BUTTON -->
   <button
     *ngIf="isActive('fetchBankStatement') && !isCompleted('fetchBankStatement')"
+    type="button"
     class="skip-btn"
-    (click)="skipProcess()">
-    Skip
+    [disabled]="isSkippingFetchBankStatement"
+    (click)="skipProcess($event)">
+    {{ isSkippingFetchBankStatement ? 'Skipping...' : 'Skip' }}
   </button>
 
   <div class="loan-step-icon">🏦</div>

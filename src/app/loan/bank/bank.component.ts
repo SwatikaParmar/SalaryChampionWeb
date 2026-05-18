@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
-import { ContentService } from '../../../service/content.service';
 import { getFirstApiErrorMessage } from '../../../service/api-error.util';
+import { ContentService } from '../../../service/content.service';
 
 @Component({
   selector: 'app-bank',
@@ -16,12 +16,16 @@ export class BankComponent implements OnInit {
   constructor(
     private contentService: ContentService,
     private router: Router,
-    private spinner: NgxSpinnerService, // ✅ spinner
-    private toastr: ToastrService, // ✅ toaster
+    private spinner: NgxSpinnerService,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
     this.getBorrowerSnapshot();
+  }
+
+  goToLoanHome() {
+    this.navigateToLoanHomeWithRefresh('aadhaarEKyc');
   }
 
   // ================= GET APPLICATION ID =================
@@ -33,7 +37,9 @@ export class BankComponent implements OnInit {
         this.spinner.hide();
 
         if (!res?.success) {
-          this.toastr.error(getFirstApiErrorMessage(res, 'Failed to load borrower details'));
+          this.toastr.error(
+            getFirstApiErrorMessage(res, 'Failed to load borrower details'),
+          );
           return;
         }
 
@@ -45,94 +51,90 @@ export class BankComponent implements OnInit {
       },
       error: (err) => {
         this.spinner.hide();
-        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'));
+        this.toastr.error(
+          getFirstApiErrorMessage(err, 'Failed to fetch borrower snapshot'),
+        );
       },
     });
   }
 
   // ================= FETCH BANK STATEMENT =================
-fetchBankStatement() {
+  fetchBankStatement() {
+    if (!this.applicationId) {
+      this.toastr.warning('Application ID missing');
+      return;
+    }
 
-  if (!this.applicationId) {
-    this.toastr.warning('Application ID missing');
-    return;
-  }
+    const payload = {
+      applicationId: this.applicationId,
+      redirectUrl:
+        'https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/loan/bank-verification',
+    };
 
-  const payload = {
-    applicationId: this.applicationId,
-    redirectUrl: 'https://staging.d1ndeezlom7hf1.amplifyapp.com/dashboard/loan/bank-verification',
-  };
+    this.spinner.show();
 
-  this.spinner.show();
+    this.contentService.fetchBankStatement(payload).subscribe({
+      next: (res: any) => {
+        this.spinner.hide();
 
-  this.contentService.fetchBankStatement(payload).subscribe({
+        // Handle text responses from the API before reading the payload.
+        if (typeof res === 'string') {
+          try {
+            res = JSON.parse(res);
+          } catch (error) {
+            console.error('Invalid JSON response:', res, error);
+            this.toastr.error('Server response invalid');
+            return;
+          }
+        }
 
-    next: (res: any) => {
-
-      this.spinner.hide();
-
-      // 🔥 HANDLE STRING RESPONSE
-      if (typeof res === 'string') {
-        try {
-          res = JSON.parse(res);
-        } catch (e) {
-          console.error('Invalid JSON response:', res);
-          this.toastr.error('Server response invalid');
+        if (res?.success && res?.data?.url) {
+          this.toastr.success('Redirecting to bank statement');
+          window.open(res.data.url, '_self');
           return;
         }
+
+        this.toastr.error(
+          getFirstApiErrorMessage(res, 'Failed to generate bank statement link'),
+        );
+      },
+      error: (err) => {
+        this.spinner.hide();
+        console.error(err);
+        this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch bank statement'));
       }
-
-      // ✅ NORMAL FLOW
-      if (res?.success && res?.data?.url) {
-
-        this.toastr.success('Redirecting to bank statement');
-
-        // 🔥 BEST REDIRECT
-        window.open(res.data.url, '_self');
-
-      } else {
-        this.toastr.error(getFirstApiErrorMessage(res, 'Failed to generate bank statement link'));
-      }
-
-    },
-
-    error: (err) => {
-      this.spinner.hide();
-      console.error(err);
-      this.toastr.error(getFirstApiErrorMessage(err, 'Failed to fetch bank statement'));
-    }
-
-  });
-}
-
-
-    /* ================= SKIP ================= */
-skipProcess() {
-
-  if (!this.applicationId) {
-    this.toastr.error('Application ID missing');
-    return;
+    });
   }
 
-  this.spinner.show();
-
-  this.contentService.skipFetchBankStatement(this.applicationId).subscribe({
-    next: () => {
-
-      this.spinner.hide();
-
-      this.toastr.success('Step skipped successfully');
-
-      // ✅ CORRECT REDIRECT
-      this.router.navigate(['/dashboard/loan'], {
-        queryParams: { refresh: true }
-      });
-
-    },
-    error: (err) => {
-      this.spinner.hide();
-      this.toastr.error(getFirstApiErrorMessage(err, 'Skip failed'));
+  /* ================= SKIP ================= */
+  skipProcess() {
+    if (!this.applicationId) {
+      this.toastr.error('Application ID missing');
+      return;
     }
-  });
-}
+
+    this.spinner.show();
+
+    this.contentService.skipFetchBankStatement(this.applicationId).subscribe({
+      next: () => {
+        this.spinner.hide();
+        this.toastr.success('Step skipped successfully');
+        this.navigateToLoanHomeWithRefresh('fetchBankStatement');
+      },
+      error: (err) => {
+        this.spinner.hide();
+        this.toastr.error(getFirstApiErrorMessage(err, 'Skip failed'));
+      }
+    });
+  }
+
+  private navigateToLoanHomeWithRefresh(completedStep?: string) {
+    this.router.navigate(['/dashboard/loan'], {
+      queryParams: {
+        refresh: Date.now(),
+        completedStep: completedStep || null,
+      },
+      replaceUrl: true,
+    });
+  }
 }

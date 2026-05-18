@@ -562,6 +562,14 @@ videoKycModalMessage: string = '';
       (this.loanProgress > 0 ? 'Continue' : 'View & Apply');
   }
 
+  get showLoanJourneyButton(): boolean {
+    const normalizedLabel = this.loanJourneyButtonLabel
+      .replace(/[\s_-]/g, '')
+      .toUpperCase();
+
+    return normalizedLabel !== 'ENTEROTP';
+  }
+
   get showLoanJourneyProgress(): boolean {
     return this.loanProgress >= 0 && this.loanProgress < 100;
   }
@@ -2948,39 +2956,42 @@ openSanctionLetter() {
   });
 }
 
-acceptSanction(otp: string) {
-  const normalizedOtp = this.normalizeOtp(otp);
+acceptSanction(otp?: string) {
+  const normalizedOtp = this.normalizeOtp(
+    otp ||
+    this.enteredOtp ||
+    this.otpData?.otpCode ||
+    this.otpData?.code ||
+    this.otpData?.otp
+  );
 
-  if (!normalizedOtp) {
-    this.toastr.error('Please enter OTP');
-    return;
-  }
-
-  if (!/^\d+$/.test(normalizedOtp)) {
+  if (normalizedOtp && !/^\d+$/.test(normalizedOtp)) {
     this.toastr.error('OtpCode must be numeric digits only.');
     return;
   }
 
-  const payload = {
-    applicationId: this.applicationId,
-    otpCode: normalizedOtp
+  const payload: any = {
+    applicationId: this.applicationId
   };
+
+  if (normalizedOtp) {
+    payload.otpCode = normalizedOtp;
+  }
 
   this.spinner.show();
 
   this.contentService.acceptSanction(payload).subscribe({
     next: (res: any) => {
-      this.spinner.hide();
-
-      if (res?.success) {
-
-        this.showSanctionModal = false;
-        this.enteredOtp = '';
-
-        // 🔥 refresh tracker
-        this.applicationStatusApi(true, undefined, true);
-
+      if (!res?.success) {
+        this.spinner.hide();
+        return;
       }
+
+      this.enteredOtp = '';
+
+      // Keep the user inside the sanction/agreement journey and move straight to e-sign.
+      this.applicationStatusApi(false, undefined, true);
+      this.openEsign(true);
     },
     error: (err) => {
       this.spinner.hide();
@@ -3032,9 +3043,10 @@ showEsignModal: boolean = false;
 esignUrlSafe!: SafeResourceUrl;
 esignUrl: string = '';
 
-openEsign() {
+openEsign(closeSanctionOnSuccess = false) {
   if (!this.applicationId) return;
 
+  this.spinner.hide();
   this.spinner.show();
 
   this.contentService.esignLink(this.applicationId).subscribe({
@@ -3049,6 +3061,10 @@ openEsign() {
         this.esignUrl = url;
         this.esignUrlSafe =
           this.sanitizer.bypassSecurityTrustResourceUrl(url);
+
+        if (closeSanctionOnSuccess) {
+          this.showSanctionModal = false;
+        }
 
         this.showEsignModal = true;
 

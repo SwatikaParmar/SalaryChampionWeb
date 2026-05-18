@@ -233,7 +233,7 @@
 
     <!-- 🔁 BUTTON CHANGE -->
   <button
-    *ngIf="showLoanJourneyProgress"
+    *ngIf="showLoanJourneyProgress && showLoanJourneyButton"
     class="btn-start"
     type="button"
     (click)="handleLoanJourneyAction()"
@@ -460,20 +460,7 @@
           OTP sent to {{ otpData?.destinationMobile }}
         </div>
 
-        <input
-          type="text"
-          inputmode="numeric"
-          autocomplete="one-time-code"
-          pattern="[0-9]*"
-          placeholder="Enter OTP"
-          [(ngModel)]="enteredOtp"
-          (ngModelChange)="onSanctionOtpInput($event)"
-          (keydown)="allowOnlyOtpDigits($event)"
-          (paste)="handleSanctionOtpPaste($event)"
-          class="otp-input"
-        />
-
-        <button class="btn-primary" (click)="acceptSanction(enteredOtp)">
+        <button class="btn-primary" (click)="acceptSanction()">
           Accept & Continue
         </button>
 

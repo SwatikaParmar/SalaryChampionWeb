@@ -358,35 +358,14 @@
             <div class="col-md-6">
               <div class="form-group">
                 <label>Residing Since *</label>
-                <div class="date-field">
-                  <input
-                    type="text"
-                    class="date-text-input"
-                    inputmode="numeric"
-                    maxlength="10"
-                    placeholder="dd-MM-yyyy"
-                    [value]="getDateDisplayValue('residingSince')"
-                    [disabled]="control('currentAddress.residingSince')?.disabled"
-                    (input)="onDateInput('residingSince', $event)"
-                    (blur)="onDateBlur('residingSince')" />
-                  <button
-                    type="button"
-                    class="date-picker-trigger"
-                    [disabled]="control('currentAddress.residingSince')?.disabled"
-                    (click)="openNativeDatePicker(residingSincePicker)">
-                    <i class="fa-regular fa-calendar"></i>
-                  </button>
-                  <input
-                    #residingSincePicker
-                    type="date"
-                    class="native-date-picker"
-                    [value]="control('currentAddress.residingSince')?.value || ''"
-                    [max]="today"
-                    [disabled]="control('currentAddress.residingSince')?.disabled"
-                    (change)="onNativeDateChange('residingSince', $event)" />
-                </div>
-                <small *ngIf="getDateErrorMessage('residingSince')">
-                  {{ getDateErrorMessage('residingSince') }}
+                <select formControlName="residingSince">
+                  <option value="">Select year</option>
+                  <option *ngFor="let option of residingSinceYearOptions" [value]="option.value">
+                    {{ option.label }}
+                  </option>
+                </select>
+                <small *ngIf="hasError('currentAddress.residingSince', 'required')">
+                  Residing since is required
                 </small>
               </div>
             </div>

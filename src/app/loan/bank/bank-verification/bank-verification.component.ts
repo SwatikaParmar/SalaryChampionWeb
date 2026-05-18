@@ -334,7 +334,11 @@ pollSession() {
 
     setTimeout(() => {
       this.router.navigate(['/dashboard/loan'], {
-        queryParams: { refresh: true }
+        queryParams: {
+          refresh: Date.now(),
+          completedStep: 'fetchBankStatement',
+        },
+        replaceUrl: true,
       });
     }, 1000);
   }

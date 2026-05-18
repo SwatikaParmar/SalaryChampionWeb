@@ -195,6 +195,14 @@
   color: #fff;
 }
 
+.skip-btn:disabled {
+  background: #fff5f5;
+  color: #ff4d4f;
+  border-color: #ffb3b5;
+  cursor: wait;
+  opacity: 0.85;
+}
+
 /* ICON */
 .loan-step-icon {
   font-size: 22px;
